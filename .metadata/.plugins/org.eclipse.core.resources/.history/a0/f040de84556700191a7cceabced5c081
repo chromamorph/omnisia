@@ -22,8 +22,6 @@ public class RunMeNLB {
 
 	public static void main(String[] args) throws InvalidMidiDataException, IOException, NoMorpheticPitchException {
 		System.out.println("Change since e1ff068");
-		System.out.println("Change since a2bf3b8");
-
 		File inputFileDirectory = new File("/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/nlb_datasets/annmidi");
 		String[] inputFileList = inputFileDirectory.list();
 		String outputDirectoryName = "/Users/dave/Documents/Work/Research/Data/NLB/OUTPUT/NLB/"+algorithm+"/NLB";
