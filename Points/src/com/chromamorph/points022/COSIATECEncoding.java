@@ -228,6 +228,18 @@ public class COSIATECEncoding extends Encoding {
 
 			if (bestTEC != null && bestTEC.getPattern().size() == 1 && bestTEC.getTranslatorSetSize() > 1)
 				bestTEC = bestTEC.getDual();
+			if (i == 1000)
+				System.out.println("breaking at 1000");
+			if (i == 1500)
+				System.out.println("breaking at 1500");
+			if (i == 2000)
+				System.out.println("breaking at 2000");
+			if (i == 2500)
+				System.out.println("breaking at 2500");
+			if (i == 3000)
+				System.out.println("breaking at 3000");
+			if (i == 3424)
+				System.out.println("breaking at 3424");
 		}
 
 		if (bestTEC == null)
