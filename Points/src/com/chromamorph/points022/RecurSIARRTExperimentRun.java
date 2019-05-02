@@ -55,7 +55,7 @@ public class RecurSIARRTExperimentRun {
 
 	public static void main(String[] args) {
 		//runJKUPDDExperiment();
-		EvaluateJKUPDDOutputForRecurSIARRTPaper.main(new String[0]);
+		RecurSIARRTEvaluateJKUPDDOutput.main(new String[0]);
 		//		runFuguesExperiment();
 		//		runNLBExperiment();
 	}
