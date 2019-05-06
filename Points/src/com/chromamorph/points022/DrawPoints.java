@@ -348,12 +348,12 @@ public class DrawPoints extends PApplet {
 		if (saveImageFile) {
 			this.save(outputImageFile);
 			noLoop();
-			exit();
+			//exit();
 		}
 		if (writeToImageFile) {
 			this.save(outputImageFile);
 			noLoop();
-			exit();
+			//exit();
 		}
 	}
 
