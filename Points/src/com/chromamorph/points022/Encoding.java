@@ -2,6 +2,7 @@ package com.chromamorph.points022;
 
 import java.awt.Dimension;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class Encoding {
 
 	private ArrayList<TEC> tecs = new ArrayList<TEC>();
 	public void setTECs(ArrayList<TEC> tecs) {this.tecs = tecs;}
-	
+
 	/**
 	 * Returns an ArrayList containing the TECs in this Encoding.
 	 *
@@ -314,7 +315,7 @@ public class Encoding {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void drawSegmentation(final String outputFilePath, final boolean diatonicPitch) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -568,45 +569,47 @@ public class Encoding {
 				);
 	}
 
+	public String toMIREXString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < getTECs().size() && (topNPatterns == 0 || i < topNPatterns); i++) {
+			TEC tec = getTECs().get(i);
+			sb.append(MIREX2013Entries.getMIREXString(tec, i+1, bbMode, segmentMode, dataset));
+		}
+		return sb.toString();
+	}
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if (forMirex) {
-			for (int i = 0; i < getTECs().size() && (topNPatterns == 0 || i < topNPatterns); i++) {
-				TEC tec = getTECs().get(i);
-				sb.append(MIREX2013Entries.getMIREXString(tec, i+1, bbMode, segmentMode, dataset));
-			}
-		} else {
-			if (!getTECs().isEmpty())
-				sb.append(getTECs().get(0));
-			for (int i = 1; i < getTECs().size() && (topNPatterns == 0 || i < topNPatterns); i++) {
-				TEC tec = getTECs().get(i);
-				sb.append("\n"+tec);
-			}
-			sb.append("\n");
-			sb.append("\nnumberOfNotes "+ getDataset().size());
-			sb.append("\ntatumsPerBar "+getTatumsPerBar());
-			sb.append("\nbarOneStartsAt "+getBarOneStartsAt());
-			sb.append("\ncompressionRatio "+getCompressionRatio());
-			sb.append("\nrunningTime "+getRunningTime());
-			sb.append("\nencodingLength "+getEncodingLength());
-			sb.append("\nencodingLengthWithoutResidualPointSet "+getEncodingLengthWithoutResidualPointSet());
-			sb.append("\nnumberOfResidualPoints "+getNumberOfResidualPoints());
-			sb.append("\npercentageOfResidualPoints "+getPercentageOfResidualPoints());
-			sb.append("\ncompressionRatioWithoutResidualPointSet "+getCompressionRatioWithoutResidualPointSet());
-			sb.append("\ntitle " + getTitle());
-			sb.append("\nnumberOfTECs "+getNumberOfTECs());
-			sb.append("\ninputFilePath "+getInputFilePathString());
-			sb.append("\noutputFilePath "+getOutputFilePathString());
-			sb.append("\nlogFilePath "+getLogFilePathString());
-			sb.append("\noutputFileExtension "+getOutputFileExtension());
-			sb.append("\nisDiatonic "+isDiatonic());
-			sb.append("\nwithoutChannel10 "+isWithoutChannel10());
-			sb.append("\nencoderName "+getEncoderName());
-			sb.append("\nforMirex "+isForMirex());
-			sb.append("\nmode "+getMode());
-			sb.append("\ntopNPatterns "+topNPatterns);
-
+		if (!getTECs().isEmpty())
+			sb.append(getTECs().get(0));
+		for (int i = 1; i < getTECs().size() && (topNPatterns == 0 || i < topNPatterns); i++) {
+			TEC tec = getTECs().get(i);
+			sb.append("\n"+tec);
 		}
+		sb.append("\n");
+		sb.append("\nnumberOfNotes "+ getDataset().size());
+		sb.append("\ntatumsPerBar "+getTatumsPerBar());
+		sb.append("\nbarOneStartsAt "+getBarOneStartsAt());
+		sb.append("\ncompressionRatio "+getCompressionRatio());
+		sb.append("\nrunningTime "+getRunningTime());
+		sb.append("\nencodingLength "+getEncodingLength());
+		sb.append("\nencodingLengthWithoutResidualPointSet "+getEncodingLengthWithoutResidualPointSet());
+		sb.append("\nnumberOfResidualPoints "+getNumberOfResidualPoints());
+		sb.append("\npercentageOfResidualPoints "+getPercentageOfResidualPoints());
+		sb.append("\ncompressionRatioWithoutResidualPointSet "+getCompressionRatioWithoutResidualPointSet());
+		sb.append("\ntitle " + getTitle());
+		sb.append("\nnumberOfTECs "+getNumberOfTECs());
+		sb.append("\ninputFilePath "+getInputFilePathString());
+		sb.append("\noutputFilePath "+getOutputFilePathString());
+		sb.append("\nlogFilePath "+getLogFilePathString());
+		sb.append("\noutputFileExtension "+getOutputFileExtension());
+		sb.append("\nisDiatonic "+isDiatonic());
+		sb.append("\nwithoutChannel10 "+isWithoutChannel10());
+		sb.append("\nencoderName "+getEncoderName());
+		sb.append("\nforMirex "+isForMirex());
+		sb.append("\nmode "+getMode());
+		sb.append("\ntopNPatterns "+topNPatterns);
+
 		return sb.toString();
 	}
 
@@ -707,7 +710,17 @@ public class Encoding {
 		if (this.outputFilePath != null) {
 			PrintWriter pw = new PrintWriter(this.outputFilePath.toFile());
 			pw.println(this);
+			pw.flush();
 			pw.close();
+			if (forMirex) {
+				int dotIndex = this.outputFilePathString.lastIndexOf('.');
+				String outputFilePathStringToDot = this.outputFilePathString.substring(0,dotIndex);
+				String mirexOutputFilePathString = outputFilePathStringToDot + ".txt";
+				pw = new PrintWriter(new File(mirexOutputFilePathString));
+				pw.println(this.toMIREXString());
+				pw.flush();
+				pw.close();			
+			}
 		}
 	}
 
@@ -766,5 +779,5 @@ public class Encoding {
 		for(TEC tec : getTECs()) 
 			tec.removeRedundantTranslators();
 	}
-	
+
 }
