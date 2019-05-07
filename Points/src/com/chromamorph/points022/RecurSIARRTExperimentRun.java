@@ -30,9 +30,11 @@ public class RecurSIARRTExperimentRun {
 			//			{"COSIATEC",               "-a COSIATEC"},
 			//			{"COSIATEC-MIN-4",         "-a COSIATEC 														-min 4"}, //Fails on Gibbons
 
-//			////////////////////////////////////////////////////////////////////////////////////
-			{"COSIATEC",				"-a COSIATEC"},
-			{"COSIATECSegment",			"-a COSIATEC		-segmode"},
+			//////////////////////////////////////////////////////////////////////////////////////
+			// COSIATEC
+			
+//			{"COSIATEC",				"-a COSIATEC"},
+//			{"COSIATECSegment",			"-a COSIATEC		-segmode"},
 //			{"COSIATECBB",				"-a COSIATEC		-bbmode"},
 //
 //			{"COSIACTTEC",				"-a COSIATEC					-ct -cta 0.67 -ctb 3"},
@@ -83,7 +85,7 @@ public class RecurSIARRTExperimentRun {
 //			{"COSIARCTTECSegment-RRT",		"-a COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
 //			{"COSIARCTTECBB-RRT",			"-a COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
 //
-//			//			with RecurSIA
+//			//			with RecurSIA and RRT
 //
 //			{"ReCOSIATEC-RRT",			"-recalg COSIATEC													-a RecurSIA		-rrt"},
 //			{"ReCOSIATECSegment-RRT",	"-recalg COSIATEC	-segmode										-a RecurSIA		-rrt"},
@@ -101,27 +103,166 @@ public class RecurSIARRTExperimentRun {
 //			{"ReCOSIARCTTECSegment-RRT","-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
 //			{"ReCOSIARCTTECBB-RRT",		"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
 
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//Forth's algorithm
+			
+//			{"Forth",				"-a Forth"},
+//			{"ForthSegment",		"-a Forth		-segmode"},
+//			{"ForthBB",				"-a Forth		-bbmode"},
+//
+//			{"ForthCT",				"-a Forth					-ct -cta 0.67 -ctb 3"},
+//			{"ForthCTSegment",		"-a Forth		-segmode	-ct -cta 0.67 -ctb 3"},
+//			{"ForthCTBB",			"-a Forth		-bbmode		-ct -cta 0.67 -ctb 3"},
+//
+//			{"ForthR",				"-a Forth											-rsd -r 3"},
+//			{"ForthRSegment",		"-a Forth		-segmode							-rsd -r 3"},
+//			{"ForthRBB",			"-a Forth		-bbmode								-rsd -r 3"},
+//
+//			{"ForthRCT",			"-a Forth					-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+//			{"ForthRCTSegment",		"-a Forth		-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+//			{"ForthRCTBB",			"-a Forth		-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+//
+//			//			with RecurSIA
+//
+//			{"ReForth",				"-recalg Forth													-a RecurSIA"},
+//			{"ReForthSegment",		"-recalg Forth	-segmode										-a RecurSIA"},
+//			{"ReForthBB",			"-recalg Forth	-bbmode											-a RecurSIA"},
+//
+//			{"ReForthCT",			"-recalg Forth				-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+//			{"ReForthCTSegment",	"-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+//			{"ReForthCTBB",			"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+//
+//			{"ReForthR",			"-recalg Forth										-rsd -r 3	-a RecurSIA"},
+//			{"ReForthRSegment",		"-recalg Forth	-segmode							-rsd -r 3	-a RecurSIA"},
+//			{"ReForthRBB",			"-recalg Forth	-bbmode								-rsd -r 3	-a RecurSIA"},
+//
+//			{"ReForthRCT",			"-recalg Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+//			{"ReForthRCTSegment",	"-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+//			{"ReForthRCTBB",		"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+//
+//			//			with -rrt
+//
+//			{"Forth-RRT",			"-a Forth																	-rrt"},
+//			{"ForthSegment-RRT",	"-a Forth	-segmode														-rrt"},
+//			{"ForthBB-RRT",			"-a Forth	-bbmode															-rrt"},
+//
+//			{"ForthCT-RRT",			"-a Forth				-ct -cta 0.67 -ctb 3								-rrt"},
+//			{"ForthCTSegment-RRT",	"-a Forth	-segmode	-ct -cta 0.67 -ctb 3								-rrt"},
+//			{"ForthCTBB-RRT",		"-a Forth	-bbmode		-ct -cta 0.67 -ctb 3								-rrt"},
+//
+//			{"ForthR-RRT",			"-a Forth										-rsd -r 3					-rrt"},
+//			{"ForthRSegment-RRT",	"-a Forth	-segmode							-rsd -r 3					-rrt"},
+//			{"ForthRBB-RRT",		"-a Forth	-bbmode								-rsd -r 3					-rrt"},
+//
+//			{"ForthRCT-RRT",		"-a Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+//			{"ForthRCTSegment-RRT",	"-a Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+//			{"ForthRCTBB-RRT",		"-a Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+//
+//			//			with RecurSIA and RRT
+//
+//			{"ReForth-RRT",			"-recalg Forth													-a RecurSIA		-rrt"},
+//			{"ReForthSegment-RRT",	"-recalg Forth	-segmode										-a RecurSIA		-rrt"},
+//			{"ReForthBB-RRT",		"-recalg Forth	-bbmode											-a RecurSIA		-rrt"},
+//
+//			{"ReForthCT-RRT",		"-recalg Forth				-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+//			{"ReForthCTSegment-RRT","-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+//			{"ReForthCTBB-RRT",		"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+//
+//			{"ReForthR-RRT",		"-recalg Forth										-rsd -r 3	-a RecurSIA		-rrt"},
+//			{"ReForthRSegment-RRT",	"-recalg Forth	-segmode							-rsd -r 3	-a RecurSIA		-rrt"},
+//			{"ReForthRBB-RRT",		"-recalg Forth	-bbmode								-rsd -r 3	-a RecurSIA		-rrt"},
+//
+//			{"ReForthRCT-RRT",		"-recalg Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+//			{"ReForthRCTSegment-RRT","-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+//			{"ReForthRCTBB-RRT",	"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
 
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//SIATECCompress
+			
+			{"SIATECCompress",					"-a SIATECCompress"},
+			{"SIATECCompressSegment",			"-a SIATECCompress		-segmode"},
+			{"SIATECCompressBB",				"-a SIATECCompress		-bbmode"},
+
+			{"SIACTTECCompress",				"-a SIATECCompress					-ct -cta 0.67 -ctb 3"},
+			{"SIACTTECCompressSegment",			"-a SIATECCompress		-segmode	-ct -cta 0.67 -ctb 3"},
+			{"SIACTTECCompressBB",				"-a SIATECCompress		-bbmode		-ct -cta 0.67 -ctb 3"},
+
+			{"SIARTECCompress",					"-a SIATECCompress											-rsd -r 3"},
+			{"SIARTECCompressSegment",			"-a SIATECCompress		-segmode							-rsd -r 3"},
+			{"SIARTECCompressBB",				"-a SIATECCompress		-bbmode								-rsd -r 3"},
+
+			{"SIARCTTECCompress",				"-a SIATECCompress					-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+			{"SIARCTTECCompressSegment",		"-a SIATECCompress		-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+			{"SIARCTTECCompressBB",				"-a SIATECCompress		-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+
+			//			with RecurSIA
+
+			{"ReSIATECCompress",				"-recalg SIATECCompress													-a RecurSIA"},
+			{"ReSIATECCompressSegment",			"-recalg SIATECCompress	-segmode										-a RecurSIA"},
+			{"ReSIATECCompressBB",				"-recalg SIATECCompress	-bbmode											-a RecurSIA"},
+
+			{"ReSIACTTECCompress",				"-recalg SIATECCompress				-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+			{"ReSIACTTECCompressSegment",		"-recalg SIATECCompress	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+			{"ReSIACTTECCompressBB",			"-recalg SIATECCompress	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+
+			{"ReSIARTECCompress",				"-recalg SIATECCompress										-rsd -r 3	-a RecurSIA"},
+			{"ReSIARTECCompressSegment",		"-recalg SIATECCompress	-segmode							-rsd -r 3	-a RecurSIA"},
+			{"ReSIARTECCompressBB",				"-recalg SIATECCompress	-bbmode								-rsd -r 3	-a RecurSIA"},
+
+			{"ReSIARCTTECCompress",				"-recalg SIATECCompress				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+			{"ReSIARCTTECCompressSegment",		"-recalg SIATECCompress	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+			{"ReSIARCTTECCompressBB",			"-recalg SIATECCompress	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+
+			//			with -rrt
+
+			{"SIATECCompress-RRT",				"-a SIATECCompress																		-rrt"},
+			{"SIATECCompressSegment-RRT",		"-a SIATECCompress		-segmode														-rrt"},
+			{"SIATECCompressBB-RRT",			"-a SIATECCompress		-bbmode															-rrt"},
+
+			{"SIACTTECCompress-RRT",			"-a SIATECCompress					-ct -cta 0.67 -ctb 3								-rrt"},
+			{"SIACTTECCompressSegment-RRT",		"-a SIATECCompress		-segmode	-ct -cta 0.67 -ctb 3								-rrt"},
+			{"SIACTTECCompressBB-RRT",			"-a SIATECCompress		-bbmode		-ct -cta 0.67 -ctb 3								-rrt"},
+
+			{"SIARTECCompress-RRT",				"-a SIATECCompress											-rsd -r 3					-rrt"},
+			{"SIARTECCompressSegment-RRT",		"-a SIATECCompress		-segmode							-rsd -r 3					-rrt"},
+			{"SIARTECCompressBB-RRT",			"-a SIATECCompress		-bbmode								-rsd -r 3					-rrt"},
+
+			{"SIARCTTECCompress-RRT",			"-a SIATECCompress					-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+			{"SIARCTTECCompressSegment-RRT",	"-a SIATECCompress		-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+			{"SIARCTTECCompressBB-RRT",			"-a SIATECCompress		-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+
+			//			with RecurSIA and RRT
+
+			{"ReSIATECCompress-RRT",			"-recalg SIATECCompress													-a RecurSIA		-rrt"},
+			{"ReSIATECCompressSegment-RRT",		"-recalg SIATECCompress	-segmode										-a RecurSIA		-rrt"},
+			{"ReSIATECCompressBB-RRT",			"-recalg SIATECCompress	-bbmode											-a RecurSIA		-rrt"},
+
+			{"ReSIACTTECCompress-RRT",			"-recalg SIATECCompress				-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+			{"ReSIACTTECCompressSegment-RRT",	"-recalg SIATECCompress	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+			{"ReSIACTTECCompressBB-RRT",		"-recalg SIATECCompress	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+
+			{"ReSIARTECCompress-RRT",			"-recalg SIATECCompress										-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReSIARTECCompressSegment-RRT",	"-recalg SIATECCompress	-segmode							-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReSIARTECCompressBB-RRT",			"-recalg SIATECCompress	-bbmode								-rsd -r 3	-a RecurSIA		-rrt"},
+
+			{"ReSIARCTTECCompress-RRT",			"-recalg SIATECCompress				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReSIARCTTECCompressSegment-RRT",	"-recalg SIATECCompress	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReSIARCTTECCompressBB-RRT",		"-recalg SIATECCompress	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			
 	};
 
 	public static void runJKUPDDExperiment() {
 		for(String[] algorithm : algorithms)
 			for (int i = 0; i < pieceLabels.length; i++) {
-				if (i == 1 || i == 4) {
-					String cmd = "-m -d -draw " + algorithm[1]; 
-					cmd += " -out RecurSIA-RRT-experiment/JKU-PDD/JKUPDD-noAudio-Aug2013/matlab/pattDiscOut/" + algorithm[0] + "/" + pieceLabels[i] + "_" + algorithm[0] + ".out";
-					cmd += " -i RecurSIA-RRT-experiment/JKU-PDD/JKUPDD-noAudio-Aug2013/groundTruth/" + groundTruthDirs[i] + "/polyphonic/lisp/" + lispFileNames[i];
-					try {
-						String[] cmdArray = cmd.split("\\s+");
-						//						for(String s : cmdArray) {
-						//							System.out.println(s + " ");
-						//						}
-						//						System.out.println();
-						OMNISIA.main(cmdArray);
-						System.gc();
-					} catch (MissingTieStartNoteException e) {
-						e.printStackTrace();
-					}
+				String cmd = "-m -d -draw " + algorithm[1]; 
+				cmd += " -out RecurSIA-RRT-experiment/JKU-PDD/JKUPDD-noAudio-Aug2013/matlab/pattDiscOut/" + algorithm[0] + "/" + pieceLabels[i] + "_" + algorithm[0] + ".out";
+				cmd += " -i RecurSIA-RRT-experiment/JKU-PDD/JKUPDD-noAudio-Aug2013/groundTruth/" + groundTruthDirs[i] + "/polyphonic/lisp/" + lispFileNames[i];
+				try {
+					String[] cmdArray = cmd.split("\\s+");
+					OMNISIA.main(cmdArray);
+					System.gc();
+				} catch (MissingTieStartNoteException e) {
+					e.printStackTrace();
 				}
 			}
 	}

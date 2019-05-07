@@ -138,7 +138,8 @@ public class ForthEncoding extends Encoding {
 					omnisiaOutputFilePath,
 					topNPatterns,
 					withoutChannel10,
-					removeRedundantTranslators
+					removeRedundantTranslators,
+					true //Called from ForthEncoding
 					);
 			ArrayList<TEC> tecs = siatecEncoding.getTECs();
 			System.out.println("DONE: "+tecs.size()+" TECs found");

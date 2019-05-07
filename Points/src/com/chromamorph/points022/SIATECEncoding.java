@@ -107,6 +107,43 @@ public class SIATECEncoding extends Encoding {
 			int topNPatterns,
 			boolean withoutChannel10,
 			boolean removeRedundantTranslators) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+		this(pointSet, 
+			inputFilePathNameOrOutputFileName, 
+			outputDirectoryPathName, 
+			minPatternSize,
+			maxPatternSize,
+			pitchRepresentation, 
+			drawOutput, 
+			verbose,
+			forRSuperdiagonals, r,
+			withCompactnessTrawler, a, b,
+			fromOMNISIA,
+			mirex, segmentMode, bbMode,
+			omnisiaOutputFilePath,
+			topNPatterns,
+			withoutChannel10,
+			removeRedundantTranslators,
+			false // calledFromForthEncoding
+				);
+	}
+	
+	public SIATECEncoding(PointSet pointSet, 
+			String inputFilePathNameOrOutputFileName, 
+			String outputDirectoryPathName, 
+			Integer minPatternSize,
+			Integer maxPatternSize,
+			PitchRepresentation pitchRepresentation, 
+			boolean drawOutput, 
+			boolean verbose,
+			boolean forRSuperdiagonals, int r,
+			boolean withCompactnessTrawler, double a, int b,
+			boolean fromOMNISIA,
+			boolean mirex, boolean segmentMode, boolean bbMode,
+			String omnisiaOutputFilePath,
+			int topNPatterns,
+			boolean withoutChannel10,
+			boolean removeRedundantTranslators,
+			boolean calledFromForthEncoding) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		super(
 				pointSet,
 				inputFilePathNameOrOutputFileName,
@@ -155,7 +192,8 @@ public class SIATECEncoding extends Encoding {
 			removeRedundantTranslators();
 		long endTime = System.currentTimeMillis();
 		setRunningTime(endTime-startTime);
-		writeToFile();
+		if (!calledFromForthEncoding)
+			writeToFile();
 		
 //		if (fromOMNISIA && outputDirectoryPathName != null && inputFilePathNameOrOutputFileName != null) {
 //			String outputFileName = Paths.get(inputFilePathNameOrOutputFileName).getFileName().toString();
