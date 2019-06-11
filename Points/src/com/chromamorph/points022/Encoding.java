@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import javax.swing.JFrame;
 
 import com.chromamorph.notes.Notes.MissingTieStartNoteException;
+import com.chromamorph.points022.MIREX2013Entries.TomDavePoint;
 
 import processing.core.PApplet;
 
@@ -569,11 +570,52 @@ public class Encoding {
 				);
 	}
 
+	static int mirexPatternNumber = 0;
+	
+	public static String getMIREXStringForTEC(TEC tec, boolean boundingBox, boolean segment, PointSet dataset) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("pattern"+(++mirexPatternNumber)+"\n");
+		TreeSet<Vector> translators = tec.getTranslators().getVectors();
+
+		ArrayList<PointSet> occurrences = new ArrayList<PointSet>();
+		for(Vector v : translators) {
+			PointSet occurrence = tec.getPattern().translate(v);
+			if (boundingBox) {
+				occurrence = dataset.getBBSubset(occurrence.getTopLeft(), occurrence.getBottomRight());
+			} else if (segment) {
+				occurrence = dataset.getSegment(occurrence.getMinX(), occurrence.getMaxX(),true);
+			}
+
+			occurrences.add(occurrence);
+		}
+
+		int occIndex = 0;
+		for(PointSet pointSet : occurrences) {
+			sb.append("occurrence"+ ++occIndex+"\n");
+			TreeSet<Point> points = pointSet.getPoints();
+			for(Point thisPoint : points) {
+				TomDavePoint tomDavePoint = MIREX2013Entries.findTomDavePoint(thisPoint);
+				double outputOnset = (tomDavePoint.tomsNumerator * 1.0)/(tomDavePoint.tomsDenominator);
+				double outputPitch = tomDavePoint.tomsPitch * 1.0;
+				String pointString = String.format("%.5f",outputOnset)+", "+String.format("%.5f",outputPitch)+"\n";
+				sb.append(pointString);
+			}
+		}
+		if (tec.getPatternTECs() != null) {
+			for(TEC patternTec : tec.getPatternTECs()) {
+				sb.append(getMIREXStringForTEC(patternTec, boundingBox, segment, dataset));
+			}
+		}
+		return sb.toString();
+	}
+
+	
 	public String toMIREXString() {
+		mirexPatternNumber = 0;
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < getTECs().size() && (topNPatterns == 0 || i < topNPatterns); i++) {
 			TEC tec = getTECs().get(i);
-			sb.append(MIREX2013Entries.getMIREXString(tec, i+1, bbMode, segmentMode, dataset));
+			sb.append(getMIREXStringForTEC(tec, bbMode, segmentMode, dataset));
 		}
 		return sb.toString();
 	}

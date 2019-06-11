@@ -34,10 +34,7 @@ public class RecurSIARRTEvaluateJKUPDDOutput {
 		}
 	}
 
-	public static void main(String[] args) {
-
-		//		RESULTS_OUTPUT_DIRECTORY_PATH = MIREX2013Entries.getFileName("Choose results folder","/Users/dave/Documents/Work/Research/MIREX2013/mirexDave-2013-07-02",true);
-		//		JKU_PDD_OUTPUT_DIRECTORY_PATH = MIREX2013Entries.getFileName("Choose algorithm output folder","/Users/dave/Documents/Work/Research/MIREX2013/mirexDave-2013-07-02",true);
+	public static void run() {
 
 		//First make a list of all the full paths of all the MIREX output files to be evaluated 
 		ArrayList<String> jnmrOutputFilePaths = new ArrayList<String>();

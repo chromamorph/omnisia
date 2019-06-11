@@ -33,148 +33,148 @@ public class RecurSIARRTExperimentRun {
 			//////////////////////////////////////////////////////////////////////////////////////
 			// COSIATEC
 			
-//			{"COSIATEC",				"-a COSIATEC"},
-//			{"COSIATECSegment",			"-a COSIATEC		-segmode"},
-//			{"COSIATECBB",				"-a COSIATEC		-bbmode"},
-//
-//			{"COSIACTTEC",				"-a COSIATEC					-ct -cta 0.67 -ctb 3"},
-//			{"COSIACTTECSegment",		"-a COSIATEC		-segmode	-ct -cta 0.67 -ctb 3"},
-//			{"COSIACTTECBB",			"-a COSIATEC		-bbmode		-ct -cta 0.67 -ctb 3"},
-//
-//			{"COSIARTEC",				"-a COSIATEC											-rsd -r 3"},
-//			{"COSIARTECSegment",		"-a COSIATEC		-segmode							-rsd -r 3"},
-//			{"COSIARTECBB",				"-a COSIATEC		-bbmode								-rsd -r 3"},
-//
-//			{"COSIARCTTEC",				"-a COSIATEC					-ct -cta 0.67 -ctb 3	-rsd -r 3"},
-//			{"COSIARCTTECSegment",		"-a COSIATEC		-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3"},
-//			{"COSIARCTTECBB",			"-a COSIATEC		-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3"},
-//
-//			//			with RecurSIA
-//
-//			{"ReCOSIATEC",				"-recalg COSIATEC													-a RecurSIA"},
-//			{"ReCOSIATECSegment",		"-recalg COSIATEC	-segmode										-a RecurSIA"},
-//			{"ReCOSIATECBB",			"-recalg COSIATEC	-bbmode											-a RecurSIA"},
-//
-//			{"ReCOSIACTTEC",			"-recalg COSIATEC				-ct -cta 0.67 -ctb 3				-a RecurSIA"},
-//			{"ReCOSIACTTECSegment",		"-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA"},
-//			{"ReCOSIACTTECBB",			"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA"},
-//
-//			{"ReCOSIARTEC",				"-recalg COSIATEC										-rsd -r 3	-a RecurSIA"},
-//			{"ReCOSIARTECSegment",		"-recalg COSIATEC	-segmode							-rsd -r 3	-a RecurSIA"},
-//			{"ReCOSIARTECBB",			"-recalg COSIATEC	-bbmode								-rsd -r 3	-a RecurSIA"},
-//
-//			{"ReCOSIARCTTEC",			"-recalg COSIATEC				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
-//			{"ReCOSIARCTTECSegment",	"-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
-//			{"ReCOSIARCTTECBB",			"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
-//
-//			//			with -rrt
-//
-//			{"COSIATEC-RRT",				"-a COSIATEC																	-rrt"},
-//			{"COSIATECSegment-RRT",			"-a COSIATEC	-segmode														-rrt"},
-//			{"COSIATECBB-RRT",				"-a COSIATEC	-bbmode															-rrt"},
-//
-//			{"COSIACTTEC-RRT",				"-a COSIATEC				-ct -cta 0.67 -ctb 3								-rrt"},
-//			{"COSIACTTECSegment-RRT",		"-a COSIATEC	-segmode	-ct -cta 0.67 -ctb 3								-rrt"},
-//			{"COSIACTTECBB-RRT",			"-a COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3								-rrt"},
-//
-//			{"COSIARTEC-RRT",				"-a COSIATEC										-rsd -r 3					-rrt"},
-//			{"COSIARTECSegment-RRT",		"-a COSIATEC	-segmode							-rsd -r 3					-rrt"},
-//			{"COSIARTECBB-RRT",				"-a COSIATEC	-bbmode								-rsd -r 3					-rrt"},
-//
-//			{"COSIARCTTEC-RRT",				"-a COSIATEC				-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
-//			{"COSIARCTTECSegment-RRT",		"-a COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
-//			{"COSIARCTTECBB-RRT",			"-a COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
-//
-//			//			with RecurSIA and RRT
-//
-//			{"ReCOSIATEC-RRT",			"-recalg COSIATEC													-a RecurSIA		-rrt"},
-//			{"ReCOSIATECSegment-RRT",	"-recalg COSIATEC	-segmode										-a RecurSIA		-rrt"},
-//			{"ReCOSIATECBB-RRT",		"-recalg COSIATEC	-bbmode											-a RecurSIA		-rrt"},
-//
-//			{"ReCOSIACTTEC-RRT",		"-recalg COSIATEC				-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
-//			{"ReCOSIACTTECSegment-RRT",	"-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
-//			{"ReCOSIACTTECBB-RRT",		"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
-//
-//			{"ReCOSIARTEC-RRT",			"-recalg COSIATEC										-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReCOSIARTECSegment-RRT",	"-recalg COSIATEC	-segmode							-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReCOSIARTECBB-RRT",		"-recalg COSIATEC	-bbmode								-rsd -r 3	-a RecurSIA		-rrt"},
-//
-//			{"ReCOSIARCTTEC-RRT",		"-recalg COSIATEC				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReCOSIARCTTECSegment-RRT","-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReCOSIARCTTECBB-RRT",		"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"COSIATEC",				"-a COSIATEC"},
+			{"COSIATECSegment",			"-a COSIATEC		-segmode"},
+			{"COSIATECBB",				"-a COSIATEC		-bbmode"},
+
+			{"COSIACTTEC",				"-a COSIATEC					-ct -cta 0.67 -ctb 3"},
+			{"COSIACTTECSegment",		"-a COSIATEC		-segmode	-ct -cta 0.67 -ctb 3"},
+			{"COSIACTTECBB",			"-a COSIATEC		-bbmode		-ct -cta 0.67 -ctb 3"},
+
+			{"COSIARTEC",				"-a COSIATEC											-rsd -r 3"},
+			{"COSIARTECSegment",		"-a COSIATEC		-segmode							-rsd -r 3"},
+			{"COSIARTECBB",				"-a COSIATEC		-bbmode								-rsd -r 3"},
+
+			{"COSIARCTTEC",				"-a COSIATEC					-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+			{"COSIARCTTECSegment",		"-a COSIATEC		-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+			{"COSIARCTTECBB",			"-a COSIATEC		-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+
+			//			with RecurSIA
+
+			{"ReCOSIATEC",				"-recalg COSIATEC													-a RecurSIA"},
+			{"ReCOSIATECSegment",		"-recalg COSIATEC	-segmode										-a RecurSIA"},
+			{"ReCOSIATECBB",			"-recalg COSIATEC	-bbmode											-a RecurSIA"},
+
+			{"ReCOSIACTTEC",			"-recalg COSIATEC				-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+			{"ReCOSIACTTECSegment",		"-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+			{"ReCOSIACTTECBB",			"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+
+			{"ReCOSIARTEC",				"-recalg COSIATEC										-rsd -r 3	-a RecurSIA"},
+			{"ReCOSIARTECSegment",		"-recalg COSIATEC	-segmode							-rsd -r 3	-a RecurSIA"},
+			{"ReCOSIARTECBB",			"-recalg COSIATEC	-bbmode								-rsd -r 3	-a RecurSIA"},
+
+			{"ReCOSIARCTTEC",			"-recalg COSIATEC				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+			{"ReCOSIARCTTECSegment",	"-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+			{"ReCOSIARCTTECBB",			"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+
+			//			with -rrt
+
+			{"COSIATEC-RRT",				"-a COSIATEC																	-rrt"},
+			{"COSIATECSegment-RRT",			"-a COSIATEC	-segmode														-rrt"},
+			{"COSIATECBB-RRT",				"-a COSIATEC	-bbmode															-rrt"},
+
+			{"COSIACTTEC-RRT",				"-a COSIATEC				-ct -cta 0.67 -ctb 3								-rrt"},
+			{"COSIACTTECSegment-RRT",		"-a COSIATEC	-segmode	-ct -cta 0.67 -ctb 3								-rrt"},
+			{"COSIACTTECBB-RRT",			"-a COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3								-rrt"},
+
+			{"COSIARTEC-RRT",				"-a COSIATEC										-rsd -r 3					-rrt"},
+			{"COSIARTECSegment-RRT",		"-a COSIATEC	-segmode							-rsd -r 3					-rrt"},
+			{"COSIARTECBB-RRT",				"-a COSIATEC	-bbmode								-rsd -r 3					-rrt"},
+
+			{"COSIARCTTEC-RRT",				"-a COSIATEC				-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+			{"COSIARCTTECSegment-RRT",		"-a COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+			{"COSIARCTTECBB-RRT",			"-a COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+
+			//			with RecurSIA and RRT
+
+			{"ReCOSIATEC-RRT",			"-recalg COSIATEC													-a RecurSIA		-rrt"},
+			{"ReCOSIATECSegment-RRT",	"-recalg COSIATEC	-segmode										-a RecurSIA		-rrt"},
+			{"ReCOSIATECBB-RRT",		"-recalg COSIATEC	-bbmode											-a RecurSIA		-rrt"},
+
+			{"ReCOSIACTTEC-RRT",		"-recalg COSIATEC				-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+			{"ReCOSIACTTECSegment-RRT",	"-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+			{"ReCOSIACTTECBB-RRT",		"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+
+			{"ReCOSIARTEC-RRT",			"-recalg COSIATEC										-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReCOSIARTECSegment-RRT",	"-recalg COSIATEC	-segmode							-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReCOSIARTECBB-RRT",		"-recalg COSIATEC	-bbmode								-rsd -r 3	-a RecurSIA		-rrt"},
+
+			{"ReCOSIARCTTEC-RRT",		"-recalg COSIATEC				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReCOSIARCTTECSegment-RRT","-recalg COSIATEC	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReCOSIARCTTECBB-RRT",		"-recalg COSIATEC	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
 
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//Forth's algorithm
 			
-//			{"Forth",				"-a Forth"},
-//			{"ForthSegment",		"-a Forth		-segmode"},
-//			{"ForthBB",				"-a Forth		-bbmode"},
-//
-//			{"ForthCT",				"-a Forth					-ct -cta 0.67 -ctb 3"},
-//			{"ForthCTSegment",		"-a Forth		-segmode	-ct -cta 0.67 -ctb 3"},
-//			{"ForthCTBB",			"-a Forth		-bbmode		-ct -cta 0.67 -ctb 3"},
-//
-//			{"ForthR",				"-a Forth											-rsd -r 3"},
-//			{"ForthRSegment",		"-a Forth		-segmode							-rsd -r 3"},
-//			{"ForthRBB",			"-a Forth		-bbmode								-rsd -r 3"},
-//
-//			{"ForthRCT",			"-a Forth					-ct -cta 0.67 -ctb 3	-rsd -r 3"},
-//			{"ForthRCTSegment",		"-a Forth		-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3"},
-//			{"ForthRCTBB",			"-a Forth		-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3"},
-//
-//			//			with RecurSIA
-//
-//			{"ReForth",				"-recalg Forth													-a RecurSIA"},
-//			{"ReForthSegment",		"-recalg Forth	-segmode										-a RecurSIA"},
-//			{"ReForthBB",			"-recalg Forth	-bbmode											-a RecurSIA"},
-//
-//			{"ReForthCT",			"-recalg Forth				-ct -cta 0.67 -ctb 3				-a RecurSIA"},
-//			{"ReForthCTSegment",	"-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA"},
-//			{"ReForthCTBB",			"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA"},
-//
-//			{"ReForthR",			"-recalg Forth										-rsd -r 3	-a RecurSIA"},
-//			{"ReForthRSegment",		"-recalg Forth	-segmode							-rsd -r 3	-a RecurSIA"},
-//			{"ReForthRBB",			"-recalg Forth	-bbmode								-rsd -r 3	-a RecurSIA"},
-//
-//			{"ReForthRCT",			"-recalg Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
-//			{"ReForthRCTSegment",	"-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
-//			{"ReForthRCTBB",		"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
-//
-//			//			with -rrt
-//
-//			{"Forth-RRT",			"-a Forth																	-rrt"},
-//			{"ForthSegment-RRT",	"-a Forth	-segmode														-rrt"},
-//			{"ForthBB-RRT",			"-a Forth	-bbmode															-rrt"},
-//
-//			{"ForthCT-RRT",			"-a Forth				-ct -cta 0.67 -ctb 3								-rrt"},
-//			{"ForthCTSegment-RRT",	"-a Forth	-segmode	-ct -cta 0.67 -ctb 3								-rrt"},
-//			{"ForthCTBB-RRT",		"-a Forth	-bbmode		-ct -cta 0.67 -ctb 3								-rrt"},
-//
-//			{"ForthR-RRT",			"-a Forth										-rsd -r 3					-rrt"},
-//			{"ForthRSegment-RRT",	"-a Forth	-segmode							-rsd -r 3					-rrt"},
-//			{"ForthRBB-RRT",		"-a Forth	-bbmode								-rsd -r 3					-rrt"},
-//
-//			{"ForthRCT-RRT",		"-a Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
-//			{"ForthRCTSegment-RRT",	"-a Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
-//			{"ForthRCTBB-RRT",		"-a Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
-//
-//			//			with RecurSIA and RRT
-//
-//			{"ReForth-RRT",			"-recalg Forth													-a RecurSIA		-rrt"},
-//			{"ReForthSegment-RRT",	"-recalg Forth	-segmode										-a RecurSIA		-rrt"},
-//			{"ReForthBB-RRT",		"-recalg Forth	-bbmode											-a RecurSIA		-rrt"},
-//
-//			{"ReForthCT-RRT",		"-recalg Forth				-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
-//			{"ReForthCTSegment-RRT","-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
-//			{"ReForthCTBB-RRT",		"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
-//
-//			{"ReForthR-RRT",		"-recalg Forth										-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReForthRSegment-RRT",	"-recalg Forth	-segmode							-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReForthRBB-RRT",		"-recalg Forth	-bbmode								-rsd -r 3	-a RecurSIA		-rrt"},
-//
-//			{"ReForthRCT-RRT",		"-recalg Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReForthRCTSegment-RRT","-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
-//			{"ReForthRCTBB-RRT",	"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"Forth",				"-a Forth"},
+			{"ForthSegment",		"-a Forth		-segmode"},
+			{"ForthBB",				"-a Forth		-bbmode"},
+
+			{"ForthCT",				"-a Forth					-ct -cta 0.67 -ctb 3"},
+			{"ForthCTSegment",		"-a Forth		-segmode	-ct -cta 0.67 -ctb 3"},
+			{"ForthCTBB",			"-a Forth		-bbmode		-ct -cta 0.67 -ctb 3"},
+
+			{"ForthR",				"-a Forth											-rsd -r 3"},
+			{"ForthRSegment",		"-a Forth		-segmode							-rsd -r 3"},
+			{"ForthRBB",			"-a Forth		-bbmode								-rsd -r 3"},
+
+			{"ForthRCT",			"-a Forth					-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+			{"ForthRCTSegment",		"-a Forth		-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+			{"ForthRCTBB",			"-a Forth		-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3"},
+
+			//			with RecurSIA
+
+			{"ReForth",				"-recalg Forth													-a RecurSIA"},
+			{"ReForthSegment",		"-recalg Forth	-segmode										-a RecurSIA"},
+			{"ReForthBB",			"-recalg Forth	-bbmode											-a RecurSIA"},
+
+			{"ReForthCT",			"-recalg Forth				-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+			{"ReForthCTSegment",	"-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+			{"ReForthCTBB",			"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA"},
+
+			{"ReForthR",			"-recalg Forth										-rsd -r 3	-a RecurSIA"},
+			{"ReForthRSegment",		"-recalg Forth	-segmode							-rsd -r 3	-a RecurSIA"},
+			{"ReForthRBB",			"-recalg Forth	-bbmode								-rsd -r 3	-a RecurSIA"},
+
+			{"ReForthRCT",			"-recalg Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+			{"ReForthRCTSegment",	"-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+			{"ReForthRCTBB",		"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA"},
+
+			//			with -rrt
+
+			{"Forth-RRT",			"-a Forth																	-rrt"},
+			{"ForthSegment-RRT",	"-a Forth	-segmode														-rrt"},
+			{"ForthBB-RRT",			"-a Forth	-bbmode															-rrt"},
+
+			{"ForthCT-RRT",			"-a Forth				-ct -cta 0.67 -ctb 3								-rrt"},
+			{"ForthCTSegment-RRT",	"-a Forth	-segmode	-ct -cta 0.67 -ctb 3								-rrt"},
+			{"ForthCTBB-RRT",		"-a Forth	-bbmode		-ct -cta 0.67 -ctb 3								-rrt"},
+
+			{"ForthR-RRT",			"-a Forth										-rsd -r 3					-rrt"},
+			{"ForthRSegment-RRT",	"-a Forth	-segmode							-rsd -r 3					-rrt"},
+			{"ForthRBB-RRT",		"-a Forth	-bbmode								-rsd -r 3					-rrt"},
+
+			{"ForthRCT-RRT",		"-a Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+			{"ForthRCTSegment-RRT",	"-a Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+			{"ForthRCTBB-RRT",		"-a Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3					-rrt"},
+
+			//			with RecurSIA and RRT
+
+			{"ReForth-RRT",			"-recalg Forth													-a RecurSIA		-rrt"},
+			{"ReForthSegment-RRT",	"-recalg Forth	-segmode										-a RecurSIA		-rrt"},
+			{"ReForthBB-RRT",		"-recalg Forth	-bbmode											-a RecurSIA		-rrt"},
+
+			{"ReForthCT-RRT",		"-recalg Forth				-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+			{"ReForthCTSegment-RRT","-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+			{"ReForthCTBB-RRT",		"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3				-a RecurSIA		-rrt"},
+
+			{"ReForthR-RRT",		"-recalg Forth										-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReForthRSegment-RRT",	"-recalg Forth	-segmode							-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReForthRBB-RRT",		"-recalg Forth	-bbmode								-rsd -r 3	-a RecurSIA		-rrt"},
+
+			{"ReForthRCT-RRT",		"-recalg Forth				-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReForthRCTSegment-RRT","-recalg Forth	-segmode	-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
+			{"ReForthRCTBB-RRT",	"-recalg Forth	-bbmode		-ct -cta 0.67 -ctb 3	-rsd -r 3	-a RecurSIA		-rrt"},
 
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//SIATECCompress
@@ -268,8 +268,8 @@ public class RecurSIARRTExperimentRun {
 	}
 
 	public static void main(String[] args) {
-		runJKUPDDExperiment();
-		//RecurSIARRTEvaluateJKUPDDOutput.main(new String[0]);
+		//runJKUPDDExperiment();
+		RecurSIARRTEvaluateJKUPDDOutput.run();
 		//		runFuguesExperiment();
 		//		runNLBExperiment();
 	}
