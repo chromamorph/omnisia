@@ -495,6 +495,17 @@ public class TEC implements Comparable<TEC>{
 		//		System.out.println("dual cov: "+dual.getCoverage());
 		//		TECQualityComparator comp = new TECQualityComparator();
 		//		System.out.println(comp.compare(tec, dual));
+		
+		TEC tec1 = new TEC("T(P(p(1,1),p(2,2),p(3,3)),V(v(0,0),v(1,1),v(2,2),v(3,3),v(4,4)))");
+		System.out.println(tec1);
+		tec1.removeRedundantTranslators();
+		System.out.println(tec1.getPattern());
+		System.out.println(tec1.getTranslators());
+		TEC tec2 = new TEC("T(P(p(0,0),p(1,1),p(0,1),p(1,0)),V(v(1,0),v(2,0),v(2,1),v(2,2)))");
+		System.out.println(tec2);
+		tec2.removeRedundantTranslators();
+		System.out.println(tec2.getPattern());
+		System.out.println(tec2.getTranslators());
 	}
 
 }
