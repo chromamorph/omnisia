@@ -45,5 +45,9 @@ public class VectorPointPair implements Comparable<VectorPointPair>{
 	public Vector getVector() { return vector; }
 	public Point getPoint() { return point; }
 	public Integer getIndex() {return index; }
+	
+	public String getLatexString() {
+		return "\\langle"+getVector().getLatexString()+","+getPoint().getLatexString()+"\\rangle";
+	}
 }
 

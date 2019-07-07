@@ -268,7 +268,7 @@ public class RecurSIARRTExperimentRun {
 	}
 
 	public static void main(String[] args) {
-		//runJKUPDDExperiment();
+//		runJKUPDDExperiment();
 		RecurSIARRTEvaluateJKUPDDOutput.run();
 		//		runFuguesExperiment();
 		//		runNLBExperiment();

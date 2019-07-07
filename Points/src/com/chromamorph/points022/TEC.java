@@ -259,6 +259,23 @@ public class TEC implements Comparable<TEC>{
 		return pfs;
 	}
 
+	public String getSIAMTableLatexString(TreeSet<VectorPointPair> siamTable) {
+		ArrayList<VectorPointPair> sta = new ArrayList<VectorPointPair>();
+		sta.addAll(siamTable);
+		StringBuilder sb = new StringBuilder();
+		sb.append("\\langle&"); // Open list
+		//Add first element
+		sb.append(sta.get(0).getLatexString());
+		for(int i = 1; i < sta.size(); i++) {
+			sb.append(",");
+			if (!sta.get(i).getVector().equals(sta.get(i-1).getVector()))
+				sb.append("\\\\\n&");
+			sb.append(sta.get(i).getLatexString());
+		}
+		sb.append("\\rangle"); // Close list
+		return sb.toString();
+	}
+	
 	/**
 	 * Removes as many translators as it can from
 	 * the translator set for this TEC such that
@@ -267,6 +284,8 @@ public class TEC implements Comparable<TEC>{
 	public void removeRedundantTranslators() {
 
 		PointFreqSet pfs = getPointFreqSet();
+		
+		//System.out.println("pfs ="+pfs.getLatexString());
 
 		/*
 		 * If there are no multipoints in pfs,
@@ -292,6 +311,9 @@ public class TEC implements Comparable<TEC>{
 			for(PointFreq p2 : pfs.getMultiPoints()) 
 				siamTable.add(new VectorPointPair(p1,p2.getPoint()));
 
+//		String siamTableLatexString = getSIAMTableLatexString(siamTable);
+//		System.out.println("\n"+siamTableLatexString);
+		
 		TreeSet<Vector> removableVectors = new TreeSet<Vector>();
 
 		Vector v = siamTable.first().getVector();
@@ -310,6 +332,8 @@ public class TEC implements Comparable<TEC>{
 			}
 		}
 
+//		for(Vector vec : removableVectors)
+//			System.out.println(vec.getLatexString());
 		////////////////////////////////////////////////////////		
 
 		/*
@@ -335,6 +359,11 @@ public class TEC implements Comparable<TEC>{
 				}
 			}
 		}
+		
+//		System.out.print("maxPoints = ");
+//		for(PointFreq pf : maxPoints) System.out.println(" "+pf.getLatexString());
+//		System.out.println("allCanBeRemoved="+allCanBeRemoved);
+		
 		if (allCanBeRemoved) {
 			for(Vector vec : removableVectors)
 				translators.remove(vec);
@@ -473,6 +502,11 @@ public class TEC implements Comparable<TEC>{
 		}
 		return pointSets;
 	}
+	
+	public String getLatexString() {
+		return "\\langle" + getPattern().getLatexString()+","+getTranslators().getLatexString()+"\\rangle";
+	}
+	
 
 	//	public static TEC TEC_CONST = new TEC("T(P(p(118,23),p(124,22),p(274,23),p(280,22),p(910,23),p(916,22)),V(v(0,0),v(50,8),v(50,10),v(52,-1),v(52,6),v(52,8),v(54,1),v(62,9),v(62,11),v(64,0),v(64,7),v(64,9),v(66,2),v(130,0),v(132,0),v(132,5),v(134,1),v(134,6),v(136,4),v(142,-2),v(144,-2),v(144,14),v(146,-3),v(146,15),v(148,-1),v(148,13),v(150,-1),v(152,-2),v(154,0),v(156,0),v(156,3),v(156,12),v(158,2),v(158,13),v(160,11),v(162,11),v(164,1),v(168,1),v(194,-3)))");
 	//	public static TEC TEC_CONST_2 = new TEC("T(P(p(118,23),p(124,22),p(274,23),p(280,22),p(910,23),p(916,22)),V(v(0,0),v(50,8),v(50,10),v(52,-1),v(52,6),v(52,8),v(54,1),v(62,9),v(62,11),v(64,0),v(64,7),v(64,9),v(66,2),v(130,0),v(132,0),v(132,5),v(134,1),v(134,6),v(136,4),v(142,-2),v(144,-2),v(144,14),v(146,-3),v(146,15),v(148,-1),v(148,13),v(150,-1),v(152,-2),v(154,0),v(156,0),v(156,3),v(156,12),v(158,2),v(158,13),v(160,11),v(162,11),v(164,1),v(168,1),v(194,-3)))");
@@ -497,15 +531,15 @@ public class TEC implements Comparable<TEC>{
 		//		System.out.println(comp.compare(tec, dual));
 		
 		TEC tec1 = new TEC("T(P(p(1,1),p(2,2),p(3,3)),V(v(0,0),v(1,1),v(2,2),v(3,3),v(4,4)))");
-		System.out.println(tec1);
+		System.out.println(tec1.getLatexString());
 		tec1.removeRedundantTranslators();
 		System.out.println(tec1.getPattern());
 		System.out.println(tec1.getTranslators());
-		TEC tec2 = new TEC("T(P(p(0,0),p(1,1),p(0,1),p(1,0)),V(v(1,0),v(2,0),v(2,1),v(2,2)))");
-		System.out.println(tec2);
-		tec2.removeRedundantTranslators();
-		System.out.println(tec2.getPattern());
-		System.out.println(tec2.getTranslators());
+//		TEC tec2 = new TEC("T(P(p(0,0),p(1,1),p(0,1),p(1,0)),V(v(0,0),v(1,0),v(2,0),v(2,1),v(2,2)))");
+//		System.out.println(tec2);
+//		tec2.removeRedundantTranslators();
+//		System.out.println(tec2.getPattern());
+//		System.out.println(tec2.getTranslators());
 	}
 
 }

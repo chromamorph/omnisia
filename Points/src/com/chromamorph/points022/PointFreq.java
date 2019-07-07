@@ -1,5 +1,6 @@
 package com.chromamorph.points022;
 
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 
@@ -71,6 +72,19 @@ public class PointFreq implements Comparable<PointFreq> {
 	@Override
 	public String toString() {
 		return "PointFreq("+point+","+freq+")";
+	}
+	
+	public String getLatexString() {
+		if (translators.isEmpty())
+			return "\\langle"+getFreq()+","+getPoint().getLatexString()+"\\rangle";
+		ArrayList<Vector> translatorArray = new ArrayList<Vector>();
+		translatorArray.addAll(translators);
+		StringBuilder sb = new StringBuilder("\\lbrace"+translatorArray.get(0).getLatexString());
+		for(int i=1;i < translatorArray.size(); i++)
+			sb.append(","+translatorArray.get(i).getLatexString());
+		sb.append("\\rbrace");
+		
+		return "\\langle"+getPoint().getLatexString()+","+sb.toString()+"\\rangle";
 	}
 }
 

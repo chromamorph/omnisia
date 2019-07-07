@@ -1,0 +1,1 @@
+cfTable <- read.table("../201906251050-cf-table.csv")

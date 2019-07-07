@@ -92,5 +92,9 @@ public class Vector implements Comparable<Vector>{
 	public double getLength() {
 		return Math.sqrt((1.0 * getX() * getX()) + (1.0 * getY() * getY()));
 	}
+	
+	public String getLatexString() {
+		return "\\langle"+getX()+","+getY()+"\\rangle";
+	}
 
 }
