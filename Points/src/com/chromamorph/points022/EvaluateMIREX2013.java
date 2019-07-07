@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -508,27 +509,30 @@ public class EvaluateMIREX2013 {
 
 		//		System.out.println("repeatedPatternsDirectory = "+repeatedPatternsDirectoryPath);
 
+		
+		FilenameFilter filenameFilter = new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				ArrayList<String> allowedPatternDirNames = new ArrayList<String>();
+				allowedPatternDirNames.add("bruhn");
+				allowedPatternDirNames.add("barlowAndMorgensternRevised");
+				allowedPatternDirNames.add("sectionalRepetitions");
+				allowedPatternDirNames.add("schoenberg");
+				allowedPatternDirNames.add("tomCollins");
+				return allowedPatternDirNames.contains(name);
+			}
+			
+		};
+		
 		File repPatDir = new File(repeatedPatternsDirectoryPath);
-		String[] patternSetDirNames = repPatDir.list();
+		String[] patternSetDirNames = repPatDir.list(filenameFilter);
 		ArrayList<String> patternSetDirectoryPaths = new ArrayList<String>();
 		for(String dirName : patternSetDirNames) {
-			//			System.out.print("dirName = "+dirName);
 			if (dirName.startsWith(".") || (repeatedPatternsDirectoryPath.contains("polyphonic") && dirName.equals("barlowAndMorgenstern"))) 
 				continue;
 			patternSetDirectoryPaths.add(repeatedPatternsDirectoryPath+(repeatedPatternsDirectoryPath.endsWith("/")?"":"/")+dirName);
-			 //else
-			//				System.out.println();
 		}
-
-		//		System.out.println("patternSetDirectoryPaths:");
-		//		for(int i = 0; i < patternSetDirectoryPaths.size(); i++)
-		//			System.out.println("  "+patternSetDirectoryPaths.get(i));
-
-		/*
-		 * Each path in patternSetDirectoryPaths is the full path to a directory
-		 * containing a set of patterns, e.g., "bruhn", "barlowAndMorgenstern", "sectionalRepetitions", "tomCollinsMisc"
-		 */
-
 		ArrayList<String> occSetDirPaths = new ArrayList<String>();
 		for(String patternSetDirectoryPath : patternSetDirectoryPaths) {
 			File patSetDir = new File(patternSetDirectoryPath);
@@ -564,5 +568,5 @@ public class EvaluateMIREX2013 {
 		}
 		System.out.println("\n**************");
 	}
-
+	
 }

@@ -124,4 +124,8 @@ public class Point implements Comparable<Point>{
 	public Point getRetrograde() {
 		return new Point(-getX(),getY());
 	}
+	
+	public String getLatexString() {
+		return "\\langle"+getX()+","+getY()+"\\rangle";
+	}
 }

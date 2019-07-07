@@ -1,7 +1,10 @@
 package com.chromamorph.points022;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,39 +22,59 @@ public class RecurSIARRTEvaluateJKUPDDOutput {
 
 	static class Result {
 		int nP, nQ;
-		double P, R, F1, PEst, REst, F1Est, P3, R3, TLF1, FFP, FFTPEst;
+		double P, R, F1, PEst, REst, F1Est, P3, R3, TLF1, FFP, FFTPEst, cf;
 		double[] POcc, ROcc, F1Occ;
 		long runtime, frt;
 
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 //			sb.append(String.format("%d,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%d",nP,nQ,P,R,F1,PEst,REst,F1Est,P3,R3,TLF1,FFP,FFTPEst,frt,runtime));
-			sb.append(String.format("%d,%d,%.4f,%.4f,%.4f",nP,nQ,P3,R3,TLF1));
+			sb.append(String.format("%d,%d,%.4f,%.4f,%.4f,%.4f,%d,%.4f",nP,nQ,P3,R3,TLF1,cf,runtime,FFP));
 //			for(int i = 0; i < POcc.length; i++) {
 //				sb.append(String.format(",%.4f,%.4f,%.4f",POcc[i],ROcc[i],F1Occ[i]));
 //			}
 			return sb.toString();
 		}
+		
+		public static String getHeaderString() {
+			return "nP,nQ,P3,R3,TLF1,cf,runtime,FFP";
+		}
 	}
 
+	public static String getValueFromEncodingFile(String encodingFilePath, String keyString) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(encodingFilePath));
+			String l = br.readLine();
+			while (!l.startsWith(keyString)) l = br.readLine();
+			String[] a = l.split(" ");
+			br.close();
+			return a[1];
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static void run() {
 
 		//First make a list of all the full paths of all the MIREX output files to be evaluated 
-		ArrayList<String> jnmrOutputFilePaths = new ArrayList<String>();
-		ArrayList<String> timingFilePaths = new ArrayList<String>();
-		String[] jnmrOutputAlgorithmDirectoryNames = new File(JKU_PDD_OUTPUT_DIRECTORY_PATH).list();
+		ArrayList<String> outputFilePaths = new ArrayList<String>();
+		ArrayList<String> encodingFilePaths = new ArrayList<String>();
+		String[] outputAlgorithmDirectoryNames = new File(JKU_PDD_OUTPUT_DIRECTORY_PATH).list();
 
-		for(String jnmrOutputAlgorithmDirectoryName : jnmrOutputAlgorithmDirectoryNames) {
-			String jnmrOutputAlgorithmDirectoryPath = JKU_PDD_OUTPUT_DIRECTORY_PATH+"/"+jnmrOutputAlgorithmDirectoryName;
-			System.out.println(jnmrOutputAlgorithmDirectoryPath);
-			if (!jnmrOutputAlgorithmDirectoryPath.startsWith(".") && new File(jnmrOutputAlgorithmDirectoryPath).isDirectory()) {
-				String[] outputFileNames = new File(jnmrOutputAlgorithmDirectoryPath).list();
-				for(String jnmrOutputFileName : outputFileNames) {
+		for(String outputAlgorithmDirectoryName : outputAlgorithmDirectoryNames) {
+			String outputAlgorithmDirectoryPath = JKU_PDD_OUTPUT_DIRECTORY_PATH+"/"+outputAlgorithmDirectoryName;
+			System.out.println(outputAlgorithmDirectoryPath);
+			if (!outputAlgorithmDirectoryPath.startsWith(".") && new File(outputAlgorithmDirectoryPath).isDirectory()) {
+				String[] outputFileNames = new File(outputAlgorithmDirectoryPath).list();
+				for(String outputFileName : outputFileNames) {
 					for(String prefix : OUTPUT_FILE_PREFIXES) {
-						if (jnmrOutputFileName.startsWith(prefix) && jnmrOutputFileName.endsWith(".txt")) {
-							jnmrOutputFilePaths.add(jnmrOutputAlgorithmDirectoryPath+"/"+jnmrOutputFileName);
-							String timingFileName = jnmrOutputFileName.substring(0,jnmrOutputFileName.lastIndexOf("."))+".rt";
-							timingFilePaths.add(jnmrOutputAlgorithmDirectoryPath+"/"+timingFileName);
+						if (outputFileName.startsWith(prefix) && outputFileName.endsWith(".txt")) {
+							outputFilePaths.add(outputAlgorithmDirectoryPath+"/"+outputFileName);
+							String encodingFileName = outputFileName.substring(0,outputFileName.lastIndexOf("."))+".out";
+							encodingFilePaths.add(outputAlgorithmDirectoryPath+"/"+encodingFileName);
 							break;
 						}
 					}
@@ -60,22 +83,22 @@ public class RecurSIARRTEvaluateJKUPDDOutput {
 		}
 
 		System.out.println("OUTPUT FILE PATHS:");
-		for(String jnmrOutputFilePath : jnmrOutputFilePaths)
-			System.out.println(jnmrOutputFilePath);
+		for(String outputFilePath : outputFilePaths)
+			System.out.println(outputFilePath);
 		
-//		System.out.println("TIMING FILE PATHS:");
-//		for(String timingFilePath : timingFilePaths)
-//			System.out.println(timingFilePath);
+		System.out.println("ENCODING FILE PATHS:");
+		for(String encodingFilePath : encodingFilePaths)
+			System.out.println(encodingFilePath);
 		
 		//Now make a list of the full paths of all the corresponding Lisp input files
 
 		ArrayList<String> lispInputFilePaths = new ArrayList<String>();
-		for(String jnmrOutputFilePath : jnmrOutputFilePaths) {
+		for(String outputFilePath : outputFilePaths) {
 			String groundTruthFolderName = null;
 			String inputFilePrefix = null;
 			for(int i = 0; i < OUTPUT_FILE_PREFIXES.length; i++) {
 				String outputFilePrefix = OUTPUT_FILE_PREFIXES[i];
-				if (jnmrOutputFilePath.contains(outputFilePrefix)) {
+				if (outputFilePath.contains(outputFilePrefix)) {
 					groundTruthFolderName = GROUND_TRUTH_DIRECTORY_NAMES[i];
 					inputFilePrefix = INPUT_FILE_PREFIXES[i];
 				}
@@ -85,18 +108,18 @@ public class RecurSIARRTEvaluateJKUPDDOutput {
 		}
 
 		for(int i = 0; i < lispInputFilePaths.size(); i++) {
-			System.out.println(jnmrOutputFilePaths.get(i));
+			System.out.println(outputFilePaths.get(i));
 			System.out.println(lispInputFilePaths.get(i));
-			System.out.println(timingFilePaths.get(i));
+			System.out.println(encodingFilePaths.get(i));
 			System.out.println();
 		}
 
 		//Calculate measures for all output files and store in a list
 		ArrayList<Result> results = new ArrayList<Result>();
 		for(int i = 0; i < lispInputFilePaths.size(); i++) {
-			String mirexCosFilePath = jnmrOutputFilePaths.get(i);
+			String mirexCosFilePath = outputFilePaths.get(i);
 			System.out.println("mirexCosFilePath = "+mirexCosFilePath);System.out.flush();
-//			String timingFilePath = timingFilePaths.get(i);
+			String encodingFilePath = encodingFilePaths.get(i);
 			String lispInputFilePath = lispInputFilePaths.get(i);
 			System.out.println("lispInputFilePath = "+lispInputFilePath);System.out.flush();
 			ArrayList<ArrayList<PointSet>> computedOccurrenceSets = MIREX2013Entries.readMIREXOutputFile(mirexCosFilePath,lispInputFilePath);
@@ -175,6 +198,9 @@ public class RecurSIARRTEvaluateJKUPDDOutput {
 			result.FFP = EvaluateMIREX2013.getP3(groundTruthOccurrenceSets,computedOccurrenceSets,5);
 			System.out.println(result.FFP);
 			System.out.flush();
+			
+			result.cf = Double.parseDouble(getValueFromEncodingFile(encodingFilePath, "compressionRatio"));
+			result.runtime = Long.parseLong(getValueFromEncodingFile(encodingFilePath, "runningTime"));
 			results.add(result);
 		}
 
@@ -188,71 +214,291 @@ public class RecurSIARRTEvaluateJKUPDDOutput {
 			PrintStream csvFile = new PrintStream(RESULTS_OUTPUT_DIRECTORY_PATH+"/"+dateString+"-results.csv");
 			StringBuilder sb = new StringBuilder();
 //			sb.append("file,nP,nQ,P,R,F1,PEst,REst,F1Est,P3,R3,TLF1,FFP,FFTPEst,frt,runtime");
-			sb.append("algorithm,file,nP,nQ,P3,R3,TLF1");
+			sb.append("algorithm,file,");
+			sb.append(Result.getHeaderString());
 //			for(int i = 0; i < OCCURRENCE_THRESHOLDS.length; i++)
 //				sb.append(String.format(",POcc(%.2f),ROcc(%.2f),F1Occ(%.2f)",OCCURRENCE_THRESHOLDS[i],OCCURRENCE_THRESHOLDS[i],OCCURRENCE_THRESHOLDS[i]));
 			String columnHeaderString = sb.toString();
 			csvFile.println(columnHeaderString);
-			for(int i = 0; i < jnmrOutputFilePaths.size(); i++) {
-				String jnmrOutputFilePath = jnmrOutputFilePaths.get(i);
+			for(int i = 0; i < outputFilePaths.size(); i++) {
+				String outputFilePath = outputFilePaths.get(i);
 				int start = JKU_PDD_OUTPUT_DIRECTORY_PATH.length()+1;
-				int end = jnmrOutputFilePath.lastIndexOf("/");
-				String algorithm = jnmrOutputFilePath.substring(start,end);
-				start = jnmrOutputFilePath.lastIndexOf("/")+1;
-				end = jnmrOutputFilePath.lastIndexOf(".");
-				String jnmrOutputFileName = jnmrOutputFilePath.substring(start,end);
-				csvFile.println(algorithm+","+jnmrOutputFileName+","+results.get(i));
+				int end = outputFilePath.lastIndexOf("/");
+				String algorithm = outputFilePath.substring(start,end);
+				start = outputFilePath.lastIndexOf("/")+1;
+				end = outputFilePath.lastIndexOf(".");
+				String outputFileName = outputFilePath.substring(start,end);
+				csvFile.println(algorithm+","+outputFileName+","+results.get(i));
 			}
 			csvFile.close();
 			
-			//Now create a second results file to produce a piece x algorithm table that just shows F1 values
+			//Now create piece x algorithm tables for each of the results that show all values separately
 			
-			csvFile = new PrintStream(RESULTS_OUTPUT_DIRECTORY_PATH+"/"+dateString+"-tlf1-table.csv");
-			csvFile.print("Algorithm");
-			for(String composer : COMPOSERS) csvFile.print(","+composer);
-			for(int i = 0; i < jnmrOutputFilePaths.size(); i++) {
-				String jnmrOutputFilePath = jnmrOutputFilePaths.get(i);
-				int start = JKU_PDD_OUTPUT_DIRECTORY_PATH.length()+1;
-				int end = jnmrOutputFilePath.lastIndexOf("/");
-				String algorithm = jnmrOutputFilePath.substring(start,end);
-				if (i%5==0) csvFile.print("\n"+algorithm);
-				csvFile.print(","+String.format("%.2f", results.get(i).TLF1));
+			String[] measures = {"P3","R3","TLF1","cf","runtime","FFP"};
+			
+			for(String measure : measures) {
+				csvFile = new PrintStream(RESULTS_OUTPUT_DIRECTORY_PATH+"/"+dateString+"-"+measure+"-table.csv");
+				csvFile.print("Algorithm, Basic algorithm, Mode, RecurSIA, RRT, CT, R");
+				for(String composer : COMPOSERS) csvFile.print(","+composer);
+				for(int i = 0; i < outputFilePaths.size(); i++) {
+					String outputFilePath = outputFilePaths.get(i);
+					int start = JKU_PDD_OUTPUT_DIRECTORY_PATH.length()+1;
+					int end = outputFilePath.lastIndexOf("/");
+					String algorithm = outputFilePath.substring(start,end);
+					if (i%5==0) csvFile.print("\n"+parseAlgorithm(algorithm));
+					switch (measure) {
+					case "P3": 		csvFile.print(","+String.format("%.4f", results.get(i).P3)); break;
+					case "R3": 		csvFile.print(","+String.format("%.4f", results.get(i).R3)); break;
+					case "TLF1": 	csvFile.print(","+String.format("%.4f", results.get(i).TLF1)); break;
+					case "cf": 		csvFile.print(","+String.format("%.4f", results.get(i).cf)); break;
+					case "runtime": csvFile.print(","+String.format("%d", results.get(i).runtime)); break;
+					case "FFP": 	csvFile.print(","+String.format("%.4f", results.get(i).FFP)); break;
+					}
+				}
+				csvFile.close();				
 			}
-			csvFile.close();
 			
-			//Now create a third results file to produce a piece x algorithm table that just shows TLP values
 			
-			csvFile = new PrintStream(RESULTS_OUTPUT_DIRECTORY_PATH+"/"+dateString+"-tlp-table.csv");
-			csvFile.print("Algorithm");
-			for(String composer : COMPOSERS) csvFile.print(","+composer);
-			for(int i = 0; i < jnmrOutputFilePaths.size(); i++) {
-				String jnmrOutputFilePath = jnmrOutputFilePaths.get(i);
-				int start = JKU_PDD_OUTPUT_DIRECTORY_PATH.length()+1;
-				int end = jnmrOutputFilePath.lastIndexOf("/");
-				String algorithm = jnmrOutputFilePath.substring(start,end);
-				if (i%5==0) csvFile.print("\n"+algorithm);
-				csvFile.print(","+String.format("%.2f", results.get(i).P3));
-			}
-			csvFile.close();
-
-			//Now create a fourth results file to produce a piece x algorithm table that just shows TLR values
-			
-			csvFile = new PrintStream(RESULTS_OUTPUT_DIRECTORY_PATH+"/"+dateString+"-tlr-table.csv");
-			csvFile.print("Algorithm");
-			for(String composer : COMPOSERS) csvFile.print(","+composer);
-			for(int i = 0; i < jnmrOutputFilePaths.size(); i++) {
-				String jnmrOutputFilePath = jnmrOutputFilePaths.get(i);
-				int start = JKU_PDD_OUTPUT_DIRECTORY_PATH.length()+1;
-				int end = jnmrOutputFilePath.lastIndexOf("/");
-				String algorithm = jnmrOutputFilePath.substring(start,end);
-				if (i%5==0) csvFile.print("\n"+algorithm);
-				csvFile.print(","+String.format("%.2f", results.get(i).R3));
-			}
-			csvFile.close();
+//			//Now create a third results file to produce a piece x algorithm table that just shows TLP values
+//			
+//			csvFile = new PrintStream(RESULTS_OUTPUT_DIRECTORY_PATH+"/"+dateString+"-tlp-table.csv");
+//			csvFile.print("Algorithm");
+//			for(String composer : COMPOSERS) csvFile.print(","+composer);
+//			for(int i = 0; i < outputFilePaths.size(); i++) {
+//				String outputFilePath = outputFilePaths.get(i);
+//				int start = JKU_PDD_OUTPUT_DIRECTORY_PATH.length()+1;
+//				int end = outputFilePath.lastIndexOf("/");
+//				String algorithm = outputFilePath.substring(start,end);
+//				if (i%5==0) csvFile.print("\n"+algorithm);
+//				csvFile.print(","+String.format("%.2f", results.get(i).P3));
+//			}
+//			csvFile.close();
+//
+//			//Now create a fourth results file to produce a piece x algorithm table that just shows TLR values
+//			
+//			csvFile = new PrintStream(RESULTS_OUTPUT_DIRECTORY_PATH+"/"+dateString+"-tlr-table.csv");
+//			csvFile.print("Algorithm");
+//			for(String composer : COMPOSERS) csvFile.print(","+composer);
+//			for(int i = 0; i < outputFilePaths.size(); i++) {
+//				String outputFilePath = outputFilePaths.get(i);
+//				int start = JKU_PDD_OUTPUT_DIRECTORY_PATH.length()+1;
+//				int end = outputFilePath.lastIndexOf("/");
+//				String algorithm = outputFilePath.substring(start,end);
+//				if (i%5==0) csvFile.print("\n"+algorithm);
+//				csvFile.print(","+String.format("%.2f", results.get(i).R3));
+//			}
+//			csvFile.close();
 
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static String getBasicAlgorithm(String algorithm) {
+		if (algorithm.contains("COSIA"))
+			return "COSIATEC";
+		if (algorithm.contains("TECCompress"))
+			return "SIATECCompress";
+		if (algorithm.contains("Forth"))
+			return "Forth";
+		return "Unknown";
+	}
+	
+	public static String getMode(String algorithm) {
+		if (algorithm.contains("BB"))
+			return "BB";
+		if (algorithm.contains("Segment"))
+			return "Segment";
+		return "Z";
+	}
+	
+	public static String getRecurSIA(String algorithm) {
+		if (algorithm.startsWith("Re"))
+			return "RecurSIA";
+		return "Z";
+	}
+	
+	public static String getRRT(String algorithm) {
+		if (algorithm.contains("-RRT"))
+			return "RRT";
+		return "Z";
+	}
+	
+	public static String getCT(String algorithm) {
+		if (algorithm.contains("CT"))
+			return "CT";
+		return "Z";
+	}
+	
+	public static String getR(String algorithm) {
+		if (algorithm.contains("ForthR")||algorithm.contains("SIAR"))
+			return "R";
+		return "Z";
+	}
+	
+	public static String parseAlgorithm(String algorithm) {
+//		Algorithm,Mode,RecurSIA,RRT,CT,R
+		String alg = getBasicAlgorithm(algorithm);
+		String mode = getMode(algorithm);
+		String recursia = getRecurSIA(algorithm);
+		String rrt = getRRT(algorithm);
+		String ct = getCT(algorithm);
+		String r = getR(algorithm);
+		return algorithm+","+alg + ","+mode+","+recursia+","+rrt+","+ct+","+r;
+	}
+	
+	public static void main(String[] args) {
+		
+		String[] algos = {
+				"ReCOSIATEC-RRT",
+				"ReCOSIATECBB-RRT",
+				"ReCOSIATECSegment-RRT",
+				"ReCOSIARTEC-RRT",
+				"ReCOSIARTECBB-RRT",
+				"ReCOSIARTECSegment-RRT",
+				"COSIATEC-RRT",
+				"COSIATECBB-RRT",
+				"COSIATECSegment-RRT",
+				"COSIARTEC-RRT",
+				"COSIARTECBB-RRT",
+				"COSIARTECSegment-RRT",
+				"ReCOSIACTTEC-RRT",
+				"ReCOSIACTTECBB-RRT",
+				"ReCOSIACTTECSegment-RRT",
+				"ReCOSIARCTTEC-RRT",
+				"ReCOSIARCTTECBB-RRT",
+				"ReCOSIARCTTECSegment-RRT",
+				"ReCOSIATEC",
+				"ReCOSIATECBB",
+				"ReCOSIATECSegment",
+				"ReCOSIARTEC",
+				"ReCOSIARTECBB",
+				"ReCOSIARTECSegment",
+				"COSIATEC",
+				"COSIATECBB",
+				"COSIATECSegment",
+				"ReCOSIACTTEC",
+				"ReCOSIACTTECBB",
+				"ReCOSIACTTECSegment",
+				"ReCOSIARCTTEC",
+				"ReCOSIARCTTECBB",
+				"ReCOSIARCTTECSegment",
+				"COSIARTEC",
+				"COSIARTECBB",
+				"COSIARTECSegment",
+				"COSIACTTEC-RRT",
+				"COSIACTTECBB-RRT",
+				"COSIACTTECSegment-RRT",
+				"COSIARCTTEC-RRT",
+				"COSIARCTTECBB-RRT",
+				"COSIARCTTECSegment-RRT",
+				"COSIACTTEC",
+				"COSIACTTECBB",
+				"COSIACTTECSegment",
+				"COSIARCTTEC",
+				"COSIARCTTECBB",
+				"COSIARCTTECSegment",
+				"ReForthR-RRT",
+				"ReForthRBB-RRT",
+				"ReForthRSegment-RRT",
+				"ReForthR",
+				"ReForthRBB",
+				"ReForthRSegment",
+				"ReSIATECCompress-RRT",
+				"ReSIATECCompressBB-RRT",
+				"ReSIATECCompressSegment-RRT",
+				"ReSIARTECCompress-RRT",
+				"ReSIARTECCompressBB-RRT",
+				"ReSIARTECCompressSegment-RRT",
+				"ReSIATECCompress",
+				"ReSIATECCompressBB",
+				"ReSIATECCompressSegment",
+				"SIATECCompress-RRT",
+				"SIATECCompressBB-RRT",
+				"SIATECCompressSegment-RRT",
+				"ForthR-RRT",
+				"ForthRBB-RRT",
+				"ForthRSegment-RRT",
+				"ForthR",
+				"ForthRBB",
+				"ForthRSegment",
+				"ReSIARTECCompress",
+				"ReSIARTECCompressBB",
+				"ReSIARTECCompressSegment",
+				"ReSIACTTECCompress-RRT",
+				"ReSIACTTECCompressBB-RRT",
+				"ReSIACTTECCompressSegment-RRT",
+				"ReSIARCTTECCompress-RRT",
+				"ReSIARCTTECCompressBB-RRT",
+				"ReSIARCTTECCompressSegment-RRT",
+				"SIATECCompress",
+				"SIATECCompressBB",
+				"SIATECCompressSegment",
+				"SIARTECCompress-RRT",
+				"SIARTECCompressBB-RRT",
+				"SIARTECCompressSegment-RRT",
+				"ReForthCT-RRT",
+				"ReForthCTBB-RRT",
+				"ReForthCTSegment-RRT",
+				"ReForthRCT-RRT",
+				"ReForthRCTBB-RRT",
+				"ReForthRCTSegment-RRT",
+				"ForthCT-RRT",
+				"ForthCTBB-RRT",
+				"ForthCTSegment-RRT",
+				"ForthRCT-RRT",
+				"ForthRCTBB-RRT",
+				"ForthRCTSegment-RRT",
+				"SIARTECCompress",
+				"SIARTECCompressBB",
+				"SIARTECCompressSegment",
+				"ReSIACTTECCompress",
+				"ReSIACTTECCompressBB",
+				"ReSIACTTECCompressSegment",
+				"ReSIARCTTECCompress",
+				"ReSIARCTTECCompressBB",
+				"ReSIARCTTECCompressSegment",
+				"SIACTTECCompress-RRT",
+				"SIACTTECCompressBB-RRT",
+				"SIACTTECCompressSegment-RRT",
+				"SIARCTTECCompress-RRT",
+				"SIARCTTECCompressBB-RRT",
+				"SIARCTTECCompressSegment-RRT",
+				"ReForthCT",
+				"ReForthCTBB",
+				"ReForthCTSegment",
+				"ReForthRCT",
+				"ReForthRCTBB",
+				"ReForthRCTSegment",
+				"SIACTTECCompress",
+				"SIACTTECCompressBB",
+				"SIACTTECCompressSegment",
+				"SIARCTTECCompress",
+				"SIARCTTECCompressBB",
+				"SIARCTTECCompressSegment",
+				"ForthCT",
+				"ForthCTBB",
+				"ForthCTSegment",
+				"ForthRCT",
+				"ForthRCTBB",
+				"ForthRCTSegment",
+				"Forth",
+				"ForthBB",
+				"ForthSegment",
+				"ReForth",
+				"ReForthBB",
+				"ReForthSegment",
+				"Forth-RRT",
+				"ForthBB-RRT",
+				"ForthSegment-RRT",
+				"ReForth-RRT",
+				"ReForthBB-RRT",
+				"ReForthSegment-RRT",
+	
+		};
+		
+		for(String alg : algos)
+			System.out.println(parseAlgorithm(alg));
 	}
 }

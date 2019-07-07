@@ -908,6 +908,16 @@ public class PointSet implements Comparable<PointSet>{
 		return imagePattern;
 	}
 
+	public String getLatexString() {
+		StringBuilder sb = new StringBuilder("\\lbrace");
+		if (!isEmpty())
+			sb.append(get(0).getLatexString());
+		for(int i = 1; i < size(); i++)
+			sb.append(","+get(i).getLatexString());
+		sb.append("\\rbrace");
+		return sb.toString();
+	}
+	
 	public static void main(String[] args ) {
 		//		boolean diatonicPitch = true;
 		//		String filePathName = "/Users/dave/Documents/Work/Research/2015-02-15-workspace/Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";

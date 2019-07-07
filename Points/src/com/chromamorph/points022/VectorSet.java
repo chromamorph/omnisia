@@ -1,6 +1,7 @@
 package com.chromamorph.points022;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.TreeSet;
 
 public class VectorSet implements Comparable<VectorSet> {
@@ -8,6 +9,11 @@ public class VectorSet implements Comparable<VectorSet> {
 	
 	public VectorSet(Vector... vectors) {
 		for(Vector vector : vectors)
+			this.vectors.add(vector);
+	}
+	
+	public VectorSet(Collection<Vector> vectorCollection) {
+		for(Vector vector : vectorCollection)
 			this.vectors.add(vector);
 	}
 	
@@ -108,6 +114,17 @@ public class VectorSet implements Comparable<VectorSet> {
 			add(vector);
 		}
 	}
+	
+	public String getLatexString() {
+		StringBuilder sb = new StringBuilder("\\lbrace");
+		if (!isEmpty())
+			sb.append(get(0).getLatexString());
+		for(int i = 1; i < size(); i++)
+			sb.append(","+get(i).getLatexString());
+		sb.append("\\rbrace");
+		return sb.toString();
+	}
+
 	
 //	public static VectorSet getVectorSetFromString(String vectorSetString) {
 //		VectorSet vectorSet = new VectorSet();

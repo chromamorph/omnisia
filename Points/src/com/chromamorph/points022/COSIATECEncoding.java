@@ -32,11 +32,17 @@ public class COSIATECEncoding extends Encoding {
 			BufferedReader br = new BufferedReader(new FileReader(encodingFileName));
 			for(String l = br.readLine(); l != null; l = br.readLine())
 				if (l.trim().length() > 0) {
-					if (l.trim().startsWith("tatumsPerBar"))
-						setTatumsPerBar(Long.parseLong(l.split(" ")[1]));
-					else if (l.trim().startsWith("barOneStartsAt"))
-						setBarOneStartsAt(Long.parseLong(l.split(" ")[1]));
-					else
+					if (l.trim().startsWith("tatumsPerBar")) {
+						String valStr = l.split(" ")[1];
+						Long val = valStr.equals("null")?null:Long.parseLong(valStr);
+						setTatumsPerBar(val);						
+					}
+					else if (l.trim().startsWith("barOneStartsAt")) {
+						String valStr = l.split(" ")[1];
+						Long val = valStr.equals("null")?null:Long.parseLong(valStr);						
+						setBarOneStartsAt(val);						
+					}
+					else if (l.trim().startsWith("T("))
 						tecStrings.add(l.trim());
 				}
 			br.close();
