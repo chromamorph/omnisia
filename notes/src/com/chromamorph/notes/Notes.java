@@ -1250,9 +1250,18 @@ public class Notes {
 	}
 
 	public static void main(String[] args) {
-		String notesFileName = "/Users/dave/Documents/Work/Research/2015-06-17-workspace-mars/notes/data/chopin-etude-op10-no1.notes";
-		String opndFileName = "/Users/dave/Documents/Work/Research/2015-06-17-workspace-mars/notes/data/chopin-etude-op10-no1.opndv";
-		new Notes(notesFileName).toOPNDFile(opndFileName);
+		String notesFileName = "data/chopin-etude-op10-no3.notes";
+//		String opndFileName = "/Users/dave/Documents/Work/Research/2015-06-17-workspace-mars/notes/data/chopin-etude-op10-no1.opndv";
+//		new Notes(notesFileName).toOPNDFile(opndFileName);
+		try {
+			new Notes(notesFileName).play(4,176);
+		} catch (InvalidMidiDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MidiUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
