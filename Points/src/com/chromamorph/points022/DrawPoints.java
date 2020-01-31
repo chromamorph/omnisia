@@ -63,6 +63,14 @@ public class DrawPoints extends PApplet {
 	private boolean writeToImageFile = false; //If true, only writes to image file without displaying analysis.
 
 
+	public DrawPoints() {
+		super();
+		tecs = null;
+		patternPairs = null;
+		points = new PointSet();
+		points.add(new Point(1,2));
+	}
+	
 	public DrawPoints(PointSet points) {
 		super();
 		tecs = null;
@@ -305,55 +313,57 @@ public class DrawPoints extends PApplet {
 	}
 
 	public void draw() {
-		background(255);
+		if (!points.isEmpty()) {
+			background(255);
 
-		drawAxes();
+			drawAxes();
 
-		for(Point n : points.getPoints()) {
-			drawPoint(n);
-		}
-
-		if (structuralSegmentation != null) {
-			drawStructuralSegmentation();
-		} else if (segmentation) {
-			drawSegmentation();
-			this.noLoop();
-		}
-		else if (drawAllOccurrenceSetsAtOnce) {
-			if (occurrenceSets != null && !occurrenceSets.isEmpty()) {
-				drawAllOccurrenceSetsAtOnce();
+			for(Point n : points.getPoints()) {
+				drawPoint(n);
 			}
-			noLoop();
-		}
-		else if (occurrenceSets != null)
-			drawOccurrenceSet();
-		else if (tecs != null && !tecs.isEmpty())
-			drawTEC();
-		else if (patternPairs != null) {
-			drawPatternPair();
-		}
-		else if (pointSetCollectionPair != null)
-			drawPointSetCollectionPair();
-		else if (patternVectorSetPair != null)
-			drawPatternVectorSetPair();
-		else if (patterns != null)
-			drawPatterns();
-		String outputImageFile = "outputFile.png";
-		if (outputFilePath != null) {
-			int folderEnd = outputFilePath.lastIndexOf("/")+1;
-			String fileNameWithoutSuffix = outputFilePath.substring(folderEnd,outputFilePath.lastIndexOf("."));
-			outputImageFile = outputFilePath.substring(0, folderEnd) + fileNameWithoutSuffix + ".png";
-			System.out.println("\nOutput image file: "+outputImageFile);
-		}			
-		if (saveImageFile) {
-			this.save(outputImageFile);
-			noLoop();
-			//exit();
-		}
-		if (writeToImageFile) {
-			this.save(outputImageFile);
-			noLoop();
-			//exit();
+
+			if (structuralSegmentation != null) {
+				drawStructuralSegmentation();
+			} else if (segmentation) {
+				drawSegmentation();
+				this.noLoop();
+			}
+			else if (drawAllOccurrenceSetsAtOnce) {
+				if (occurrenceSets != null && !occurrenceSets.isEmpty()) {
+					drawAllOccurrenceSetsAtOnce();
+				}
+				noLoop();
+			}
+			else if (occurrenceSets != null)
+				drawOccurrenceSet();
+			else if (tecs != null && !tecs.isEmpty())
+				drawTEC();
+			else if (patternPairs != null) {
+				drawPatternPair();
+			}
+			else if (pointSetCollectionPair != null)
+				drawPointSetCollectionPair();
+			else if (patternVectorSetPair != null)
+				drawPatternVectorSetPair();
+			else if (patterns != null)
+				drawPatterns();
+			String outputImageFile = "outputFile.png";
+			if (outputFilePath != null) {
+				int folderEnd = outputFilePath.lastIndexOf("/")+1;
+				String fileNameWithoutSuffix = outputFilePath.substring(folderEnd,outputFilePath.lastIndexOf("."));
+				outputImageFile = outputFilePath.substring(0, folderEnd) + fileNameWithoutSuffix + ".png";
+				System.out.println("\nOutput image file: "+outputImageFile);
+			}			
+			if (saveImageFile) {
+				this.save(outputImageFile);
+				noLoop();
+				//exit();
+			}
+			if (writeToImageFile) {
+				this.save(outputImageFile);
+				noLoop();
+				//exit();
+			}
 		}
 	}
 
@@ -800,32 +810,33 @@ public class DrawPoints extends PApplet {
 	}
 
 	public void setup() {
-		if (points.isEmpty()) exit();
-		minScreenX = margin;
-		maxScreenX = drawWindowWidth - margin;
-		minScreenY = margin;
-		maxScreenY = drawWindowHeight - margin;
-		maxDataY = max(points.getMaxY(),1);
-		maxDataX = (long) max(points.getMaxX(),1);
-		minDataY = min(points.getMinY(),0);
-		minDataX = (long) min(points.getMinX(),0);
+		if (!points.isEmpty())  {
+			minScreenX = margin;
+			maxScreenX = drawWindowWidth - margin;
+			minScreenY = margin;
+			maxScreenY = drawWindowHeight - margin;
+			maxDataY = max(points.getMaxY(),1);
+			maxDataX = (long) max(points.getMaxX(),1);
+			minDataY = min(points.getMinY(),0);
+			minDataX = (long) min(points.getMinX(),0);
 
-		if (printToPDF)
-			size(drawWindowWidth,drawWindowHeight,PDF,outputPDFFilePath);
-		else 
-			size(drawWindowWidth,drawWindowHeight);
-		smooth();
-		background(255);
-		//		font = createFont("Arial", 14);
-		textFont(createFont("Arial", 14));
-		if (tecs != null && tecs.size() > 0) 
-			System.out.println(String.format("%.2f", tec.getCompactness())+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
-		else if (patternPairs != null) {
-			System.out.println(patternPair);
-			System.out.println("Printing pattern pairs");
-			System.out.println(patternPair);
-		} else if (arrayListOfPointSetCollectionPairs != null)
-			System.out.println("Drawing point set collection pairs");
+			if (printToPDF)
+				size(drawWindowWidth,drawWindowHeight,PDF,outputPDFFilePath);
+			else 
+				size(drawWindowWidth,drawWindowHeight);
+			smooth();
+			background(255);
+			//		font = createFont("Arial", 14);
+			textFont(createFont("Arial", 14));
+			if (tecs != null && tecs.size() > 0) 
+				System.out.println(String.format("%.2f", tec.getCompactness())+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
+			else if (patternPairs != null) {
+				System.out.println(patternPair);
+				System.out.println("Printing pattern pairs");
+				System.out.println(patternPair);
+			} else if (arrayListOfPointSetCollectionPairs != null)
+				System.out.println("Drawing point set collection pairs");
+		}
 	}
 
 }

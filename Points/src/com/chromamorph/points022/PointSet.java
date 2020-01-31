@@ -982,7 +982,10 @@ public class PointSet implements Comparable<PointSet>{
 			ps = new PointSet(
 //					"/Volumes/LOTOFSPACE/Work/Research/2016-08-04-workspace/chromamorph/Points/data/PATTERNS-BOOK/MISC/noMtpPattern.pts",
 //					"/Volumes/LOTOFSPACE/Work/Research/Collaborations/Kat Agres/StimuliForDave_Exp1/1NormChNorm.mid",
-					"/Volumes/LOTOFSPACE/Work/Research/Collaborations/Kat Agres/StimuliForDave_Exp1/12NormSm.mid",
+//					"/Volumes/LOTOFSPACE/Work/Research/Collaborations/Kat Agres/StimuliForDave_Exp1/12NormSm.mid",
+//					"D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Arcade - Duncan Laurence\\42366-mid-2019-12-06-17-03-59-809\\42366.pts",
+//					"D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Spirit in the Sky - Keiino\\42371.0.gm.mid",
+					"D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Soldi - Mahmood\\42250.0.gm.mid",
 					false,true);
 			ps.draw("No MTP point set",false,true);
 			System.out.println(ps);

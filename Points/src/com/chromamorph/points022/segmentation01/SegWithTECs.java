@@ -22,8 +22,11 @@ public class SegWithTECs {
 	private StructuralSegmentation segmentation;
 	
 	public SegWithTECs() {
-		String pointSetFilePath = "/Users/dave/Documents/Work/Research/Data/Sony/Lounge music segmentation/FilesWithGroundTruthDM/LC0103/LC0103.mid";
-		String encodingFilePathName = "/Users/dave/Documents/Work/Research/Data/Sony/Lounge music segmentation/FilesWithGroundTruthDM/LC0103/LC0103-diat.cos";
+//		String pointSetFilePath = "/Users/dave/Documents/Work/Research/Data/Sony/Lounge music segmentation/FilesWithGroundTruthDM/LC0103/LC0103.mid";
+//		String encodingFilePathName = "/Users/dave/Documents/Work/Research/Data/Sony/Lounge music segmentation/FilesWithGroundTruthDM/LC0103/LC0103-diat.cos";
+		
+		String pointSetFilePath = "D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Arcade - Duncan Laurence\\42366.mid";
+		String encodingFilePathName = "D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Arcade - Duncan Laurence\\42366-mid-2019-12-08-19-40-23-410\\42366-diat.cos";
 		
 		try {
 			pointSet = new PointSet(pointSetFilePath,true);
@@ -45,7 +48,7 @@ public class SegWithTECs {
 	
 	public static void main(String[] args) {
 		try {
-			PrintWriter out = new PrintWriter("/Users/dave/Documents/Work/Research/Data/Sony/Lounge music segmentation/FilesWithGroundTruthDM/SC001-seg.txt");
+			PrintWriter out = new PrintWriter("D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Arcade - Duncan Laurence\\42366-mid-2019-12-08-19-40-23-410\\42366-diat.seg");
 			out.println(new SegWithTECs());
 			out.close();
 		} catch (FileNotFoundException e) {
