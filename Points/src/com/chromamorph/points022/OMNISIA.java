@@ -94,6 +94,7 @@ public class OMNISIA {
 	private static int TOP_N_PATTERNS				= 0; //Limits output to top n patterns (if 0, then all patterns returned)
 	private static Algorithm RECURSIA_ALGORITHM		= Algorithm.COSIATEC;
 	private static boolean SORT_BY_PATTERN_SIZE		= false;
+	private static boolean GPU_ACCEL				= false;
 
 
 	////////////////////
@@ -133,6 +134,7 @@ public class OMNISIA {
 	private static String TOP_N_PATTERNS_SWITCH		= "top";
 	private static String RECURSIA_ALGORITHM_SWITCH	= "recalg";
 	private static String SORT_BY_PATTERN_SIZE_SWITCH = "sortpat";
+	private static String GPU_ACCEL_SWITCH			= "gpu";
 
 
 
@@ -212,6 +214,10 @@ public class OMNISIA {
 		SORT_BY_PATTERN_SIZE = getBooleanValue(SORT_BY_PATTERN_SIZE_SWITCH, args);
 	}
 
+	private static void getGPUAccel(String[] args) {
+		GPU_ACCEL = getBooleanValue(GPU_ACCEL_SWITCH, args);
+	}
+	
 	private static void getHelp(String[] args) {
 		HELP = getBooleanValue(HELP_SWITCH, args);
 	}
@@ -582,6 +588,7 @@ public class OMNISIA {
 				"Top N Patterns (-"+TOP_N_PATTERNS_SWITCH+"): " + TOP_N_PATTERNS,
 				"Basic algorithm used by RecurSIA (-"+RECURSIA_ALGORITHM_SWITCH+"): " + RECURSIA_ALGORITHM,
 				"Sort TECs by decreasing pattern size (-"+SORT_BY_PATTERN_SIZE_SWITCH+"): " + SORT_BY_PATTERN_SIZE,
+				"Use GPU acceleration (-"+GPU_ACCEL_SWITCH+"): " + GPU_ACCEL,
 				""
 				);		
 	}
@@ -692,6 +699,8 @@ public class OMNISIA {
 				"",
 				"-"+SORT_BY_PATTERN_SIZE_SWITCH+"\tWhen using COSIATEC, getBestTEC sorts TECs",
 				"\twith preference given to TECs with larger patterns.",
+				"",
+				"-"+GPU_ACCEL_SWITCH+"\tUse GPU acceleration.",
 				""
 				);
 	}
@@ -861,7 +870,8 @@ public class OMNISIA {
 					MIREX, SEGMENT_MODE, BB_MODE,
 					(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
 					TOP_N_PATTERNS,
-					WITHOUT_CHANNEL_10);
+					WITHOUT_CHANNEL_10,
+					GPU_ACCEL);
 		} catch (NoMorpheticPitchException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -1022,6 +1032,7 @@ public class OMNISIA {
 		getSegmentMode(args);
 		getBBMode(args);
 		getSortByPatternSize(args);
+		getGPUAccel(args);
 		try {
 			getCTB(args);
 			getR(args);
