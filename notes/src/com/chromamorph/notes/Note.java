@@ -287,5 +287,9 @@ public class Note implements Comparable<Note>{
 		return note;
 	}
 
+	public Double getMidPoint() {
+		return getOnset() + getDuration()/2.0;
+	}
+
 
 }

@@ -1172,6 +1172,24 @@ public class Notes {
 		}
 	}
 
+	public void toOPMFileForRetrograde(String opmrFileName) {
+		try {
+			Path outputFilePath = Paths.get(opmrFileName);
+			outputFilePath.getParent().toFile().mkdirs();
+			PrintWriter pr = new PrintWriter(outputFilePath.toFile());
+			for(Note note : notes) {
+				Integer mp = note.getPitch().getMorpheticPitch();
+				if (mp == null)
+					mp = note.getComputedPitch().getMorpheticPitch();
+				Double noteMidPoint = note.getMidPoint();
+				pr.println(noteMidPoint + " " + mp);
+			}
+			pr.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void toOPNDFile(String opndFileName) {
 		try {
 			Path outputFilePath = Paths.get(opndFileName);
@@ -1250,18 +1268,29 @@ public class Notes {
 	}
 
 	public static void main(String[] args) {
-		String notesFileName = "data/chopin-etude-op10-no3.notes";
-//		String opndFileName = "/Users/dave/Documents/Work/Research/2015-06-17-workspace-mars/notes/data/chopin-etude-op10-no1.opndv";
-//		new Notes(notesFileName).toOPNDFile(opndFileName);
+		
 		try {
-			new Notes(notesFileName).play(4,176);
-		} catch (InvalidMidiDataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MidiUnavailableException e) {
+			String opndFileName = "../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";
+			Notes notes = Notes.fromOPND(opndFileName);
+			notes.toOPMFileForRetrograde("../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-729.opmr");
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+//		String notesFileName = "data/chopin-etude-op10-no3.notes";
+////		String opndFileName = "/Users/dave/Documents/Work/Research/2015-06-17-workspace-mars/notes/data/chopin-etude-op10-no1.opndv";
+////		new Notes(notesFileName).toOPNDFile(opndFileName);
+//		try {
+//			new Notes(notesFileName).play(4,176);
+//		} catch (InvalidMidiDataException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (MidiUnavailableException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 }
