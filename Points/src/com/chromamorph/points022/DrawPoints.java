@@ -317,13 +317,13 @@ public class DrawPoints extends PApplet {
 			drawStructuralSegmentation();
 		} else if (segmentation) {
 			drawSegmentation();
-			this.noLoop();
+			//this.noLoop();
 		}
 		else if (drawAllOccurrenceSetsAtOnce) {
 			if (occurrenceSets != null && !occurrenceSets.isEmpty()) {
 				drawAllOccurrenceSetsAtOnce();
 			}
-			noLoop();
+			//noLoop();
 		}
 		else if (occurrenceSets != null)
 			drawOccurrenceSet();
@@ -347,14 +347,15 @@ public class DrawPoints extends PApplet {
 		}			
 		if (saveImageFile) {
 			this.save(outputImageFile);
-			noLoop();
+			//noLoop();
 			//exit();
 		}
 		if (writeToImageFile) {
 			this.save(outputImageFile);
-			noLoop();
+			//noLoop();
 			//exit();
 		}
+		exit();
 	}
 
 	public void keyPressed() {
