@@ -317,13 +317,13 @@ public class DrawPoints extends PApplet {
 			drawStructuralSegmentation();
 		} else if (segmentation) {
 			drawSegmentation();
-			this.noLoop();
+			//this.noLoop();
 		}
 		else if (drawAllOccurrenceSetsAtOnce) {
 			if (occurrenceSets != null && !occurrenceSets.isEmpty()) {
 				drawAllOccurrenceSetsAtOnce();
 			}
-			noLoop();
+			//noLoop();
 		}
 		else if (occurrenceSets != null)
 			drawOccurrenceSet();
@@ -347,14 +347,15 @@ public class DrawPoints extends PApplet {
 		}			
 		if (saveImageFile) {
 			this.save(outputImageFile);
-			noLoop();
+			//noLoop();
 			//exit();
 		}
 		if (writeToImageFile) {
 			this.save(outputImageFile);
-			noLoop();
+			//noLoop();
 			//exit();
 		}
+		exit();
 	}
 
 	public void keyPressed() {
@@ -490,14 +491,26 @@ public class DrawPoints extends PApplet {
 				continue;
 			ArrayList<PointSet> occurrenceSet = occurrenceSets.get(i);
 			int col = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
-			fill(col);
-			stroke(col);
+			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/4);
 			strokeWeight(2);
+			boolean firstOccurrence = true;
 			for(PointSet occurrence : occurrenceSet) {
+				int c = firstOccurrence?col:col2;
 				Point lastPoint = occurrence.first();
 				for(Point p : occurrence.getPoints()) {
-					drawPoint(p,col,col,1,ROUND,pointWidth+1,pointHeight+1);
-					drawLine(lastPoint,p,col,lineWidth,ROUND);
+					int s = firstOccurrence?col:col2;
+					int f = firstOccurrence?col:col2;
+					float sw = firstOccurrence?2:1;
+					float w = firstOccurrence?pointWidth+2:pointWidth;
+					float h = firstOccurrence?pointHeight+2:pointHeight;
+					if (OMNISIA.RHYTHM_ONLY) { // Draws points and lines with y value equal to TEC number, i
+						drawPoint(p,s,f,sw,ROUND,w,h, i);
+						drawLine(lastPoint, p, s, sw, ROUND, i);
+					}
+					else {
+						drawPoint(p,s,f,sw,ROUND,w,h);
+						drawLine(lastPoint,p,s,sw,ROUND);
+					}
 					//					drawPoint(p,0,0,1,ROUND,pointWidth+1,pointHeight+1);
 					//					drawLine(lastPoint,p,0,lineWidth,ROUND);
 					lastPoint = p;
@@ -505,6 +518,7 @@ public class DrawPoints extends PApplet {
 				//				Point topLeft = occurrence.getTopLeft();
 				//				Point bottomRight = occurrence.getBottomRight();
 				//				drawFilledRectangle(col,topLeft,bottomRight);
+				firstOccurrence = false;
 			}
 			if ((numberOfTecs-i)%500==0)
 				System.out.print(".");
@@ -750,7 +764,7 @@ public class DrawPoints extends PApplet {
 			i++;
 		}
 		//		System.out.println("Got here in drawAxes method - after loop");
-		String pitchString = (diatonicPitch==true?"morphetic pitch":"chromatic pitch");
+		String pitchString = OMNISIA.RHYTHM_ONLY?"TEC number":(diatonicPitch==true?"morphetic pitch":"chromatic pitch");
 		pushMatrix();
 		translate(zeroX-40,minScreenY+(maxScreenY-minScreenY)/2);
 		rotate(-PI/2);
@@ -782,12 +796,36 @@ public class DrawPoints extends PApplet {
 		ellipse(x,y,width,height);
 	}
 
+	private void drawPoint(Point n, int stroke, int fill, float strokeWeight, int strokeCap, float width, float height, int tecNumber) {
+		stroke(stroke);
+		fill(fill);
+		strokeWeight(strokeWeight);
+		strokeCap(strokeCap);
+		Point p = getScreenPoint(n.getX(), tecNumber+1);
+		float x = p.getX();
+		float y = p.getY();
+		ellipse(x,y,width,height);
+	}
+	
 	private void drawLine(Point n1, Point n2, int stroke, float strokeWeight, int strokeCap) {
 		stroke(stroke);
 		strokeWeight(strokeWeight);
 		strokeCap(strokeCap);
 		Point p1 = getScreenPoint(n1.getX(), n1.getY());
 		Point p2 = getScreenPoint(n2.getX(), n2.getY());
+		float x1 = p1.getX();
+		float y1 = p1.getY();
+		float x2 = p2.getX();
+		float y2 = p2.getY();
+		line(x1,y1,x2,y2);
+	}
+
+	private void drawLine(Point n1, Point n2, int stroke, float strokeWeight, int strokeCap, int tecNumber) {
+		stroke(stroke);
+		strokeWeight(strokeWeight);
+		strokeCap(strokeCap);
+		Point p1 = getScreenPoint(n1.getX(), tecNumber+1);
+		Point p2 = getScreenPoint(n2.getX(), tecNumber+1);
 		float x1 = p1.getX();
 		float y1 = p1.getY();
 		float x2 = p2.getX();
@@ -805,7 +843,7 @@ public class DrawPoints extends PApplet {
 		maxScreenX = drawWindowWidth - margin;
 		minScreenY = margin;
 		maxScreenY = drawWindowHeight - margin;
-		maxDataY = max(points.getMaxY(),1);
+		maxDataY = OMNISIA.RHYTHM_ONLY?max(occurrenceSets.size()+1,1):max(points.getMaxY(),1);
 		maxDataX = (long) max(points.getMaxX(),1);
 		minDataY = min(points.getMinY(),0);
 		minDataX = (long) min(points.getMinX(),0);

@@ -97,7 +97,9 @@ public class COSIATECEncoding extends Encoding {
 			String omnisiaOutputFilePathString,
 			int topNPatterns,
 			boolean withoutChannel10,
-			boolean sortPatternsBySize) throws MissingTieStartNoteException, FileNotFoundException {
+			boolean sortPatternsBySize,
+			String tecPriorityString,
+			String dualTecPriorityString) throws MissingTieStartNoteException, FileNotFoundException {
 		super(dataset,inputFilePathString,
 				outputDirectoryPathString,
 				diatonicPitch,
@@ -126,7 +128,9 @@ public class COSIATECEncoding extends Encoding {
 						minTECCompactness, 
 						minPatternSize, 
 						maxPatternSize,
-						sortPatternsBySize);
+						sortPatternsBySize,
+						tecPriorityString,
+						dualTecPriorityString);
 				getTECs().add(bestTEC);
 				points.remove(bestTEC.getCoveredPoints());
 			}
@@ -152,7 +156,9 @@ public class COSIATECEncoding extends Encoding {
 			double minTECCompactness,
 			int minPatternSize,
 			int maxPatternSize,
-			boolean sortPatternsBySize) {
+			boolean sortPatternsBySize,
+			String tecPriorityString,
+			String dualTecPriorityString) {
 		if (points.isEmpty())
 			throw new IllegalArgumentException("getBestTEC called with empty point set!");
 		System.out.println("getBestTEC:");
@@ -186,7 +192,7 @@ public class COSIATECEncoding extends Encoding {
 		}
 
 
-		TECQualityComparator tecQualityComparator = new TECQualityComparator();
+		TECQualityComparator tecQualityComparator = new TECQualityComparator(tecPriorityString);
 		if (sortPatternsBySize)
 			tecQualityComparator = new TECPointSetSizeComparator();
 
@@ -220,7 +226,8 @@ public class COSIATECEncoding extends Encoding {
 			}
 
 			//Check to see if thisTEC is better than bestTEC. If it is, then set bestTEC to point at thisTEC.
-			if (dualTEC != null && tecQualityComparator.compare(dualTEC,bestTEC) < 0) {
+			TECQualityComparator dualTecQualityComparator = new TECQualityComparator(dualTecPriorityString);
+			if (dualTEC != null && dualTecQualityComparator.compare(dualTEC,bestTEC) < 0) {
 				if (dualTEC.getCompactness() >= minTECCompactness && dualTEC.getPatternSize() >= minPatternSize)
 					bestTEC = dualTEC;
 			}

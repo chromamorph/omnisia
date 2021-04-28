@@ -163,10 +163,23 @@ public class Encoding {
 			setTatumsPerBarAndBarOneStartsAt(this.inputFilePathString);
 			setTitle(Paths.get(inputFilePathString).getFileName().toString());
 		}
-		if (dataset != null)
-			this.dataset = dataset;
-		else if (this.inputFilePathString != null)
-			this.dataset = new PointSet(this.inputFilePathString, isDiatonic, withoutChannel10);
+
+		if (dataset == null && this.inputFilePathString != null)
+			dataset = new PointSet(this.inputFilePathString, isDiatonic, withoutChannel10);
+
+		if (OMNISIA.RHYTHM_ONLY) {
+			PointSet newDataset = new PointSet();
+			for (Point p : dataset.getPoints())
+				newDataset.add(new Point(p.getX(),0));
+			dataset = newDataset;
+		}
+
+		this.dataset = dataset;
+
+		//		if (dataset != null)
+		//			this.dataset = dataset;
+		//		else if (this.inputFilePathString != null)
+		//			this.dataset = new PointSet(this.inputFilePathString, isDiatonic, withoutChannel10);
 
 		this.encoderName = this.getClass().getName();
 	}
@@ -279,7 +292,8 @@ public class Encoding {
 
 	public void drawOccurrenceSetsToFile(final String outputFilePath, final boolean diatonicPitch) {
 		try {
-			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+			final Runnable drawRunnable = new Runnable() {
+				//			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
 					JFrame frame = new JFrame();
 					frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
@@ -289,7 +303,9 @@ public class Encoding {
 					embed.init();
 					frame.pack();
 				}
-			});
+				//			});
+			};
+			javax.swing.SwingUtilities.invokeAndWait(drawRunnable);
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -571,7 +587,7 @@ public class Encoding {
 	}
 
 	static int mirexPatternNumber = 0;
-	
+
 	public static String getMIREXStringForTEC(TEC tec, boolean boundingBox, boolean segment, PointSet dataset) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("pattern"+(++mirexPatternNumber)+"\n");
@@ -609,7 +625,7 @@ public class Encoding {
 		return sb.toString();
 	}
 
-	
+
 	public String toMIREXString() {
 		mirexPatternNumber = 0;
 		StringBuilder sb = new StringBuilder();
