@@ -747,7 +747,7 @@ public class OMNISIA {
 				"\tSee entry in this help for the switch, -"+TEC_PRIORITY_SWITCH+", for details regarding",
 				"\thow to construct the string value for this switch. If neither this switch nor -"+TEC_PRIORITY_SWITCH,
 				"\tare set, then the value of this string is "+TECQualityComparator.DEFAULT_PRIORITY_STRING+".",
-				"\tIf -"+TEC_PRIORITY_SWITCH+"is set, but this switch is not, then the value of this string is",
+				"\tIf -"+TEC_PRIORITY_SWITCH+" is set, but this switch is not, then the value of this string is",
 				"\t the same as that set for -"+TEC_PRIORITY_SWITCH+".",
 				""	
 				);
