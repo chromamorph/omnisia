@@ -667,6 +667,7 @@ public class Encoding {
 		sb.append("\nforMirex "+isForMirex());
 		sb.append("\nmode "+getMode());
 		sb.append("\ntopNPatterns "+topNPatterns);
+		sb.append("\n\n"+OMNISIA.getParameterValuesString());
 
 		return sb.toString();
 	}

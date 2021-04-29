@@ -573,8 +573,8 @@ public class OMNISIA {
 		}
 	}
 
-	private static void printParsedParameterValues() {
-		println("",
+	public static String getParameterValuesString() {
+		String[] parameterStrings = new String[]{
 				"Parameter values",
 				"================",
 				"Basic algorithm: (-"+ALGORITHM_SWITCH+"): "+BASIC_ALGORITHM,
@@ -616,7 +616,15 @@ public class OMNISIA {
 				"TEC quality priority string (-"+TEC_PRIORITY_SWITCH+"): " + TEC_PRIORITY_STRING,
 				"Dual TEC quality priority string (-"+DUAL_TEC_PRIORITY_SWITCH+"): " + DUAL_TEC_PRIORITY_STRING,
 				""
-				);		
+		};
+		StringBuilder sb = new StringBuilder();
+		for(String s : parameterStrings)
+			sb.append(s+"\n");
+		return sb.toString();
+	}
+	
+	private static void printParsedParameterValues() {
+		println(getParameterValuesString());		
 	}
 
 	private static String getBasicAlgorithms() {
@@ -1082,7 +1090,9 @@ public class OMNISIA {
 				RECURSIA_ALGORITHM,
 				CR_LOW, CR_HIGH, COMP_V_LOW, COMP_V_HIGH, C_MIN, SIGMA_MIN, BB_COMPACTNESS,
 				true, //fromOMNISIA
-				SORT_BY_PATTERN_SIZE
+				SORT_BY_PATTERN_SIZE,
+				TEC_PRIORITY_STRING,
+				DUAL_TEC_PRIORITY_STRING
 				);
 	}
 
