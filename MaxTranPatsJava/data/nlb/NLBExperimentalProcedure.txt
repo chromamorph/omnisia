@@ -1,0 +1,34 @@
+We assume we have set up a directory, <root>, to hold all the output data
+
+1. Generate compressed versions of all the annotated files. This is done using 
+
+com.chromamorph.points018.RunMeNLB.java
+
+These compressed files get stored in a directory
+
+<root>/<algorithm>/NLB
+
+where <algorithm> is the name of this algorithm.
+
+2. Generated compressed versions of all pairs of annotated files. This is done using
+
+com.chromamorph.points.018.RunMeNLBPairs.java
+
+The compressed files are stored in a folder called
+
+<root>/<algorithm>/NLB-PAIRS
+
+
+3. Calculate the NCD between each pair of songs. This is done using
+
+com.chromamorph.points018.NLBNCD.java
+
+The distances are stored in a file called
+
+<root>/<algorithm>/distances.txt
+
+4. Compute the family for each song and the success rate for 1-nn and leave-one-out cross validation. This is done using the file
+
+com.chromamorph.points018.JNMR2014Evaluation.java
+
+It automatically generates a results table at the location where you ask it to (defined in nlbResultsTableTexFilePath).

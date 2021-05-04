@@ -1,9 +1,11 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.TreeSet;
 
 public class Utility {
@@ -311,6 +313,12 @@ public class Utility {
 
 		System.out.println(lcm(3,4,8));
 		
+		String[] inputFileNames = getInputFileNames("data/nlb/nlb_datasets/annmidi");
+		for(String s : inputFileNames)
+			System.out.println(s);
+		
+		System.out.println("Number of files: "+inputFileNames.length);
+		
 		
 //		//Test mod
 //		for (long a = -10; a < 10; a++)
@@ -362,18 +370,41 @@ public class Utility {
 	
 	}
 	
-	public static String getOutputFileName(
+	/**
+	 * Set outputDir to null if you want the output files to be stored in a subdirectory of 
+	 * the input directory.
+	 * @param outputDir
+	 * @param inputFilePath
+	 * @param transformationClasses
+	 * @return
+	 */
+	public static String getOutputFilePath(
 			String outputDir,
-			String fileName, 
+			String inputFilePath, 
 			TransformationClass[] transformationClasses) {
-		int startOfSuffix = fileName.lastIndexOf('.');
-		int startOfName = fileName.lastIndexOf('/')+1;
-		String newPath = outputDir + (outputDir.endsWith("/")?"":"/");
-		String newName = fileName.substring(startOfName,startOfSuffix);
+		int startOfSuffix = inputFilePath.lastIndexOf('.'); // includes dot
+		int startOfName = inputFilePath.lastIndexOf('/')+1;
+		String inputDir = inputFilePath.substring(0,startOfName); // includes trailing /
+		if (outputDir == null) {
+			outputDir = inputDir;
+		}
+		String outputFilePath = outputDir + (outputDir.endsWith("/")?"":"/");
+		
+		String inputFileName = inputFilePath.substring(startOfName,startOfSuffix);
+		
+//		Append name of subdirectory to contain output files
+		String subdirName = inputFileName;
+		subdirName += "-" + inputFilePath.substring(startOfSuffix+1);
+		
 		for(TransformationClass tc : transformationClasses)
-			newName += "-" + tc.getName();
-		String newSuffix = ".out";
-		return newPath + newName + newSuffix;
+			subdirName += "-" + tc.getName();
+		Calendar cal = Calendar.getInstance();
+		String timeString = cal.get(Calendar.YEAR)+"-"+String.format("%02d", 1+cal.get(Calendar.MONTH))+"-"+String.format("%02d", cal.get(Calendar.DATE))+"-"+String.format("%02d", cal.get(Calendar.HOUR_OF_DAY))+"-"+String.format("%02d", cal.get(Calendar.MINUTE))+"-"+String.format("%02d", cal.get(Calendar.SECOND))+"-"+String.format("%03d", cal.get(Calendar.MILLISECOND));
+		subdirName += "-"+timeString+"/";
+		outputFilePath += subdirName;
+		new File(outputFilePath).mkdirs();
+		outputFilePath += inputFileName + ".enc";
+		return outputFilePath;
 	}
 	
 	public static void println(PrintWriter output, Object s) {
@@ -386,4 +417,18 @@ public class Utility {
 		output.print(s.toString());
 	}
 
+	public static String[] getInputFileNames(String inputDirStr) {
+		File inputDir = new File(inputDirStr);
+		return inputDir.list(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return 
+						name.endsWith(".mid") || 
+						name.endsWith(".pts") ||
+						name.endsWith(".opnd");
+			}
+		});
+	}
+	
 }

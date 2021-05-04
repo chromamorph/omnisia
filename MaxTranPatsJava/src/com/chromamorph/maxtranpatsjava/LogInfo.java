@@ -3,12 +3,20 @@ package com.chromamorph.maxtranpatsjava;
 import java.io.PrintWriter;
 
 public class LogInfo implements Comparable<LogInfo> {
+	public static long PREV_TIME_STAMP = 0l;
+	public static long ACCUMULATED_TIME = 0l;
 	private long timeStamp;
 	private String description;
+	private long timeSincePrevTimeStamp = 0l;
+	private long thisAccumulatedTime = 0l;
 	
 	public LogInfo(long timeStamp, String description, boolean printOut) {
 		this.timeStamp = timeStamp;
 		this.description = description;
+		this.timeSincePrevTimeStamp = PREV_TIME_STAMP!=0l?(timeStamp - PREV_TIME_STAMP):0l;
+		ACCUMULATED_TIME += timeSincePrevTimeStamp;
+		thisAccumulatedTime = ACCUMULATED_TIME;
+		PREV_TIME_STAMP = timeStamp;
 		if (printOut) {
 			System.out.println(this);
 			System.out.flush();
@@ -27,6 +35,8 @@ public class LogInfo implements Comparable<LogInfo> {
 	
 	public long getTimeStamp() {return timeStamp;}
 	public String getDescription() {return description;}
+	
+	public long getTimeSinceLastTimeStamp() {return timeSincePrevTimeStamp;}
 
 	@Override
 	public int compareTo(LogInfo o) {
@@ -45,7 +55,7 @@ public class LogInfo implements Comparable<LogInfo> {
 	
 	@Override
 	public String toString() {
-		return String.format("%d ms:\t%s", getTimeStamp(),getDescription());
+		return String.format("%15d ms%15d ms  %s", thisAccumulatedTime, getTimeSinceLastTimeStamp(),getDescription());
 	}
 }
 

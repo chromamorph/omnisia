@@ -1,0 +1,33 @@
+CF=2.00, COV=12, UL=24, PL=8, TL=4, Pat=P(p(60.0,30.0),p(510.0,27.0),p(990.0,30.0),p(1110.0,28.0)), Trans=[T(F_2T,[1440.0, 0.0]), T(F_2T,[2910.0, 1.0])], SupMTPs=null
+CF=1.83, COV=11, UL=22, PL=8, TL=4, Pat=P(p(60.0,30.0),p(1170.0,30.0),p(1500.0,30.0),p(2190.0,29.0)), Trans=[T(F_2T,[150.0, -1.0]), T(F_2T,[840.0, -2.0])], SupMTPs=null
+CF=1.83, COV=11, UL=22, PL=8, TL=4, Pat=P(p(330.0,28.0),p(390.0,27.0),p(1830.0,27.0),p(2610.0,30.0)), Trans=[T(F_2T,[660.0, 2.0]), T(F_2T,[720.0, 1.0])], SupMTPs=null
+CF=1.80, COV=9, UL=18, PL=6, TL=4, Pat=P(p(450.0,26.0),p(510.0,27.0),p(660.0,29.0)), Trans=[T(F_2T,[1440.0, 0.0]), T(F_2T,[3240.0, 2.0])], SupMTPs=null
+CF=1.00, COV=17, UL=34, PL=34, TL=0, Pat=P(p(570.0,28.0),p(750.0,30.0),p(810.0,29.0),p(1770.0,31.0),p(2250.0,29.0),p(2760.0,29.0),p(2910.0,29.0),p(3090.0,29.0),p(3165.0,31.0),p(3225.0,31.0),p(3540.0,27.0),p(3630.0,28.0),p(3810.0,31.0),p(4140.0,28.0),p(4260.0,32.0),p(4380.0,31.0),p(4560.0,27.0)), Trans=[], SupMTPs=null
+
+
+Coverage: 52
+Uncompressed length: 104
+Encoding length: 80
+Compression factor: 1.3
+Number of occurrence sets: 5
+
+
+
+Log:
+          11690 ms              8 ms  computeMaximalTransformablePatterns starts
+          11698 ms              8 ms  computeMaximalTransformablePatterns ends
+          11698 ms              0 ms  computeSizeMTPSetArray ends
+          11698 ms              0 ms  computePatternTransformationSetPairs ends
+          11701 ms              3 ms  computeSuperMTPs ends
+          11725 ms             24 ms  computeHeterogeneousOccurrenceSets ends
+          11729 ms              4 ms  removeDuplicateOccurrenceSets ends
+          11731 ms              2 ms  removeRedundantTransformations ends
+          11731 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          11732 ms              1 ms  computeSortedOccurrenceSets ends
+          11732 ms              0 ms  computeEncoding ends
+          11732 ms              0 ms  Program ends
+
+
+Number of points: 52
+Number of MTPs before removal: 276
+Number of OSs after removal: 133

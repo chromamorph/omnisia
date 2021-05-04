@@ -75,7 +75,7 @@ public class OccurrenceSet {
 	public String toString() {
 		String s = "ERROR";
 		try {
-			s = String.format("CF=%2.2f, COV=%6d, UL=%6d, PL=%4d, TL=%4d, Pat=%s, Trans=%s, SupMTPs=%s", 
+			s = String.format("CF=%.2f, COV=%d, UL=%d, PL=%d, TL=%d, Pat=%s, Trans=%s, SupMTPs=%s", 
 					getCompressionFactor(), 
 					getCoverage(),
 					getUncompressedLength(), 
@@ -103,7 +103,7 @@ public class OccurrenceSet {
 
 	public PointSet getCoveredSet() throws Exception {
 		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PoinSet.");
+			throw new Exception("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		if (coveredSet == null) {
 			coveredSet = new PointSet();
 			coveredSet.addAll(getPattern());
@@ -115,35 +115,41 @@ public class OccurrenceSet {
 
 	public int getCoverage() throws Exception {
 		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute coverage. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PoinSet.");
+			throw new Exception("superMTPs needs to be null in order to compute coverage. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		PointSet cs = getCoveredSet();
 		return cs.size();
 	}
 
-	//	public long getPatternEncodingLength() {
-	//		return getPattern().size()*getDataset().getPointComplexity();
-	//	}
+	public int getPatternEncodingLength() {
+		return getPattern().size()*getPattern().getDimensionality();
+		//			return getPattern().size()*getDataset().getPointComplexity();
+	}
 
-	//	public int getTransformationSetEncodingLength() throws Exception {
-	//		if (getSuperMTPs() != null)
-	//			throw new Exception("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
-	//		int el = 0;
-	//		for(Transformation f : getTransformations())
-	//			el += f.getSigmaComplexity();
-	//		return el;
-	//	}
+	public int getTransformationSetEncodingLength() throws Exception {
+		if (getSuperMTPs() != null)
+			throw new Exception("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+		int el = 0;
+		for(Transformation f : getTransformations())
+			el += f.getTransformationClass().getSigmaLength();
+		return el;
+	}
 
-	//	public long getEncodingLength() throws Exception {
-	//		if (getSuperMTPs() != null)
-	//			throw new Exception("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
-	//		if (encodingLength != -1) 
-	//			return encodingLength;
-	//		return getPatternEncodingLength() + getTransformationSetEncodingLength();
-	//	}
+	public long getEncodingLength() throws Exception {
+		if (getSuperMTPs() != null)
+			throw new Exception("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+		if (encodingLength != -1) 
+			return encodingLength;
+		return getPatternEncodingLength() + getTransformationSetEncodingLength();
+	}
 
-	//	public long getUncompressedLength() throws Exception {
-	//		return getCoverage()*getDataset().getPointComplexity();
-	//	}
+	public int getDimensionality() {
+		return getPattern().getDimensionality();
+	}
+	
+	public int getUncompressedLength() throws Exception {
+		return getCoverage()*getDimensionality();
+		//			return getCoverage()*getDataset().getPointComplexity();
+	}
 
 	public int getPatternLength() {
 		return getPattern().getDimensionality() * getPattern().size();
@@ -157,18 +163,8 @@ public class OccurrenceSet {
 		return transformationSetLength;
 	}
 
-	public int getUncompressedLength() throws Exception {
-		return getPattern().getDimensionality() * getCoverage();
-	}
-
 	public double getCompressionFactor() throws Exception {
-		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute coverage. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PoinSet.");
-
-		return 1.0 * getUncompressedLength() / (getPatternLength() + getTransformationSetLength());
-
-		//		Following attempts to compute compression factor more accurately
-		//		return (getUncompressedLength()*1.0)/getEncodingLength();
+		return 1.0 * getUncompressedLength() / getEncodingLength();
 	}
 
 	public PointFreqSet getPointFreqSet() {
@@ -472,5 +468,5 @@ public class OccurrenceSet {
 		}
 	};
 
-	
+
 }

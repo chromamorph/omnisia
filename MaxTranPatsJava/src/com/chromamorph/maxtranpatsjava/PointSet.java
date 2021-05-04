@@ -30,6 +30,15 @@ public class PointSet implements Comparable<PointSet>{
 	private ArrayList<OccurrenceSet> sortedOccurrenceSets;
 	private TreeSet<TransformationClass> transformationClasses;
 	private long pointComplexity = -1;
+	private Encoding encoding = null;
+	
+	public void setEncoding(ArrayList<OccurrenceSet> occurrenceSets) {
+		this.encoding = new Encoding(occurrenceSets);
+	}
+	
+	public Encoding getEncoding() {
+		return encoding;
+	}
 	
 	public Long getTicksPerSecond() {
 		return ticksPerSecond;
@@ -576,6 +585,44 @@ public class PointSet implements Comparable<PointSet>{
 			}
 	}
 	
+	public PointSet setMinus(PointSet pointSet) {
+		PointSet result = new PointSet();
+		for(Point p : getPoints()) {
+			if (!pointSet.contains(p))
+				result.add(p);
+		}
+		result.resetPointsArray();
+		return result;
+	}
+	
+	/**
+	 * Assumes sortedOccurenceSets holds a list of OccurrenceSets in descending order of quality.
+	 * @throws Exception
+	 */
+	public void computeEncoding() throws Exception {
+		ArrayList<OccurrenceSet> encoding = new ArrayList<OccurrenceSet>();
+		
+		// Assumes first occurrence set in list is the "best"
+		encoding.add(sortedOccurrenceSets.get(0));
+		PointSet coveredSet = new PointSet();
+		coveredSet.addAll(sortedOccurrenceSets.get(0).getCoveredSet());
+		for(int i = 1; i < sortedOccurrenceSets.size(); i++) {
+			OccurrenceSet os = sortedOccurrenceSets.get(i);
+			PointSet diffSet = os.getCoveredSet().setMinus(coveredSet);
+			int osEncodingLength = os.getPatternLength() + os.getTransformationSetLength();
+			if (osEncodingLength < diffSet.getDimensionality()*diffSet.size()) {
+				encoding.add(os);
+				coveredSet.addAll(os.getCoveredSet());
+			}
+		}
+		PointSet residualSet = this.setMinus(coveredSet);
+		if (!residualSet.isEmpty()) {
+			OccurrenceSet residualOccurrenceSet = new OccurrenceSet(residualSet, this);
+			encoding.add(residualOccurrenceSet);
+		}
+		setEncoding(encoding);
+	}
+	
 	public static void run(
 			String fileName, 
 			TransformationClass[] transformationClasses, 
@@ -587,7 +634,7 @@ public class PointSet implements Comparable<PointSet>{
 			
 			ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
-			String outputFileName = Utility.getOutputFileName(outputDir, fileName, transformationClasses);
+			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 
 			PrintWriter output = new PrintWriter(outputFileName);
 			PointSet ps = new PointSet(
@@ -623,42 +670,46 @@ public class PointSet implements Comparable<PointSet>{
 			
 			ps.removeOccurrenceSetsWithEmptyTransformationSets();
 			log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
+
+			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
+			log.add(new LogInfo("computeSortedOccurrenceSets ends", true));
 			
-			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_TIMES_COVERAGE_COMPARATOR);			
-			Utility.println(output, "\nOccurrence sets sorted decreasing by cf x coverage:");
-			int j = 0;
-			for(OccurrenceSet os : ps.sortedOccurrenceSets) {
-				String s = String.format("%5d. %s", ++j, os);
-				Utility.println(output, s);
-			}
+			ps.computeEncoding();
+			log.add(new LogInfo("computeEncoding ends", true));
+			
+//			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_TIMES_COVERAGE_COMPARATOR);			
+//			Utility.println(output, "\nOccurrence sets sorted decreasing by cf x coverage:");
+//			int j = 0;
+//			for(OccurrenceSet os : ps.sortedOccurrenceSets) {
+//				String s = String.format("%5d. %s", ++j, os);
+//				Utility.println(output, s);
+//			}
+//
+//			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);			
+//			Utility.println(output, "\nOccurrence sets sorted decreasing by cf then coverage:");
+//			j = 0;
+//			for(OccurrenceSet os : ps.sortedOccurrenceSets) {
+//				String s = String.format("%5d. %s", ++j, os);
+//				Utility.println(output, s);
+//			}
+//
+//			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_COVERAGE_THEN_CF_COMPARATOR);			
+//			Utility.println(output, "\nOccurrence sets sorted decreasing by coverage then cf:");
+//			j = 0;
+//			for(OccurrenceSet os : ps.sortedOccurrenceSets) {
+//				String s = String.format("%5d. %s", ++j, os);
+//				Utility.println(output, s);
+//			}
 
-			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);			
-			Utility.println(output, "\nOccurrence sets sorted decreasing by cf then coverage:");
-			j = 0;
-			for(OccurrenceSet os : ps.sortedOccurrenceSets) {
-				String s = String.format("%5d. %s", ++j, os);
-				Utility.println(output, s);
-			}
-
-			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_COVERAGE_THEN_CF_COMPARATOR);			
-			Utility.println(output, "\nOccurrence sets sorted decreasing by coverage then cf:");
-			j = 0;
-			for(OccurrenceSet os : ps.sortedOccurrenceSets) {
-				String s = String.format("%5d. %s", ++j, os);
-				Utility.println(output, s);
-			}
-
-			log.add(new LogInfo("Program ends", true));
+			log.add(new LogInfo("Program ends\n\n", true));
+			
+			Utility.println(output, ps.getEncoding());
 			
 			Utility.println(output, "\n\nLog:");
 			for(int i = 0; i < log.size(); i++) {
-				long timeOffset = log.get(i>0?i-1:i).getTimeStamp();
-				Utility.print(output, String.format("%6d ms\t", log.get(i).getTimeStamp() - timeOffset));
 				Utility.println(output, log.get(i));
 			}
 			
-			Utility.println(output, "Total time without printed output: " + (log.get(log.size()-2).getTimeStamp() - log.get(0).getTimeStamp()));
-			Utility.println(output, "Total time with printed output: " + (log.get(log.size()-1).getTimeStamp() - log.get(0).getTimeStamp()));
 			Utility.println(output, "Number of points: " + ps.size());
 			Utility.println(output, "Number of MTPs before removal: " + numMTPsBeforeRemoval);
 			Utility.println(output, "Number of OSs after removal: " + ps.sortedOccurrenceSets.size());
@@ -677,9 +728,9 @@ public class PointSet implements Comparable<PointSet>{
 	public static void main(String[] args) {
 		String dir = "data/JMM2020-experiment-on-corsair";
 		String[] fileNames = new String[] {
-				dir+"/bwv846b-050.pts",
-				dir+"/bwv846b-100.pts",
-				dir+"/bwv846b-150.pts",
+//				dir+"/bwv846b-050.pts",
+//				dir+"/bwv846b-100.pts",
+//				dir+"/bwv846b-150.pts",
 //				dir+"/bwv846b-200.pts",
 //				dir+"/bwv846b-250.pts",
 //				dir+"/bwv846b-300.pts",
@@ -692,28 +743,32 @@ public class PointSet implements Comparable<PointSet>{
 //				dir+"/bwv846b-650.pts",
 //				dir+"/bwv846b-700.pts",
 //				dir+"/bwv846b-729.pts"
-//				"data/8x25000midi/telemamagdebgerman21m.mid"
+				"data/8x25000midi/telemamagdebgerman21m.mid"
+//				"data/test/basic-sia-test-dataset.pts"
 		};
+		
+		String inputDir = "data/nlb/nlb_datasets/annmidi";
+		String[] nlbFileNames = Utility.getInputFileNames(inputDir);
 
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
-//			new TransformationClass[] {new F_2T()},
+			new TransformationClass[] {new F_2T()},
 //			new TransformationClass[] {new F_2TR()},
-			new TransformationClass[] {new F_2STR()},
+//			new TransformationClass[] {new F_2STR()},
 //			new TransformationClass[] {new F_2T(), new F_2TR()},
 //			new TransformationClass[] {new F_2TR(), new F_2STR()},
 //			new TransformationClass[] {new F_2STR(), new F_2T()},
 //			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
 		};
 
-		for(String fileName : fileNames)
+		for(String fileName : nlbFileNames)
 			for(TransformationClass[] transformationClassArray : transformationClassArrays)
 				run(
-						fileName, 
+						inputDir+"/"+fileName, 
 						transformationClassArray, 
 						true, // pitchSpell
 						true, // midTimePoint
 						"1100",
-						"output/test");
+						"output/nlb-20210504/single-files");
 		
 	}
 }
