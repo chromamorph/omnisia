@@ -43,6 +43,10 @@ public class Point implements Comparable<Point>{
 		return coords.get(i);
 	}
 	
+	public void set(int i, double x) {
+		coords.set(i, x);
+	}
+	
 	@Override
 	public int compareTo(Point o) {
 		if (o == null) return 1;

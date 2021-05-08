@@ -1,6 +1,5 @@
 package com.chromamorph.maxtranpatsjava;
 
-import java.util.ArrayList;
 import java.util.TreeSet;
 
 

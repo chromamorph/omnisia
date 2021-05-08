@@ -10,6 +10,8 @@ import java.util.TreeSet;
 
 public class Utility {
 	
+	public static double TOLERANCE = 0.000001;
+	
 	public static int compareToArrayListOfDoubles(ArrayList<Double> a1, ArrayList<Double> a2) {
 		if (a2 == null && a1 == null) return 0;
 		if (a1 == null) return -1;
@@ -40,6 +42,7 @@ public class Utility {
 		return f;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static int[][] computePermutationIndexSequences(int k) {
 		int factorialK = factorial(k);
 		int[][] A = new int[factorialK][k];
@@ -407,6 +410,46 @@ public class Utility {
 		return outputFilePath;
 	}
 	
+	public static String getOutputPathForPairFileEncoding(
+			String outputDirectory, 
+			String inputFilePath1, 
+			String inputFilePath2,
+			TransformationClass[] transformationClasses) {
+	
+		int startOfSuffix1 = inputFilePath1.lastIndexOf('.'); // includes dot
+		int startOfName1 = inputFilePath1.lastIndexOf('/')+1;
+		String inputDir1 = inputFilePath1.substring(0,startOfName1); // includes trailing /
+
+		int startOfSuffix2 = inputFilePath2.lastIndexOf('.'); // includes dot
+		int startOfName2 = inputFilePath2.lastIndexOf('/')+1;
+
+		if (outputDirectory == null) {
+			outputDirectory = inputDir1;
+		}
+		
+		String outputFilePath = outputDirectory + (outputDirectory.endsWith("/")?"":"/");
+		
+		String inputFileName1 = inputFilePath1.substring(startOfName1,startOfSuffix1);
+		String inputFileName2 = inputFilePath2.substring(startOfName2,startOfSuffix2);
+		
+//		Append name of subdirectory to contain output files
+		String subdirName = inputFileName1;
+		subdirName += "-" + inputFilePath1.substring(startOfSuffix1+1);
+		subdirName += "-" + inputFileName2 + "-" + inputFilePath2.substring(startOfSuffix2+1);
+		
+		for(TransformationClass tc : transformationClasses)
+			subdirName += "-" + tc.getName();
+		Calendar cal = Calendar.getInstance();
+		String timeString = cal.get(Calendar.YEAR)+"-"+String.format("%02d", 1+cal.get(Calendar.MONTH))+"-"+String.format("%02d", cal.get(Calendar.DATE))+"-"+String.format("%02d", cal.get(Calendar.HOUR_OF_DAY))+"-"+String.format("%02d", cal.get(Calendar.MINUTE))+"-"+String.format("%02d", cal.get(Calendar.SECOND))+"-"+String.format("%03d", cal.get(Calendar.MILLISECOND));
+		subdirName += "-"+timeString+"/";
+		outputFilePath += subdirName;
+		new File(outputFilePath).mkdirs();
+		outputFilePath += inputFileName1 + "-" + inputFileName2 + ".enc";
+		return outputFilePath;
+	}
+	
+
+	
 	public static void println(PrintWriter output, Object s) {
 		System.out.println(s.toString());
 		output.println(s.toString());
@@ -429,6 +472,14 @@ public class Utility {
 						name.endsWith(".opnd");
 			}
 		});
+	}
+
+	public static boolean equalWithTolerance(double x, double y) {
+		return Math.abs(x - y) <= TOLERANCE;
+	}
+	
+	public static double roundToNearestHalf(double x) {
+		return (1.0 * Math.round(2*x))/2;
 	}
 	
 }
