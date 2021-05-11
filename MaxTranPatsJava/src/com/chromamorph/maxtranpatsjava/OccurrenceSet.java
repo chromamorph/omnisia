@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.TreeSet;
 
-public class OccurrenceSet {
+public class OccurrenceSet implements Comparable<OccurrenceSet>{
 	private PointSet pattern;
 	private TreeSet<Transformation> transformations = new TreeSet<Transformation>();
 	private ArrayList<OccurrenceSet> superMTPs;
@@ -468,5 +469,51 @@ public class OccurrenceSet {
 		}
 	};
 
+	public TreeSet<PointSet> getOccurrences() throws Exception {
+		if (getSuperMTPs() != null)
+			throw new Exception("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+		TreeSet<PointSet> occurrences = new TreeSet<PointSet>();
+		for(Transformation transformation : getTransformations())
+			occurrences.add(transformation.phi(getPattern()));
+		return occurrences;
+	}
+	
+	@Override
+	public int compareTo(OccurrenceSet o) {
+		if (getSuperMTPs() != null || o.getSuperMTPs() != null) {
+			System.out.println("ERROR: superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+			System.exit(1);
+		}
+		if (o == null) return 1;
+		int d = getPattern().size() - o.getPattern().size();
+		if (d != 0) return d;
+		d = getTransformations().size() - o.getTransformations().size();
+		if (d != 0) return d;
+		try {
+			TreeSet<PointSet> thisPointSets = getOccurrences();
+			TreeSet<PointSet> otherPointSets = o.getOccurrences();
+			d = thisPointSets.size() - otherPointSets.size();
+			if (d != 0) return d;
+			Iterator<PointSet> thisIterator = thisPointSets.iterator();
+			Iterator<PointSet> otherIterator = otherPointSets.iterator();
+			while(thisIterator.hasNext()) {
+				PointSet thisPattern = thisIterator.next();
+				PointSet otherPattern = otherIterator.next();
+				d = thisPattern.compareTo(otherPattern);
+				if (d != 0) 
+					return d;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return 0;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		if (!(obj instanceof OccurrenceSet)) return false;
+		return compareTo((OccurrenceSet)obj)==0;
+	}
 }

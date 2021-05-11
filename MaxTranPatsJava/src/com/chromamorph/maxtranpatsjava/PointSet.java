@@ -555,25 +555,33 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public void removeDuplicateOccurrenceSets() {
-		for(int size : mtpSizes)
-			for(int i = 0; i < occurrenceSets[size].size() - 1; i++) {
-				for(int j = i+1; j < occurrenceSets[size].size(); j++) {
-					OccurrenceSet os1 = occurrenceSets[size].get(i);
-					OccurrenceSet os2 = occurrenceSets[size].get(j);
-					if (os1.getPattern().equals(os2.getPattern())) {
-						occurrenceSets[size].remove(j);
-						j--;
-					} else {
-						for(Transformation f : os1.getTransformations()) {
-							if (os2.getPattern().equals(f.phi(os1.getPattern()))) {
-								occurrenceSets[size].remove(j);
-								j--;
-								break;
-							}
-						}
-					}
-				}
+		for(int size : mtpSizes) {
+			TreeSet<OccurrenceSet> sortedDeDupedList = new TreeSet<OccurrenceSet>();
+			for(OccurrenceSet os : occurrenceSets[size]) {
+				sortedDeDupedList.add(os);
 			}
+			occurrenceSets[size] = new ArrayList<OccurrenceSet>();
+			System.gc();
+			occurrenceSets[size].addAll(sortedDeDupedList);
+		}
+//		for(int i = 0; i < occurrenceSets[size].size() - 1; i++) {
+//			for(int j = i+1; j < occurrenceSets[size].size(); j++) {
+//				OccurrenceSet os1 = occurrenceSets[size].get(i);
+//				OccurrenceSet os2 = occurrenceSets[size].get(j);
+//				if (os1.getPattern().equals(os2.getPattern())) {
+//					occurrenceSets[size].remove(j);
+//					j--;
+//				} else {
+//					for(Transformation f : os1.getTransformations()) {
+//						if (os2.getPattern().equals(f.phi(os1.getPattern()))) {
+//							occurrenceSets[size].remove(j);
+//							j--;
+//							break;
+//						}
+//					}
+//				}
+//			}
+//		}
 	}
 
 	public void removeOccurrenceSetsWithEmptyTransformationSets() {
@@ -818,7 +826,7 @@ public class PointSet implements Comparable<PointSet>{
 		for(int i = 0; i < nlbFileNames.length - 1; i++)
 			for(int j = i + 1; j < nlbFileNames.length; j++)
 				for(TransformationClass[] transformationClassArray : transformationClassArrays) {
-					if (count >= startIndex && count < endIndex)
+					if (count >= startIndex && (count < endIndex || endIndex == 0))
 						encodePairOfPointSetsFromFiles(
 								inputDir+"/"+nlbFileNames[i],
 								inputDir+"/"+nlbFileNames[j],
@@ -826,13 +834,13 @@ public class PointSet implements Comparable<PointSet>{
 								true, // pitchSpell
 								true, // midTimePoint
 								"1100",
-								"output/nlb-20210504/pair-files-F2STR-with-quantization");		
+								"output/nlb-20210504/pair-files-F2STR-with-deduping");		
 					count++;
 				}
 	}
 
 	public static void main(String[] args) {
 		//		compressNLBSingleFiles(startIndex);
-		compressNLBPairFiles(0,10);
+		compressNLBPairFiles(0,0);
 	}
 }
