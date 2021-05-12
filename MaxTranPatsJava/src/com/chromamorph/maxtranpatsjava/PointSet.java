@@ -338,6 +338,10 @@ public class PointSet implements Comparable<PointSet>{
 	//	}
 
 
+	public void computeMTPsWithScalexia(int minSize) {
+		
+	}
+	
 	public void computeMaximalTransformablePatterns(int minSize) throws Exception {
 		if (transformationClasses == null)
 			throw new Exception("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -631,8 +635,16 @@ public class PointSet implements Comparable<PointSet>{
 		}
 		setEncoding(encoding);
 	}
-
+	
 	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses) throws Exception {
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3);
+	}
+	public static void encodePointSet(
+			PointSet ps, 
+			String outputFileName, 
+			TransformationClass[] transformationClasses,
+			boolean useScalexia,
+			int minSize) throws Exception {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
 		PrintWriter output = new PrintWriter(outputFileName);
@@ -640,7 +652,10 @@ public class PointSet implements Comparable<PointSet>{
 		ps.addTransformationClasses(transformationClasses);		
 
 		log.add(new LogInfo("computeMaximalTransformablePatterns starts", true));
-		ps.computeMaximalTransformablePatterns(3);
+		if (useScalexia)
+			ps.computeMTPsWithScalexia(minSize);
+		else
+			ps.computeMaximalTransformablePatterns(minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
 		int numMTPsBeforeRemoval = ps.getMTPs().size();
