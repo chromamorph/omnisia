@@ -1,6 +1,7 @@
 package com.chromamorph.maxtranpatsjava;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 public class Transformation implements Comparable<Transformation>{
 	private TransformationClass transformationClass;
@@ -81,4 +82,39 @@ public class Transformation implements Comparable<Transformation>{
 //		return getTransformationClass().getSigmaComplexity();
 //	}
 	
+	public static TreeSet<Transformation> readTransformationsFromString(String transformationsString) throws InvalidArgumentException {
+		if (transformationsString.equals("[]"))
+			return new TreeSet<Transformation>();
+		if (!transformationsString.startsWith("[T(") || !transformationsString.endsWith("])]"))
+			throw new InvalidArgumentException("Transformation.readTransformationsFromString(String) called with invalid argument:\n"+transformationsString);
+		String tranListStr = transformationsString.substring(1,transformationsString.length()-1);
+		tranListStr = tranListStr.replace("), T(", ");T(");
+		String[] tranArray = tranListStr.split(";");
+		TreeSet<Transformation> transformations = new TreeSet<Transformation>();
+		for(String tran : tranArray)
+			transformations.add(new Transformation(tran));
+		return transformations;
+	}
+	
+	public Transformation(String transformationString) throws InvalidArgumentException {
+		if (!transformationString.startsWith("T(") || !transformationString.endsWith("])"))
+			throw new InvalidArgumentException("Transformation(String) constructor called with invalid argument String: "+transformationString);
+		
+		TransformationClass tc = null;
+		if (transformationString.contains("F_2STR"))
+			tc = new F_2STR();
+		else if (transformationString.contains("F_2TR"))
+			tc = new F_2TR();
+		else if (transformationString.contains("F_2T"))
+			tc = new F_2T();
+		setTransformationClass(tc);
+		
+		ArrayList<Double> sigma = new ArrayList<Double>();
+		int sigmaStart = transformationString.indexOf("[")+1;
+		int sigmaEnd = transformationString.indexOf("]");
+		String[] sigmaArray = transformationString.substring(sigmaStart,sigmaEnd).split(", ");
+		for(String s : sigmaArray)
+			sigma.add(Double.parseDouble(s));
+		setSigma(sigma);
+	}
 }

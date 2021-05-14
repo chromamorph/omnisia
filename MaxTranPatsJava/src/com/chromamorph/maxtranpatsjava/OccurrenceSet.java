@@ -1,5 +1,6 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +45,25 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		resetProperties();
 	}
 
+	public OccurrenceSet(String l, PointSet dataset) throws InvalidArgumentException {
+		int patternStart, patternEnd, transStart, transEnd;
+		if (l.trim().startsWith("OS(P(")) {
+			patternStart = 3;
+			patternEnd = l.indexOf("[")-1;
+		} else if (l.contains("Pat=") && !l.contains("Trans=")) {
+			patternStart = l.indexOf("Pat=")+4;
+			patternEnd = l.indexOf("Trans=")-2;
+		} else
+			throw new InvalidParameterException("OccurrenceSet constructor called with invalid String argument,\n  "+l);
+		transStart = l.indexOf("[");
+		transEnd = l.lastIndexOf("]")+1;
+		String patternString = l.substring(patternStart,patternEnd);
+		String transformationsString = l.substring(transStart,transEnd);
+		setPattern(new PointSet(patternString));
+		this.dataset = dataset;
+		addAllTransformations(Transformation.readTransformationsFromString(transformationsString));
+	}
+
 	public void addTransformation(Transformation transformation) {
 		transformations.add(transformation);
 		resetProperties();
@@ -76,15 +96,18 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 	public String toString() {
 		String s = "ERROR";
 		try {
-			s = String.format("CF=%.2f, COV=%d, UL=%d, PL=%d, TL=%d, Pat=%s, Trans=%s, SupMTPs=%s", 
-					getCompressionFactor(), 
-					getCoverage(),
-					getUncompressedLength(), 
-					getPatternLength(), 
-					getTransformationSetLength(), 
-					getPattern(), 
-					getTransformations(), 
-					getSuperMTPs());
+//			s = String.format("CF=%.2f, COV=%d, UL=%d, PL=%d, TL=%d, Pat=%s, Trans=%s, SupMTPs=%s", 
+//					getSuperMTPs() == null?getCompressionFactor():-1, 
+//					getSuperMTPs() == null?getCoverage():-1,
+//					getSuperMTPs() == null?getUncompressedLength():-1, 
+//					getPatternLength(), 
+//					getTransformationSetLength(), 
+//					getPattern(), 
+//					getTransformations(), 
+//					getSuperMTPs()
+////					getSuperMTPs() == null?getCoveredSet():null
+//					);
+			s = String.format("OS(%s,%s,%s)",getPattern(),getTransformations(),getSuperMTPs());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
