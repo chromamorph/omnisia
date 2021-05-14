@@ -1,0 +1,34 @@
+CF=1.58, COV=19, UL=38, PL=20, TL=4, Pat=P(p(60.0,23.0),p(210.0,30.0),p(330.0,31.0),p(420.0,30.0),p(570.0,29.0),p(690.0,28.0),p(780.0,27.0),p(900.0,29.0),p(1020.0,28.0),p(2220.0,28.0)), Trans=[T(F_2STR,[1.0, 1200.0, 0.0, 1.0])], SupMTPs=null
+  P(p(60.0,23.0),p(210.0,30.0),p(330.0,31.0),p(420.0,30.0),p(570.0,29.0),p(690.0,28.0),p(780.0,27.0),p(900.0,29.0),p(1020.0,28.0),p(1260.0,23.0),p(1410.0,30.0),p(1530.0,31.0),p(1620.0,30.0),p(1770.0,29.0),p(1890.0,28.0),p(1980.0,27.0),p(2100.0,29.0),p(2220.0,28.0),p(3420.0,28.0))
+CF=1.38, COV=11, UL=22, PL=12, TL=4, Pat=P(p(1980.0,27.0),p(2220.0,28.0),p(2430.0,29.0),p(2490.0,28.0),p(2580.0,27.0),p(3300.0,27.0)), Trans=[T(F_2STR,[1.0, 720.0, 0.0, 1.0])], SupMTPs=null
+  P(p(1980.0,27.0),p(2220.0,28.0),p(2430.0,29.0),p(2490.0,28.0),p(2580.0,27.0),p(2700.0,27.0),p(2940.0,28.0),p(3150.0,29.0),p(3210.0,28.0),p(3300.0,27.0),p(4020.0,27.0))
+CF=1.00, COV=4, UL=8, PL=8, TL=0, Pat=P(p(2820.0,28.0),p(3060.0,31.0),p(3600.0,29.0),p(3840.0,28.0)), Trans=[], SupMTPs=null
+  P(p(2820.0,28.0),p(3060.0,31.0),p(3600.0,29.0),p(3840.0,28.0))
+
+
+Coverage: 32
+Uncompressed length: 64
+Encoding length: 48
+Compression factor: 1.3333333333333333
+Number of occurrence sets: 3
+
+
+
+Log:
+         161195 ms              7 ms  computeMaximalTransformablePatterns starts
+         161365 ms            170 ms  computeMaximalTransformablePatterns ends
+         161366 ms              1 ms  computeSizeMTPSetArray ends
+         161367 ms              1 ms  computePatternTransformationSetPairs ends
+         161371 ms              4 ms  computeSuperMTPs ends
+         161390 ms             19 ms  computeHeterogeneousOccurrenceSets ends
+         161527 ms            137 ms  removeDuplicateOccurrenceSets ends
+         161530 ms              3 ms  removeRedundantTransformations ends
+         161531 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         161532 ms              1 ms  computeSortedOccurrenceSets ends
+         161533 ms              1 ms  computeEncoding ends
+         161533 ms              0 ms  Program ends
+
+
+Number of points: 32
+Number of MTPs before removal: 767
+Number of OSs after removal: 365

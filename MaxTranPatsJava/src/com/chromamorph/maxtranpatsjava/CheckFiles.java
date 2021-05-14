@@ -152,7 +152,7 @@ public class CheckFiles {
 		//		String rootDirStr = "output/nlb-20210504/single-files-with-quantization"; // Some STR files
 		//		String rootDirStr = "output/nlb-20210504/pair-files-F2STR-with-quantization";
 		//		String rootDirStr = "output/nlb-20210504/single-files-with-scalexia"; // Some STR files
-		String rootDirStr = "output/nlb-20210504/pair-files-F2STR-with-scalexia";
+		String rootDirStr = "output/nlb-20210504/pair-files-F2STR-with-scalexia-p50-failed";
 		String datasetFileDirectory = "data/nlb/nlb_datasets/annmidi";
 		boolean pairFiles = true;
 

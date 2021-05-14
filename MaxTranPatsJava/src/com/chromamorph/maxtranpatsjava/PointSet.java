@@ -1015,12 +1015,61 @@ public class PointSet implements Comparable<PointSet>{
 				);
 	}
 	
+	private static void renameNLBPairFileOutputFiles() {
+		String inputFileDir = "data/nlb/nlb_datasets/annmidi";
+		String outputFileDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia";
+
+		String[] nlbFileNamesArray = Utility.getInputFileNames(inputFileDir);
+		ArrayList<String> nlbFileNames = new ArrayList<String>();
+		for (String nlbFileName : nlbFileNamesArray)
+			nlbFileNames.add(nlbFileName);
+		nlbFileNames.sort(null);
+
+		String[] existingOutputFilesArray = new File(outputFileDir).list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return (new File(dir, name).isDirectory() && !name.startsWith("."));
+			}
+			
+		});
+		TreeSet<String> existingOutputFiles = new TreeSet<String>();
+		for(String name : existingOutputFilesArray)
+			existingOutputFiles.add(name);
+
+		int count = 0;
+		for(int i = 0; i < nlbFileNames.size() - 1; i++)
+			for(int j = i + 1; j < nlbFileNames.size(); j++){
+
+					String fn1 = nlbFileNames.get(i);
+					fn1 = fn1.replace(".", "-");
+					String fn2 = nlbFileNames.get(j);
+					fn2 = fn2.replace(".","-");
+					String outputFilePrefix = fn1+"-"+fn2;
+					String countStr = String.format("%5d",count);
+
+					String existingFileName = existingOutputFiles.ceiling(countStr+"-"+outputFilePrefix);
+					
+					if (existingFileName != null && existingFileName.startsWith(countStr+"-"+outputFilePrefix)) {
+						String newCountStr = String.format("%05d",count);
+						boolean success = new File(outputFileDir+"/"+existingFileName).renameTo(new File(outputFileDir+"/"+newCountStr+"-"+existingFileName.substring(6)));
+						if (!success)
+							System.out.println("ERROR: Failed to rename "+existingFileName);
+					} else {
+						System.out.println("ERROR: Failed to find existing file starting with "+countStr+"-"+outputFilePrefix);
+					}
+					count++;
+				}
+	}
+	
 	public static void main(String[] args) {
-		int start = 303, end = 305;
+		int start = 3, end = 320;
 		if (args.length > 0) start = Integer.parseInt(args[0]);
 		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(start);
-		compressNLBPairFiles(start,end);
+//		compressNLBPairFiles(start,end);
 //		encodeFile();
+		renameNLBPairFileOutputFiles();
 	}
+
 }

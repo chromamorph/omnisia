@@ -1,0 +1,34 @@
+CF=1.33, COV=8, UL=16, PL=8, TL=4, Pat=P(p(210.0,29.0),p(330.0,30.0),p(1950.0,28.0),p(2010.0,28.0)), Trans=[T(F_2STR,[1.0, 240.0, -57.0, -1.0])], SupMTPs=null
+  P(p(210.0,29.0),p(330.0,30.0),p(450.0,28.0),p(570.0,27.0),p(1950.0,28.0),p(2010.0,28.0),p(2190.0,29.0),p(2250.0,29.0))
+CF=1.29, COV=9, UL=18, PL=6, TL=8, Pat=P(p(690.0,27.0),p(1110.0,28.0),p(1170.0,27.0)), Trans=[T(F_2STR,[2.0, 120.0, 0.0, 1.0]), T(F_2STR,[2.5, -825.0, 0.0, 1.0])], SupMTPs=null
+  P(p(690.0,27.0),p(900.0,27.0),p(1110.0,28.0),p(1170.0,27.0),p(1500.0,27.0),p(1950.0,28.0),p(2100.0,27.0),p(2340.0,28.0),p(2460.0,27.0))
+CF=1.00, COV=9, UL=18, PL=18, TL=0, Pat=P(p(60.0,23.0),p(630.0,26.0),p(780.0,28.0),p(1260.0,26.0),p(1350.0,26.0),p(1410.0,26.0),p(1620.0,31.0),p(1800.0,30.0),p(2580.0,26.0)), Trans=[], SupMTPs=null
+  P(p(60.0,23.0),p(630.0,26.0),p(780.0,28.0),p(1260.0,26.0),p(1350.0,26.0),p(1410.0,26.0),p(1620.0,31.0),p(1800.0,30.0),p(2580.0,26.0))
+
+
+Coverage: 25
+Uncompressed length: 50
+Encoding length: 44
+Compression factor: 1.1363636363636365
+Number of occurrence sets: 3
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            203 ms            203 ms  computeMaximalTransformablePatterns ends
+            219 ms             16 ms  computeSizeMTPSetArray ends
+            219 ms              0 ms  computePatternTransformationSetPairs ends
+            219 ms              0 ms  computeSuperMTPs ends
+            250 ms             31 ms  computeHeterogeneousOccurrenceSets ends
+            328 ms             78 ms  removeDuplicateOccurrenceSets ends
+            344 ms             16 ms  removeRedundantTransformations ends
+            344 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            344 ms              0 ms  computeSortedOccurrenceSets ends
+            344 ms              0 ms  computeEncoding ends
+            344 ms              0 ms  Program ends
+
+
+Number of points: 25
+Number of MTPs before removal: 254
+Number of OSs after removal: 155
