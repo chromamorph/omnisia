@@ -414,7 +414,8 @@ public class Utility {
 			String outputDirectory, 
 			String inputFilePath1, 
 			String inputFilePath2,
-			TransformationClass[] transformationClasses) {
+			TransformationClass[] transformationClasses,
+			int count) {
 	
 		int startOfSuffix1 = inputFilePath1.lastIndexOf('.'); // includes dot
 		int startOfName1 = inputFilePath1.lastIndexOf('/')+1;
@@ -433,7 +434,8 @@ public class Utility {
 		String inputFileName2 = inputFilePath2.substring(startOfName2,startOfSuffix2);
 		
 //		Append name of subdirectory to contain output files
-		String subdirName = inputFileName1;
+		String countStr = String.format("%05d", count);
+		String subdirName = countStr+"-"+inputFileName1;
 		subdirName += "-" + inputFilePath1.substring(startOfSuffix1+1);
 		subdirName += "-" + inputFileName2 + "-" + inputFilePath2.substring(startOfSuffix2+1);
 		

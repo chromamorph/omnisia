@@ -817,9 +817,10 @@ public class PointSet implements Comparable<PointSet>{
 			String dimensionMask, 
 			String outputDirectory,
 			boolean useScalexia,
-			int minSize) {
+			int minSize,
+			int count) {
 		try {
-			String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses);
+			String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 			PointSet ps1 = new PointSet(
 					new File(filePath1), 
 					pitchSpell, 
@@ -928,7 +929,7 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static void compressNLBPairFiles(int startIndex, int endIndex) {
 		String inputDir = "data/nlb/nlb_datasets/annmidi";
-		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia";
+		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-new-mac";
 		
 //		Find file pairs within the range between startIndex and endIndex for which there is
 //		no output file in the outputDir
@@ -981,7 +982,8 @@ public class PointSet implements Comparable<PointSet>{
 					fn1 = fn1.replace(".", "-");
 					String fn2 = nlbFileNames.get(j);
 					fn2 = fn2.replace(".","-");
-					String outputFilePrefix = fn1+"-"+fn2;
+					String countStr = String.format("%05d", count);
+					String outputFilePrefix = countStr+"-"+fn1+"-"+fn2;
 					
 					if (!existingOutputFiles.contains(outputFilePrefix) 
 							&& count >= startIndex 
@@ -995,7 +997,8 @@ public class PointSet implements Comparable<PointSet>{
 								"1100",
 								outputDir,
 								true,
-								3);		
+								3,
+								count);		
 					}
 					count++;
 				}
@@ -1046,28 +1049,27 @@ public class PointSet implements Comparable<PointSet>{
 					String fn2 = nlbFileNames.get(j);
 					fn2 = fn2.replace(".","-");
 					String outputFilePrefix = fn1+"-"+fn2;
-					String countStr = String.format("%5d",count);
 
-					String existingFileName = existingOutputFiles.ceiling(countStr+"-"+outputFilePrefix);
+					String existingFileName = existingOutputFiles.ceiling(outputFilePrefix);
 					
-					if (existingFileName != null && existingFileName.startsWith(countStr+"-"+outputFilePrefix)) {
+					if (existingFileName != null && existingFileName.startsWith(outputFilePrefix)) {
 						String newCountStr = String.format("%05d",count);
-						boolean success = new File(outputFileDir+"/"+existingFileName).renameTo(new File(outputFileDir+"/"+newCountStr+"-"+existingFileName.substring(6)));
+						boolean success = new File(outputFileDir+"/"+existingFileName).renameTo(new File(outputFileDir+"/"+newCountStr+"-"+existingFileName));
 						if (!success)
 							System.out.println("ERROR: Failed to rename "+existingFileName);
 					} else {
-						System.out.println("ERROR: Failed to find existing file starting with "+countStr+"-"+outputFilePrefix);
+						System.out.println("ERROR: Failed to find existing file starting with "+outputFilePrefix);
 					}
 					count++;
 				}
 	}
 	
 	public static void main(String[] args) {
-		int start = 3, end = 320;
+		int start = 380, end = 400;
 		if (args.length > 0) start = Integer.parseInt(args[0]);
 		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(start);
-//		compressNLBPairFiles(start,end);
+		compressNLBPairFiles(start,end);
 //		encodeFile();
 		renameNLBPairFileOutputFiles();
 	}
