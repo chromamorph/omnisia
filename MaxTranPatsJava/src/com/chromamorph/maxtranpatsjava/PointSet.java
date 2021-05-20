@@ -1065,13 +1065,13 @@ public class PointSet implements Comparable<PointSet>{
 	}
 	
 	public static void main(String[] args) {
-		int start = 380, end = 400;
+		int start = 750, end = 800;
 		if (args.length > 0) start = Integer.parseInt(args[0]);
 		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(start);
 		compressNLBPairFiles(start,end);
 //		encodeFile();
-		renameNLBPairFileOutputFiles();
+//		renameNLBPairFileOutputFiles();
 	}
 
 }
