@@ -8,6 +8,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -22,6 +23,10 @@ import com.chromamorph.points022.SCALEXIA3Encoding.PVF;
 
 public class PointSet implements Comparable<PointSet>{
 
+	public static long TIME_AT_START_OF_COMPUTING_HETERO_OS = 0l;
+	public static boolean COMPUTE_HETERO_OS_COMPLETED = false;
+	public static long TIME_LIMIT = 1000 * 60 * 1; // 20 minutes
+	
 	private Long ticksPerSecond = null;
 
 	private TreeSet<Point> points = new TreeSet<Point>();
@@ -413,9 +418,9 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	public void computeMaximalTransformablePatterns(int minSize) throws Exception {
+	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
-			throw new Exception("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
 		TreeSet<TransformationPointSequencePair> transformationObjectBasisPairs = new TreeSet<TransformationPointSequencePair>();
 		for(TransformationClass tc : transformationClasses) {
 			int basisSize = tc.getBasisSize();
@@ -595,7 +600,7 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	public void computeHeterogeneousOccurrenceSets() {
+	public void computeHeterogeneousOccurrenceSets() throws TimeOutException {
 		for(int size : mtpSizes) {
 //			System.out.println("Computing heterogeneous occurrence sets of mtps of size "+size+", of which there are "+occurrenceSets[size].size());
 			for (OccurrenceSet mtp : occurrenceSets[size]) {
@@ -683,9 +688,10 @@ public class PointSet implements Comparable<PointSet>{
 
 	/**
 	 * Assumes sortedOccurenceSets holds a list of OccurrenceSets in descending order of quality.
+	 * @throws SuperMTPsNotNullException 
 	 * @throws Exception
 	 */
-	public void computeEncoding() throws Exception {
+	public void computeEncoding() throws SuperMTPsNotNullException {
 		ArrayList<OccurrenceSet> encoding = new ArrayList<OccurrenceSet>();
 
 		// Assumes first occurrence set in list is the "best"
@@ -712,15 +718,14 @@ public class PointSet implements Comparable<PointSet>{
 	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses) throws Exception {
 		encodePointSet(ps, outputFileName, transformationClasses, false, 3);
 	}
-	public static void encodePointSet(
+	public static void encodePointSet (
 			PointSet ps, 
 			String outputFilePath, 
 			TransformationClass[] transformationClasses,
 			boolean useScalexia,
-			int minSize) throws Exception {
+			int minSize) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
-		PrintWriter output = new PrintWriter(outputFilePath);
 
 		ps.addTransformationClasses(transformationClasses);		
 
@@ -741,6 +746,8 @@ public class PointSet implements Comparable<PointSet>{
 		ps.computeSuperMTPs();
 		log.add(new LogInfo("computeSuperMTPs ends", true));
 
+		TIME_AT_START_OF_COMPUTING_HETERO_OS = Calendar.getInstance().getTimeInMillis();
+		COMPUTE_HETERO_OS_COMPLETED = false;
 		ps.computeHeterogeneousOccurrenceSets();
 		log.add(new LogInfo("computeHeterogeneousOccurrenceSets ends", true));
 
@@ -785,6 +792,7 @@ public class PointSet implements Comparable<PointSet>{
 
 		log.add(new LogInfo("Program ends\n\n", true));
 
+		PrintWriter output = new PrintWriter(outputFilePath);
 		Utility.println(output, ps.getEncoding());
 
 		Utility.println(output, "\n\nLog:");
@@ -819,8 +827,8 @@ public class PointSet implements Comparable<PointSet>{
 			boolean useScalexia,
 			int minSize,
 			int count) {
+		String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 		try {
-			String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 			PointSet ps1 = new PointSet(
 					new File(filePath1), 
 					pitchSpell, 
@@ -843,9 +851,14 @@ public class PointSet implements Comparable<PointSet>{
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (TimeOutException e) {
+			Utility.moveOutputFilesToFailedDir(outputFileName);
+			System.out.println("ERROR: Computing of super-MTPs timed out on file, "+new File(outputFileName).getParent());
+		} catch (NoTransformationClassesDefinedException e) {
 			e.printStackTrace();
-		}
+		} catch (SuperMTPsNotNullException e) {
+			e.printStackTrace();
+		} 
 	}
 
 	public static void encodePointSetFromFile(
@@ -1065,7 +1078,7 @@ public class PointSet implements Comparable<PointSet>{
 	}
 	
 	public static void main(String[] args) {
-		int start = 700, end = 750;
+		int start = 707, end = 708;
 		if (args.length > 0) start = Integer.parseInt(args[0]);
 		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(start);

@@ -2,6 +2,7 @@ package com.chromamorph.maxtranpatsjava;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -95,7 +96,6 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 	@Override
 	public String toString() {
 		String s = "ERROR";
-		try {
 //			s = String.format("CF=%.2f, COV=%d, UL=%d, PL=%d, TL=%d, Pat=%s, Trans=%s, SupMTPs=%s", 
 //					getSuperMTPs() == null?getCompressionFactor():-1, 
 //					getSuperMTPs() == null?getCoverage():-1,
@@ -108,13 +108,13 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 ////					getSuperMTPs() == null?getCoveredSet():null
 //					);
 			s = String.format("OS(%s,%s,%s)",getPattern(),getTransformations(),getSuperMTPs());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return s;
 	}
 
-	public TreeSet<Transformation> getSuperMTPTransformations() {
+	public TreeSet<Transformation> getSuperMTPTransformations()  throws TimeOutException {
+		long time = Calendar.getInstance().getTimeInMillis();
+		if (time - PointSet.TIME_AT_START_OF_COMPUTING_HETERO_OS > PointSet.TIME_LIMIT)
+			throw new TimeOutException("getSupeMTPTransformations timed out");
 		TreeSet<Transformation> superMTPTransformations = new TreeSet<Transformation>();
 		if (superMTPs == null)
 			return superMTPTransformations;
@@ -125,9 +125,9 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		return superMTPTransformations;
 	}
 
-	public PointSet getCoveredSet() throws Exception {
+	public PointSet getCoveredSet() throws SuperMTPsNotNullException {
 		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		if (coveredSet == null) {
 			coveredSet = new PointSet();
 			coveredSet.addAll(getPattern());
@@ -137,9 +137,9 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		return coveredSet;
 	}
 
-	public int getCoverage() throws Exception {
+	public int getCoverage() throws SuperMTPsNotNullException {
 		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute coverage. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute coverage. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		PointSet cs = getCoveredSet();
 		return cs.size();
 	}
@@ -149,18 +149,18 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		//			return getPattern().size()*getDataset().getPointComplexity();
 	}
 
-	public int getTransformationSetEncodingLength() throws Exception {
+	public int getTransformationSetEncodingLength() throws SuperMTPsNotNullException {
 		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		int el = 0;
 		for(Transformation f : getTransformations())
 			el += f.getTransformationClass().getSigmaLength();
 		return el;
 	}
 
-	public long getEncodingLength() throws Exception {
+	public long getEncodingLength() throws SuperMTPsNotNullException {
 		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		if (encodingLength != -1) 
 			return encodingLength;
 		return getPatternEncodingLength() + getTransformationSetEncodingLength();
@@ -170,7 +170,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		return getPattern().getDimensionality();
 	}
 	
-	public int getUncompressedLength() throws Exception {
+	public int getUncompressedLength() throws SuperMTPsNotNullException {
 		return getCoverage()*getDimensionality();
 		//			return getCoverage()*getDataset().getPointComplexity();
 	}
@@ -187,7 +187,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		return transformationSetLength;
 	}
 
-	public double getCompressionFactor() throws Exception {
+	public double getCompressionFactor() throws SuperMTPsNotNullException {
 		return 1.0 * getUncompressedLength() / getEncodingLength();
 	}
 
@@ -437,7 +437,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 				if (d != 0) return d;
 				d = o2.getCoverage() - o1.getCoverage();
 				if (d != 0) return d;
-			} catch (Exception e) {
+			} catch (SuperMTPsNotNullException e) {
 				e.printStackTrace();
 			}
 			d = o2.getPattern().size() - o1.getPattern().size();
@@ -461,7 +461,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 				if (d != 0) return d;
 				d = o2.getCoverage() - o1.getCoverage();
 				if (d != 0) return d;
-			} catch (Exception e) {
+			} catch (SuperMTPsNotNullException e) {
 				e.printStackTrace();
 			}
 			d = o2.getPattern().size() - o1.getPattern().size();
@@ -483,7 +483,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 				if (d != 0) return d;
 				d = (int) Math.signum(o2.getCompressionFactor()-o1.getCompressionFactor());
 				if (d != 0) return d;
-			} catch (Exception e) {
+			} catch (SuperMTPsNotNullException e) {
 				e.printStackTrace();
 			}
 			d = o2.getPattern().size() - o1.getPattern().size();
@@ -492,9 +492,9 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		}
 	};
 
-	public TreeSet<PointSet> getOccurrences() throws Exception {
+	public TreeSet<PointSet> getOccurrences() throws SuperMTPsNotNullException {
 		if (getSuperMTPs() != null)
-			throw new Exception("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		TreeSet<PointSet> occurrences = new TreeSet<PointSet>();
 		for(Transformation transformation : getTransformations())
 			occurrences.add(transformation.phi(getPattern()));
@@ -526,7 +526,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 				if (d != 0) 
 					return d;
 			}
-		} catch (Exception e) {
+		} catch (SuperMTPsNotNullException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
