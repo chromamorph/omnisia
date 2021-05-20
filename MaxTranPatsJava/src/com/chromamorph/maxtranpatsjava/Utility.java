@@ -305,73 +305,6 @@ public class Utility {
 	}
 
 
-	public static void main(String[] args) {
-		ArrayList<Double> a = new ArrayList<Double>();
-		a.add(1.0);
-		a.add(0.0);
-		a.add(0.0);
-		a.add(1.0);
-		ArrayList<Double> b = Utility.makeSigma(1.0,0.0,0.0,1.0);
-		System.out.println(a.equals(b));
-
-		System.out.println(lcm(3,4,8));
-		
-		String[] inputFileNames = getInputFileNames("data/nlb/nlb_datasets/annmidi");
-		for(String s : inputFileNames)
-			System.out.println(s);
-		
-		System.out.println("Number of files: "+inputFileNames.length);
-		
-		
-//		//Test mod
-//		for (long a = -10; a < 10; a++)
-//			for (long b = -10; b < 10; b++) {
-//				try {
-//					System.out.println(""+b+" mod "+a+" = "+mod(b,a));
-//				} catch(IllegalArgumentException e) {
-//					System.out.println(e.getMessage());
-//				}
-//			}
-//
-//		//Test floor
-//		for (long a = -10; a < 10; a++)
-//			for (long b = -10; b < 10; b++) {
-//				try {
-//					System.out.println("floor("+a+","+b+") = "+floor(a,b));
-//				} catch(IllegalArgumentException e) {
-//					System.out.println(e.getMessage());
-//				}
-//			}
-//
-//		//Test gcd
-//		for (long a = -10; a < 10; a++)
-//			for (long b = -10; b < 10; b++) {
-//				try {
-//					System.out.println("gcd("+a+","+b+") = "+gcd(a,b));
-//				} catch(IllegalArgumentException e) {
-//					System.out.println(e.getMessage());
-//				}
-//			}
-//		
-//		//Test isPrime
-//		System.out.println("Primes less than 100");
-//		for(int i = 0; i < 100; i++) 
-//			if (isPrime(i))
-//				System.out.println(i);
-//		
-//		//Test or highest prime factors
-//		for(int i = 0; i < 100; i++)
-//			System.out.println(""+i+" "+getHighestPrimeFactor(i));
-//		
-//		//Test factorize
-//		for(int i = 0; i < 100; i++)
-//			System.out.println(""+i+" "+factorize(i));
-//		
-//		//Test gcd with list of numbers
-//		System.out.println(gcd(9,15,30));
-
-	
-	}
 	
 	/**
 	 * Set outputDir to null if you want the output files to be stored in a subdirectory of 
@@ -483,5 +416,88 @@ public class Utility {
 	public static double roundToNearestHalf(double x) {
 		return (1.0 * Math.round(2*x))/2;
 	}
+	
+	public static boolean moveOutputFilesToFailedDir(String outputFilePathName) {
+		File outputFile = new File(outputFilePathName);
+		File outputFileDir = outputFile.getParentFile();
+		File destinationFile = new File(outputFileDir.getParent()+"-failed/"+outputFileDir.getName()+"/"+outputFile.getName());
+		destinationFile.getParentFile().mkdirs();
+		boolean fileRenamed = outputFile.renameTo(destinationFile);
+		boolean fileDeleted = outputFile.delete();
+		boolean dirDeleted = outputFileDir.delete();
+		return fileRenamed && fileDeleted && dirDeleted;
+	}
+	
+	public static void main(String[] args) {
+//		ArrayList<Double> a = new ArrayList<Double>();
+//		a.add(1.0);
+//		a.add(0.0);
+//		a.add(0.0);
+//		a.add(1.0);
+//		ArrayList<Double> b = Utility.makeSigma(1.0,0.0,0.0,1.0);
+//		System.out.println(a.equals(b));
+//
+//		System.out.println(lcm(3,4,8));
+//		
+//		String[] inputFileNames = getInputFileNames("data/nlb/nlb_datasets/annmidi");
+//		for(String s : inputFileNames)
+//			System.out.println(s);
+//		
+//		System.out.println("Number of files: "+inputFileNames.length);
+//		
+		
+//		//Test mod
+//		for (long a = -10; a < 10; a++)
+//			for (long b = -10; b < 10; b++) {
+//				try {
+//					System.out.println(""+b+" mod "+a+" = "+mod(b,a));
+//				} catch(IllegalArgumentException e) {
+//					System.out.println(e.getMessage());
+//				}
+//			}
+//
+//		//Test floor
+//		for (long a = -10; a < 10; a++)
+//			for (long b = -10; b < 10; b++) {
+//				try {
+//					System.out.println("floor("+a+","+b+") = "+floor(a,b));
+//				} catch(IllegalArgumentException e) {
+//					System.out.println(e.getMessage());
+//				}
+//			}
+//
+//		//Test gcd
+//		for (long a = -10; a < 10; a++)
+//			for (long b = -10; b < 10; b++) {
+//				try {
+//					System.out.println("gcd("+a+","+b+") = "+gcd(a,b));
+//				} catch(IllegalArgumentException e) {
+//					System.out.println(e.getMessage());
+//				}
+//			}
+//		
+//		//Test isPrime
+//		System.out.println("Primes less than 100");
+//		for(int i = 0; i < 100; i++) 
+//			if (isPrime(i))
+//				System.out.println(i);
+//		
+//		//Test or highest prime factors
+//		for(int i = 0; i < 100; i++)
+//			System.out.println(""+i+" "+getHighestPrimeFactor(i));
+//		
+//		//Test factorize
+//		for(int i = 0; i < 100; i++)
+//			System.out.println(""+i+" "+factorize(i));
+//		
+//		//Test gcd with list of numbers
+//		System.out.println(gcd(9,15,30));
+
+	
+		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_1/test_file_1.txt");
+		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_2/test_file_2.txt");
+
+	}
+
 	
 }
