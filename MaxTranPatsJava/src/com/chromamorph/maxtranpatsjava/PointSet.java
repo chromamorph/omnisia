@@ -25,7 +25,7 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static long TIME_AT_START_OF_COMPUTING_HETERO_OS = 0l;
 	public static boolean COMPUTE_HETERO_OS_COMPLETED = false;
-	public static long TIME_LIMIT = 1000 * 60 * 1; // 20 minutes
+	public static long TIME_LIMIT = 1000 * 60 * 20; // 20 minutes
 	
 	private Long ticksPerSecond = null;
 
@@ -853,7 +853,7 @@ public class PointSet implements Comparable<PointSet>{
 			e.printStackTrace();
 		} catch (TimeOutException e) {
 			Utility.moveOutputFilesToFailedDir(outputFileName);
-			System.out.println("ERROR: Computing of super-MTPs timed out on file, "+new File(outputFileName).getParent());
+			System.out.println("ERROR: Computing of heterogeneous occurrence sets timed out on file, "+new File(outputFileName).getParent());
 		} catch (NoTransformationClassesDefinedException e) {
 			e.printStackTrace();
 		} catch (SuperMTPsNotNullException e) {
