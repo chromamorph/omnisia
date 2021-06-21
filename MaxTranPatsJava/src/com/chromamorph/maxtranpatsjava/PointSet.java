@@ -942,7 +942,7 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static void compressNLBPairFiles(int startIndex, int endIndex) {
 		String inputDir = "data/nlb/nlb_datasets/annmidi";
-		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-mac2010";
+		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-new-mac";
 		
 //		Find file pairs within the range between startIndex and endIndex for which there is
 //		no output file in the outputDir

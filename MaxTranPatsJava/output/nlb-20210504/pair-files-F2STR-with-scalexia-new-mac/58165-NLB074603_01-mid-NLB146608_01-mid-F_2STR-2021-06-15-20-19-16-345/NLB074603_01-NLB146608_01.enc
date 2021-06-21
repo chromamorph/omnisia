@@ -1,0 +1,32 @@
+OS(P(p(5670.0,24.0),p(5730.0,24.0),p(5820.0,27.0),p(5925.0,29.0),p(5985.0,29.0),p(6030.0,29.0),p(6090.0,29.0),p(6180.0,28.0),p(6300.0,27.0),p(6405.0,28.0),p(6465.0,28.0),p(6540.0,29.0),p(6660.0,31.0),p(6780.0,29.0),p(6900.0,28.0),p(7005.0,30.0),p(7065.0,30.0),p(7110.0,29.0),p(7170.0,28.0),p(7320.0,27.0)),[T(F_2STR,[1.0, 1800.0, 0.0, 1.0])],null)
+OS(P(p(2820.0,28.0),p(2970.0,29.0),p(3090.0,28.0),p(3150.0,27.0),p(3210.0,26.0),p(3300.0,25.0),p(3420.0,26.0),p(3540.0,29.0),p(3660.0,28.0),p(3780.0,29.0),p(3900.0,28.0),p(4080.0,24.0)),[T(F_2STR,[1.0, 1440.0, 0.0, 1.0])],null)
+OS(P(p(390.0,29.0),p(450.0,29.0),p(510.0,28.0),p(870.0,28.0),p(930.0,28.0)),[T(F_2STR,[-1.5, 1965.0, -56.0, -1.0])],null)
+OS(P(p(30.0,24.0),p(90.0,29.0),p(150.0,29.0),p(210.0,29.0),p(270.0,29.0),p(330.0,30.0),p(750.0,24.0),p(810.0,28.0),p(990.0,28.0),p(1050.0,30.0),p(1095.0,29.0),p(1125.0,28.0)),[],null)
+
+
+Coverage: 86
+Uncompressed length: 172
+Encoding length: 110
+Compression factor: 1.5636363636363637
+Number of occurrence sets: 4
+
+
+
+Log:
+       84457603 ms              1 ms  computeMaximalTransformablePatterns starts
+       84467726 ms          10123 ms  computeMaximalTransformablePatterns ends
+       84467736 ms             10 ms  computeSizeMTPSetArray ends
+       84467740 ms              4 ms  computePatternTransformationSetPairs ends
+       84467826 ms             86 ms  computeSuperMTPs ends
+       84468948 ms           1122 ms  computeHeterogeneousOccurrenceSets ends
+       84469524 ms            576 ms  removeDuplicateOccurrenceSets ends
+       84469552 ms             28 ms  removeRedundantTransformations ends
+       84469552 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+       84469561 ms              9 ms  computeSortedOccurrenceSets ends
+       84469566 ms              5 ms  computeEncoding ends
+       84469566 ms              0 ms  Program ends
+
+
+Number of points: 86
+Number of MTPs before removal: 7367
+Number of OSs after removal: 1803
