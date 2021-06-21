@@ -1,0 +1,32 @@
+OS(P(p(120.0,27.0),p(360.0,28.0),p(600.0,27.0),p(720.0,24.0),p(990.0,24.0),p(1080.0,27.0),p(1560.0,27.0),p(1680.0,24.0),p(2010.0,29.0),p(2070.0,29.0),p(2130.0,29.0),p(2190.0,29.0),p(2280.0,29.0),p(2490.0,31.0),p(2550.0,31.0),p(2610.0,30.0),p(2670.0,29.0),p(2790.0,28.0),p(2910.0,27.0),p(2970.0,26.0),p(3030.0,28.0),p(3090.0,28.0),p(3150.0,28.0),p(3240.0,28.0),p(3330.0,29.0),p(3570.0,28.0),p(3720.0,27.0)),[T(F_2STR,[1.0, 7500.0, 0.0, 1.0])],null)
+OS(P(p(30.0,24.0),p(930.0,24.0),p(990.0,24.0),p(7500.0,24.0)),[T(F_2STR,[-1.0, 8700.0, 3.0, 1.0])],null)
+OS(P(p(480.0,29.0),p(1440.0,29.0),p(1950.0,29.0)),[T(F_2STR,[1.0, 7470.0, -58.0, -1.0])],null)
+OS(P(p(240.0,27.0),p(870.0,24.0),p(1320.0,28.0),p(2400.0,31.0),p(3390.0,30.0),p(3480.0,29.0),p(3630.0,28.0),p(8010.0,28.0),p(8730.0,27.0),p(8790.0,28.0),p(8850.0,28.0),p(8970.0,28.0),p(9870.0,31.0),p(9930.0,31.0),p(10890.0,29.0),p(10965.0,29.0),p(11025.0,29.0),p(11130.0,26.0)),[],null)
+
+
+Coverage: 85
+Uncompressed length: 170
+Encoding length: 116
+Compression factor: 1.4655172413793103
+Number of occurrence sets: 4
+
+
+
+Log:
+       66158646 ms              1 ms  computeMaximalTransformablePatterns starts
+       66166092 ms           7446 ms  computeMaximalTransformablePatterns ends
+       66166103 ms             11 ms  computeSizeMTPSetArray ends
+       66166105 ms              2 ms  computePatternTransformationSetPairs ends
+       66166230 ms            125 ms  computeSuperMTPs ends
+       66252346 ms          86116 ms  computeHeterogeneousOccurrenceSets ends
+       66253077 ms            731 ms  removeDuplicateOccurrenceSets ends
+       66253110 ms             33 ms  removeRedundantTransformations ends
+       66253111 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+       66253121 ms             10 ms  computeSortedOccurrenceSets ends
+       66253127 ms              6 ms  computeEncoding ends
+       66253127 ms              0 ms  Program ends
+
+
+Number of points: 85
+Number of MTPs before removal: 8099
+Number of OSs after removal: 2173

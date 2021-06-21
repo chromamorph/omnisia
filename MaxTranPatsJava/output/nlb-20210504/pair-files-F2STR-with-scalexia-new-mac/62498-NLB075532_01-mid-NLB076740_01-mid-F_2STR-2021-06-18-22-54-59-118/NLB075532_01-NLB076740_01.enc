@@ -1,0 +1,34 @@
+OS(P(p(7410.0,31.0),p(7470.0,34.0),p(7530.0,33.0),p(7590.0,32.0),p(7710.0,31.0),p(7860.0,29.0),p(7935.0,32.0),p(7965.0,32.0),p(8010.0,31.0),p(8070.0,30.0),p(8130.0,29.0),p(8220.0,28.0),p(8295.0,29.0),p(8325.0,30.0),p(8400.0,31.0),p(8490.0,31.0),p(8580.0,30.0),p(8670.0,29.0),p(8730.0,28.0),p(8790.0,27.0)),[T(F_2STR,[1.0, 1440.0, 0.0, 1.0])],null)
+OS(P(p(30.0,24.0),p(90.0,25.0),p(150.0,26.0),p(270.0,26.0),p(330.0,25.0)),[T(F_2STR,[1.0, 6540.0, 7.0, 1.0]), T(F_2STR,[-3.0, 2760.0, 2.0, 1.0])],null)
+OS(P(p(450.0,24.0),p(510.0,24.0),p(630.0,24.0),p(960.0,24.0),p(1050.0,24.0),p(1140.0,25.0),p(1590.0,24.0)),[T(F_2STR,[2.0, 5310.0, 7.0, 1.0])],null)
+OS(P(p(390.0,25.0),p(570.0,25.0),p(690.0,24.0),p(750.0,27.0)),[T(F_2STR,[5.0, -1140.0, -52.0, -1.0])],null)
+OS(P(p(1230.0,24.0),p(1530.0,22.0),p(5610.0,24.0)),[T(F_2STR,[-0.5, 3015.0, -51.0, -1.0])],null)
+OS(P(p(870.0,27.0),p(1350.0,22.0),p(1470.0,20.0),p(1650.0,27.0),p(1860.0,28.0),p(2070.0,29.0),p(2190.0,30.0),p(2550.0,24.0),p(2790.0,27.0),p(5685.0,27.0),p(5745.0,27.0),p(5790.0,28.0),p(5910.0,29.0),p(6090.0,27.0),p(6270.0,32.0),p(6450.0,31.0),p(6750.0,34.0),p(6990.0,32.0)),[],null)
+
+
+Coverage: 96
+Uncompressed length: 192
+Encoding length: 138
+Compression factor: 1.391304347826087
+Number of occurrence sets: 6
+
+
+
+Log:
+      163333942 ms              1 ms  computeMaximalTransformablePatterns starts
+      163340778 ms           6836 ms  computeMaximalTransformablePatterns ends
+      163340791 ms             13 ms  computeSizeMTPSetArray ends
+      163340795 ms              4 ms  computePatternTransformationSetPairs ends
+      163340967 ms            172 ms  computeSuperMTPs ends
+      163341709 ms            742 ms  computeHeterogeneousOccurrenceSets ends
+      163342401 ms            692 ms  removeDuplicateOccurrenceSets ends
+      163342440 ms             39 ms  removeRedundantTransformations ends
+      163342441 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+      163342456 ms             15 ms  computeSortedOccurrenceSets ends
+      163342465 ms              9 ms  computeEncoding ends
+      163342465 ms              0 ms  Program ends
+
+
+Number of points: 96
+Number of MTPs before removal: 9804
+Number of OSs after removal: 2520

@@ -1,0 +1,32 @@
+OS(P(p(30.0,31.0),p(90.0,31.0),p(270.0,27.0),p(330.0,27.0),p(510.0,27.0),p(570.0,28.0),p(660.0,29.0),p(840.0,29.0),p(990.0,31.0),p(1050.0,31.0),p(1230.0,27.0),p(1290.0,27.0),p(1470.0,27.0),p(1530.0,28.0),p(1620.0,29.0),p(1800.0,29.0),p(2130.0,31.0),p(2235.0,31.0),p(2265.0,31.0),p(2310.0,30.0),p(2370.0,29.0),p(2430.0,30.0),p(2490.0,31.0),p(2580.0,32.0),p(2700.0,32.0),p(2910.0,33.0),p(3450.0,30.0),p(3660.0,29.0)),[T(F_2STR,[1.0, 7320.0, 0.0, 1.0])],null)
+OS(P(p(1170.0,27.0),p(1350.0,28.0),p(1410.0,28.0),p(1470.0,27.0)),[T(F_2STR,[-3.0, 4620.0, 0.0, 1.0]), T(F_2STR,[1.0, 1920.0, 4.0, 1.0])],null)
+OS(P(p(10290.0,34.0),p(10530.0,32.0),p(10650.0,31.0)),[T(F_2STR,[-5.25, 64612.5, -3.0, 1.0])],null)
+OS(P(p(150.0,27.0),p(450.0,28.0),p(1950.0,29.0),p(2010.0,30.0),p(2820.0,34.0),p(2970.0,32.0),p(3195.0,31.0),p(3225.0,31.0),p(7500.0,27.0),p(7740.0,28.0),p(8460.0,27.0),p(10140.0,32.0),p(10350.0,31.0),p(10440.0,31.0),p(10710.0,30.0)),[],null)
+
+
+Coverage: 87
+Uncompressed length: 174
+Encoding length: 116
+Compression factor: 1.5
+Number of occurrence sets: 4
+
+
+
+Log:
+       71931728 ms              1 ms  computeMaximalTransformablePatterns starts
+       71939681 ms           7953 ms  computeMaximalTransformablePatterns ends
+       71939687 ms              6 ms  computeSizeMTPSetArray ends
+       71939689 ms              2 ms  computePatternTransformationSetPairs ends
+       71939775 ms             86 ms  computeSuperMTPs ends
+       71964424 ms          24649 ms  computeHeterogeneousOccurrenceSets ends
+       71965149 ms            725 ms  removeDuplicateOccurrenceSets ends
+       71965174 ms             25 ms  removeRedundantTransformations ends
+       71965174 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+       71965182 ms              8 ms  computeSortedOccurrenceSets ends
+       71965187 ms              5 ms  computeEncoding ends
+       71965187 ms              0 ms  Program ends
+
+
+Number of points: 87
+Number of MTPs before removal: 5941
+Number of OSs after removal: 1729
