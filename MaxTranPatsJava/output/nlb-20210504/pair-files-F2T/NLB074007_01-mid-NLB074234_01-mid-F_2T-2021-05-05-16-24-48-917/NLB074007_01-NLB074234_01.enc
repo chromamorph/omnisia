@@ -1,0 +1,37 @@
+CF=2.42, COV=29, UL=58, PL=20, TL=4, Pat=P(p(30.0,24.0),p(930.0,26.0),p(1560.0,29.0),p(1650.0,29.0),p(1740.0,28.0),p(1830.0,29.0),p(2010.0,30.0),p(2190.0,25.0),p(2280.0,24.0),p(2370.0,26.0)), Trans=[T(F_2T,[4320.0, 0.0]), T(F_2T,[5760.0, 0.0])], SupMTPs=null
+CF=2.29, COV=16, UL=32, PL=8, TL=6, Pat=P(p(390.0,24.0),p(570.0,23.0),p(4710.0,24.0),p(4890.0,23.0)), Trans=[T(F_2T,[720.0, -1.0]), T(F_2T,[1170.0, 5.0]), T(F_2T,[2160.0, 6.0])], SupMTPs=null
+CF=2.25, COV=18, UL=36, PL=6, TL=10, Pat=P(p(1650.0,29.0),p(2010.0,30.0),p(2730.0,29.0)), Trans=[T(F_2T,[2610.0, -5.0]), T(F_2T,[4320.0, 0.0]), T(F_2T,[15600.0, 0.0]), T(F_2T,[15660.0, -1.0]), T(F_2T,[15720.0, -2.0])], SupMTPs=null
+CF=2.20, COV=22, UL=44, PL=6, TL=14, Pat=P(p(3150.0,27.0),p(3210.0,26.0),p(3270.0,25.0)), Trans=[T(F_2T,[60.0, -1.0]), T(F_2T,[720.0, 0.0]), T(F_2T,[14100.0, 2.0]), T(F_2T,[14460.0, 3.0]), T(F_2T,[15180.0, 2.0]), T(F_2T,[15540.0, 3.0]), T(F_2T,[16380.0, 6.0])], SupMTPs=null
+CF=2.00, COV=14, UL=28, PL=6, TL=8, Pat=P(p(840.0,28.0),p(2460.0,28.0),p(2550.0,30.0)), Trans=[T(F_2T,[4230.0, -2.0]), T(F_2T,[4320.0, 0.0]), T(F_2T,[16710.0, 1.0]), T(F_2T,[17610.0, -1.0])], SupMTPs=null
+CF=2.00, COV=12, UL=24, PL=6, TL=6, Pat=P(p(210.0,24.0),p(570.0,23.0),p(2370.0,26.0)), Trans=[T(F_2T,[4320.0, 0.0]), T(F_2T,[16890.0, 5.0]), T(F_2T,[17970.0, 5.0])], SupMTPs=null
+CF=2.00, COV=12, UL=24, PL=6, TL=6, Pat=P(p(1020.0,24.0),p(3630.0,26.0),p(4080.0,25.0)), Trans=[T(F_2T,[3420.0, 3.0]), T(F_2T,[4140.0, 4.0]), T(F_2T,[16170.0, 5.0])], SupMTPs=null
+CF=1.80, COV=9, UL=18, PL=6, TL=4, Pat=P(p(930.0,26.0),p(2970.0,27.0),p(3030.0,27.0)), Trans=[T(F_2T,[16680.0, 4.0]), T(F_2T,[16980.0, 1.0])], SupMTPs=null
+CF=1.00, COV=32, UL=64, PL=64, TL=0, Pat=P(p(120.0,27.0),p(300.0,25.0),p(735.0,26.0),p(765.0,27.0),p(1455.0,24.0),p(1485.0,24.0),p(2910.0,24.0),p(3090.0,27.0),p(3405.0,26.0),p(3465.0,26.0),p(3540.0,26.0),p(3690.0,25.0),p(3765.0,25.0),p(3825.0,26.0),p(4170.0,24.0),p(7230.0,24.0),p(8310.0,28.0),p(8490.0,27.0),p(17010.0,27.0),p(18090.0,27.0),p(18270.0,29.0),p(18630.0,29.0),p(18990.0,27.0),p(19350.0,31.0),p(19410.0,31.0),p(19470.0,32.0),p(19890.0,29.0),p(20430.0,31.0),p(20490.0,31.0),p(20550.0,29.0),p(20610.0,28.0),p(20730.0,27.0)), Trans=[], SupMTPs=null
+
+
+Coverage: 129
+Uncompressed length: 258
+Encoding length: 186
+Compression factor: 1.3870967741935485
+Number of occurrence sets: 9
+
+
+
+Log:
+        9597086 ms              3 ms  computeMaximalTransformablePatterns starts
+        9597116 ms             30 ms  computeMaximalTransformablePatterns ends
+        9597117 ms              1 ms  computeSizeMTPSetArray ends
+        9597118 ms              1 ms  computePatternTransformationSetPairs ends
+        9597218 ms            100 ms  computeSuperMTPs ends
+        9597307 ms             89 ms  computeHeterogeneousOccurrenceSets ends
+        9597456 ms            149 ms  removeDuplicateOccurrenceSets ends
+        9597460 ms              4 ms  removeRedundantTransformations ends
+        9597460 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        9597462 ms              2 ms  computeSortedOccurrenceSets ends
+        9597464 ms              2 ms  computeEncoding ends
+        9597464 ms              0 ms  Program ends
+
+
+Number of points: 129
+Number of MTPs before removal: 1746
+Number of OSs after removal: 812

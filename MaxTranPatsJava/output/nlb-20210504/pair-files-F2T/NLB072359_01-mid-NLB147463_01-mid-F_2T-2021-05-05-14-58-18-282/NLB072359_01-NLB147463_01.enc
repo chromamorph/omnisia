@@ -1,0 +1,33 @@
+CF=1.80, COV=9, UL=18, PL=6, TL=4, Pat=P(p(780.0,29.0),p(900.0,28.0),p(1500.0,28.0)), Trans=[T(F_2T,[5070.0, -1.0]), T(F_2T,[5400.0, -1.0])], SupMTPs=null
+CF=1.80, COV=9, UL=18, PL=6, TL=4, Pat=P(p(990.0,29.0),p(1140.0,27.0),p(1380.0,28.0)), Trans=[T(F_2T,[5520.0, -1.0]), T(F_2T,[6210.0, 1.0])], SupMTPs=null
+CF=1.71, COV=12, UL=24, PL=12, TL=2, Pat=P(p(210.0,31.0),p(1050.0,28.0),p(1770.0,28.0),p(6570.0,27.0),p(7410.0,28.0),p(7650.0,29.0)), Trans=[T(F_2T,[90.0, -1.0])], SupMTPs=null
+CF=1.50, COV=6, UL=12, PL=6, TL=2, Pat=P(p(1230.0,27.0),p(1290.0,27.0),p(7020.0,31.0)), Trans=[T(F_2T,[720.0, -3.0])], SupMTPs=null
+CF=1.00, COV=19, UL=38, PL=38, TL=0, Pat=P(p(90.0,30.0),p(480.0,29.0),p(630.0,27.0),p(690.0,28.0),p(1590.0,31.0),p(1650.0,30.0),p(1710.0,29.0),p(2160.0,29.0),p(2400.0,28.0),p(2700.0,27.0),p(5460.0,23.0),p(5610.0,29.0),p(5730.0,30.0),p(6030.0,26.0),p(6090.0,27.0),p(6750.0,26.0),p(6810.0,26.0),p(7860.0,27.0),p(7980.0,26.0)), Trans=[], SupMTPs=null
+
+
+Coverage: 50
+Uncompressed length: 100
+Encoding length: 80
+Compression factor: 1.25
+Number of occurrence sets: 5
+
+
+
+Log:
+        4406451 ms              2 ms  computeMaximalTransformablePatterns starts
+        4406455 ms              4 ms  computeMaximalTransformablePatterns ends
+        4406455 ms              0 ms  computeSizeMTPSetArray ends
+        4406455 ms              0 ms  computePatternTransformationSetPairs ends
+        4406456 ms              1 ms  computeSuperMTPs ends
+        4406529 ms             73 ms  computeHeterogeneousOccurrenceSets ends
+        4406531 ms              2 ms  removeDuplicateOccurrenceSets ends
+        4406531 ms              0 ms  removeRedundantTransformations ends
+        4406531 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        4406531 ms              0 ms  computeSortedOccurrenceSets ends
+        4406531 ms              0 ms  computeEncoding ends
+        4406531 ms              0 ms  Program ends
+
+
+Number of points: 50
+Number of MTPs before removal: 184
+Number of OSs after removal: 90
