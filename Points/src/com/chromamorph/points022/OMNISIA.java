@@ -98,6 +98,7 @@ public class OMNISIA {
 	public static boolean RHYTHM_ONLY				= false;
 	public static String TEC_PRIORITY_STRING		= TECQualityComparator.DEFAULT_PRIORITY_STRING;
 	public static String DUAL_TEC_PRIORITY_STRING	= TECQualityComparator.DEFAULT_PRIORITY_STRING;
+	public static boolean NUM_MTPS_ONLY				= false;
 
 	////////////////////
 	//	Switches
@@ -140,6 +141,7 @@ public class OMNISIA {
 	private static String RHYTHM_ONLY_SWITCH		= "rhythm";
 	private static String TEC_PRIORITY_SWITCH		= "tecqual";
 	private static String DUAL_TEC_PRIORITY_SWITCH	= "dualtecqual";
+	private static String NUM_MTPS_ONLY_SWITCH		= "nummtpsonly";
 
 
 	////////////////////
@@ -224,6 +226,10 @@ public class OMNISIA {
 
 	private static void getRhythmOnly(String[] args) {
 		RHYTHM_ONLY = getBooleanValue(RHYTHM_ONLY_SWITCH, args);
+	}
+	
+	private static void getNumMtpsOnly(String[] args) {
+		NUM_MTPS_ONLY = getBooleanValue(NUM_MTPS_ONLY_SWITCH, args);
 	}
 	
 	private static void getDiatonicPitch(String[] args) {
@@ -615,6 +621,7 @@ public class OMNISIA {
 				"Rhythm only (-"+RHYTHM_ONLY_SWITCH+"): " + RHYTHM_ONLY,
 				"TEC quality priority string (-"+TEC_PRIORITY_SWITCH+"): " + TEC_PRIORITY_STRING,
 				"Dual TEC quality priority string (-"+DUAL_TEC_PRIORITY_SWITCH+"): " + DUAL_TEC_PRIORITY_STRING,
+				"Return number of MTPs only (-"+NUM_MTPS_ONLY_SWITCH+"): " + NUM_MTPS_ONLY,
 				""
 		};
 		StringBuilder sb = new StringBuilder();
@@ -757,6 +764,10 @@ public class OMNISIA {
 				"\tare set, then the value of this string is "+TECQualityComparator.DEFAULT_PRIORITY_STRING+".",
 				"\tIf -"+TEC_PRIORITY_SWITCH+" is set, but this switch is not, then the value of this string is",
 				"\t the same as that set for -"+TEC_PRIORITY_SWITCH+".",
+				"",
+				"-"+NUM_MTPS_ONLY_SWITCH+"\t If true, then returns running time for computing vector table, sorting it",
+				"\tand counting number of MTPs. This is in order to generate output that can be compared with Antti",
+				"\t Laaksonen's parallel implementations of this process of 13 June 2021.",
 				""	
 				);
 	}
@@ -1149,6 +1160,7 @@ public class OMNISIA {
 			return;
 		}
 		getRhythmOnly(args);
+		getNumMtpsOnly(args);
 		getTECPriority(args);
 		getDualTECPriority(args);
 		try {

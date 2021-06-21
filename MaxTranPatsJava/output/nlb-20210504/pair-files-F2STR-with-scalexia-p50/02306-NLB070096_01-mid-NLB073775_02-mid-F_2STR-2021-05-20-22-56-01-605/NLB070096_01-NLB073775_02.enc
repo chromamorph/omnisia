@@ -1,0 +1,32 @@
+OS(P(p(1470.0,24.0),p(1560.0,22.0),p(1650.0,24.0),p(1740.0,27.0),p(1830.0,29.0),p(1920.0,28.0),p(2010.0,27.0),p(2100.0,25.0),p(2190.0,27.0),p(2280.0,26.0),p(2370.0,25.0),p(2430.0,24.0),p(2490.0,25.0),p(2550.0,26.0),p(2730.0,27.0),p(8400.0,24.0),p(8550.0,30.0),p(8670.0,31.0),p(8760.0,30.0),p(8910.0,29.0),p(9030.0,28.0),p(9090.0,27.0),p(9150.0,28.0),p(9240.0,29.0),p(9540.0,28.0)),[T(F_2STR,[1.0, 1440.0, 0.0, 1.0])],null)
+OS(P(p(30.0,24.0),p(390.0,24.0),p(450.0,26.0),p(735.0,26.0)),[T(F_2STR,[-2.0, 12150.0, 3.0, 1.0])],null)
+OS(P(p(11430.0,27.0),p(11490.0,27.0),p(11550.0,27.0),p(11640.0,28.0)),[T(F_2STR,[1.0, 840.0, 3.0, 1.0])],null)
+OS(P(p(120.0,22.0),p(210.0,24.0),p(300.0,27.0),p(600.0,25.0),p(765.0,27.0),p(840.0,26.0),p(930.0,27.0),p(1020.0,26.0),p(1110.0,25.0),p(1290.0,24.0),p(11310.0,28.0),p(11760.0,32.0),p(11940.0,31.0),p(12150.0,26.0),p(12210.0,25.0),p(12600.0,30.0),p(12840.0,29.0)),[],null)
+
+
+Coverage: 82
+Uncompressed length: 164
+Encoding length: 112
+Compression factor: 1.4642857142857142
+Number of occurrence sets: 4
+
+
+
+Log:
+          61204 ms              7 ms  computeMaximalTransformablePatterns starts
+          69231 ms           8027 ms  computeMaximalTransformablePatterns ends
+          69243 ms             12 ms  computeSizeMTPSetArray ends
+          69248 ms              5 ms  computePatternTransformationSetPairs ends
+          69417 ms            169 ms  computeSuperMTPs ends
+         586368 ms         516951 ms  computeHeterogeneousOccurrenceSets ends
+         588643 ms           2275 ms  removeDuplicateOccurrenceSets ends
+         588715 ms             72 ms  removeRedundantTransformations ends
+         588744 ms             29 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         588759 ms             15 ms  computeSortedOccurrenceSets ends
+         588769 ms             10 ms  computeEncoding ends
+         588769 ms              0 ms  Program ends
+
+
+Number of points: 82
+Number of MTPs before removal: 7120
+Number of OSs after removal: 2225
