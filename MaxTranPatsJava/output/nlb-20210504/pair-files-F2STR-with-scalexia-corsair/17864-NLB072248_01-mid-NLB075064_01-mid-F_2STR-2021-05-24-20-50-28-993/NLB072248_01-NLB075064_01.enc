@@ -1,0 +1,33 @@
+OS(P(p(7965.0,28.0),p(8025.0,29.0),p(8100.0,30.0),p(8220.0,31.0),p(8340.0,32.0),p(8460.0,32.0),p(8580.0,31.0),p(8700.0,29.0),p(8820.0,27.0),p(8910.0,28.0),p(8970.0,29.0),p(9060.0,30.0),p(9150.0,31.0),p(9210.0,30.0),p(9360.0,29.0),p(9600.0,28.0),p(9900.0,27.0)),[T(F_2STR,[1.0, 2160.0, 0.0, 1.0])],null)
+OS(P(p(810.0,26.0),p(990.0,26.0),p(1530.0,27.0),p(1710.0,25.0)),[T(F_2STR,[-1.3333333333333333, 3330.0, 2.0, 1.0]), T(F_2STR,[1.3333333333333333, 60.00000000000006, -54.0, -1.0]), T(F_2STR,[-12.0, 20790.0, -54.0, -1.0])],null)
+OS(P(p(2580.0,28.0),p(2820.0,27.0),p(5940.0,28.0),p(6720.0,24.0),p(7140.0,28.0)),[T(F_2STR,[-1.0, 13200.0, 4.0, 1.0])],null)
+OS(P(p(90.0,28.0),p(180.0,29.0),p(330.0,29.0),p(420.0,28.0)),[T(F_2STR,[-2.0, 1410.0, -56.0, -1.0])],null)
+OS(P(p(30.0,27.0),p(510.0,28.0),p(660.0,27.0),p(900.0,25.0),p(1470.0,27.0),p(1620.0,26.0),p(1770.0,25.0),p(1860.0,24.0),p(1950.0,29.0),p(2190.0,27.0),p(2490.0,29.0),p(2685.0,29.0),p(2745.0,28.0),p(5760.0,27.0),p(6180.0,31.0),p(6270.0,30.0),p(6330.0,29.0),p(6960.0,27.0),p(7380.0,31.0),p(7470.0,30.0),p(7530.0,29.0),p(7740.0,28.0)),[],null)
+
+
+Coverage: 85
+Uncompressed length: 170
+Encoding length: 128
+Compression factor: 1.328125
+Number of occurrence sets: 5
+
+
+
+Log:
+       34162488 ms              3 ms  computeMaximalTransformablePatterns starts
+       34178056 ms          15568 ms  computeMaximalTransformablePatterns ends
+       34178067 ms             11 ms  computeSizeMTPSetArray ends
+       34178072 ms              5 ms  computePatternTransformationSetPairs ends
+       34178229 ms            157 ms  computeSuperMTPs ends
+       34178456 ms            227 ms  computeHeterogeneousOccurrenceSets ends
+       34179428 ms            972 ms  removeDuplicateOccurrenceSets ends
+       34179472 ms             44 ms  removeRedundantTransformations ends
+       34179473 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+       34179503 ms             30 ms  computeSortedOccurrenceSets ends
+       34179509 ms              6 ms  computeEncoding ends
+       34179509 ms              0 ms  Program ends
+
+
+Number of points: 85
+Number of MTPs before removal: 6177
+Number of OSs after removal: 1895
