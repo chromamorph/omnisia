@@ -1,0 +1,33 @@
+OS(P(p(9450.0,31.0),p(9540.0,27.0),p(9630.0,27.0),p(9690.0,27.0),p(9780.0,28.0),p(9870.0,27.0),p(9930.0,28.0),p(10020.0,29.0),p(10140.0,29.0),p(11310.0,29.0),p(11370.0,30.0),p(11460.0,31.0),p(11550.0,32.0),p(11610.0,31.0),p(11670.0,30.0)),[T(F_2STR,[1.0, 960.0, 0.0, 1.0])],null)
+OS(P(p(1020.0,31.0),p(1110.0,31.0),p(1170.0,30.0),p(1530.0,29.0),p(1590.0,30.0)),[T(F_2STR,[1.0, 1920.0, 0.0, 1.0]), T(F_2STR,[1.0, 2880.0, 0.0, 1.0])],null)
+OS(P(p(450.0,30.0),p(510.0,29.0),p(570.0,30.0),p(630.0,31.0),p(1410.0,30.0),p(1470.0,30.0),p(1590.0,30.0)),[T(F_2STR,[1.0, 11220.0, 0.0, 1.0])],null)
+OS(P(p(1470.0,30.0),p(2340.0,33.0),p(2430.0,32.0),p(2490.0,31.0)),[T(F_2STR,[-1.0, 3120.0, -62.0, -1.0]), T(F_2STR,[-9.5, 26475.0, -62.0, -1.0])],null)
+OS(P(p(60.0,27.0),p(150.0,28.0),p(210.0,29.0),p(330.0,30.0),p(900.0,28.0),p(1290.0,30.0),p(1800.0,31.0),p(1950.0,27.0),p(2010.0,27.0),p(2070.0,29.0),p(2130.0,29.0),p(2220.0,34.0),p(2550.0,32.0),p(2610.0,33.0),p(2700.0,32.0),p(3180.0,29.0),p(3285.0,29.0),p(3345.0,29.0),p(3570.0,32.0),p(3720.0,31.0),p(4140.0,29.0),p(4305.0,29.0),p(4350.0,28.0),p(4530.0,28.0),p(4680.0,27.0),p(10350.0,31.0),p(11940.0,32.0),p(12060.0,32.0),p(12180.0,32.0),p(12750.0,32.0),p(12960.0,29.0)),[],null)
+
+
+Coverage: 96
+Uncompressed length: 192
+Encoding length: 148
+Compression factor: 1.2972972972972974
+Number of occurrence sets: 5
+
+
+
+Log:
+       14979307 ms              2 ms  computeMaximalTransformablePatterns starts
+       14992726 ms          13419 ms  computeMaximalTransformablePatterns ends
+       14992739 ms             13 ms  computeSizeMTPSetArray ends
+       14992742 ms              3 ms  computePatternTransformationSetPairs ends
+       14992901 ms            159 ms  computeSuperMTPs ends
+       14992998 ms             97 ms  computeHeterogeneousOccurrenceSets ends
+       14993406 ms            408 ms  removeDuplicateOccurrenceSets ends
+       14993442 ms             36 ms  removeRedundantTransformations ends
+       14993442 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+       14993456 ms             14 ms  computeSortedOccurrenceSets ends
+       14993464 ms              8 ms  computeEncoding ends
+       14993464 ms              0 ms  Program ends
+
+
+Number of points: 96
+Number of MTPs before removal: 10154
+Number of OSs after removal: 2574

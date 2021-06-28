@@ -1,0 +1,34 @@
+OS(P(p(8910.0,31.0),p(8970.0,31.0),p(9030.0,27.0),p(9090.0,27.0),p(9150.0,27.0),p(9210.0,27.0),p(9270.0,28.0),p(9330.0,28.0),p(9390.0,27.0),p(9450.0,28.0),p(9540.0,29.0),p(9720.0,29.0),p(11010.0,31.0),p(11115.0,31.0),p(11145.0,31.0)),[T(F_2STR,[1.0, 960.0, 0.0, 1.0])],null)
+OS(P(p(2700.0,30.0),p(2820.0,31.0),p(2940.0,32.0),p(3060.0,32.0)),[T(F_2STR,[-0.5, 13680.0, 0.0, 1.0]), T(F_2STR,[3.5, 540.0, -3.0, 1.0])],null)
+OS(P(p(3300.0,29.0),p(3420.0,27.0),p(3510.0,28.0),p(3570.0,29.0)),[T(F_2STR,[-1.0, 7320.0, 2.0, 1.0]), T(F_2STR,[1.0, 8280.0, -61.0, -1.0])],null)
+OS(P(p(540.0,31.0),p(630.0,30.0),p(690.0,29.0),p(2070.0,30.0),p(2280.0,28.0)),[T(F_2STR,[-1.0, 12000.0, 1.0, 1.0])],null)
+OS(P(p(1080.0,24.0),p(1560.0,27.0),p(4440.0,27.0)),[T(F_2STR,[-0.5, 2520.0, -55.0, -1.0])],null)
+OS(P(p(120.0,27.0),p(420.0,32.0),p(780.0,28.0),p(900.0,26.0),p(1860.0,32.0),p(2130.0,29.0),p(2490.0,28.0),p(2550.0,28.0),p(2610.0,29.0),p(3180.0,31.0),p(3660.0,30.0),p(4200.0,28.0),p(10890.0,30.0),p(11190.0,30.0),p(12540.0,29.0)),[],null)
+
+
+Coverage: 81
+Uncompressed length: 162
+Encoding length: 120
+Compression factor: 1.35
+Number of occurrence sets: 6
+
+
+
+Log:
+       51793571 ms             21 ms  computeMaximalTransformablePatterns starts
+       51803377 ms           9806 ms  computeMaximalTransformablePatterns ends
+       51803383 ms              6 ms  computeSizeMTPSetArray ends
+       51803386 ms              3 ms  computePatternTransformationSetPairs ends
+       51803453 ms             67 ms  computeSuperMTPs ends
+       51803548 ms             95 ms  computeHeterogeneousOccurrenceSets ends
+       51803887 ms            339 ms  removeDuplicateOccurrenceSets ends
+       51803908 ms             21 ms  removeRedundantTransformations ends
+       51803908 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+       51803916 ms              8 ms  computeSortedOccurrenceSets ends
+       51803921 ms              5 ms  computeEncoding ends
+       51803921 ms              0 ms  Program ends
+
+
+Number of points: 81
+Number of MTPs before removal: 5017
+Number of OSs after removal: 1601

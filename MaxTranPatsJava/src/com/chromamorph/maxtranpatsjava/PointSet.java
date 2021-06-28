@@ -25,7 +25,7 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static long TIME_AT_START_OF_COMPUTING_HETERO_OS = 0l;
 	public static boolean COMPUTE_HETERO_OS_COMPLETED = false;
-	public static long TIME_LIMIT = 1000 * 60 * 20; // 20 minutes
+	public static long TIME_LIMIT = 1000 * 60 * 30; // 30 minutes
 	
 	private Long ticksPerSecond = null;
 
@@ -942,7 +942,7 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static void compressNLBPairFiles(int startIndex, int endIndex) {
 		String inputDir = "data/nlb/nlb_datasets/annmidi";
-		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-corsair";
+		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-new-mac";
 		
 //		Find file pairs within the range between startIndex and endIndex for which there is
 //		no output file in the outputDir
@@ -1078,7 +1078,7 @@ public class PointSet implements Comparable<PointSet>{
 	}
 	
 	public static void main(String[] args) {
-		int start = 28000, end = 30000;
+		int start = 63340, end = 64000;
 		if (args.length > 0) start = Integer.parseInt(args[0]);
 		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(start);
