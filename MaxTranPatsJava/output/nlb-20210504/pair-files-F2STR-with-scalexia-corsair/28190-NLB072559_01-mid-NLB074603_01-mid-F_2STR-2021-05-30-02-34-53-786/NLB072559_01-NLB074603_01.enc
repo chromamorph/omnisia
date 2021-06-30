@@ -1,0 +1,33 @@
+OS(P(p(1470.0,24.0),p(1530.0,24.0),p(1620.0,27.0),p(1725.0,29.0),p(1785.0,29.0),p(1830.0,29.0),p(1890.0,27.0),p(1950.0,28.0),p(2010.0,26.0),p(2100.0,27.0),p(2190.0,28.0),p(2250.0,28.0),p(2310.0,29.0),p(2370.0,31.0),p(2445.0,31.0),p(2505.0,29.0),p(2550.0,29.0),p(2610.0,27.0),p(2700.0,28.0),p(2790.0,30.0),p(2850.0,29.0),p(2910.0,28.0),p(2970.0,26.0),p(3060.0,27.0)),[T(F_2STR,[1.0, 1800.0, 0.0, 1.0])],null)
+OS(P(p(9810.0,29.0),p(9870.0,29.0),p(9930.0,29.0),p(9990.0,29.0),p(10290.0,28.0),p(10380.0,28.0)),[T(F_2STR,[1.0, 720.0, -1.0, 1.0])],null)
+OS(P(p(390.0,27.0),p(450.0,26.0),p(540.0,25.0),p(1620.0,27.0)),[T(F_2STR,[-0.5, 11040.0, -55.0, -1.0])],null)
+OS(P(p(1050.0,30.0),p(1110.0,29.0),p(1170.0,28.0),p(1260.0,24.0)),[T(F_2STR,[2.0, 7950.0, 0.0, 1.0])],null)
+OS(P(p(60.0,24.0),p(180.0,27.0),p(285.0,29.0),p(345.0,27.0),p(660.0,26.0),p(780.0,29.0),p(930.0,28.0),p(9750.0,24.0),p(10110.0,29.0),p(10920.0,28.0)),[],null)
+
+
+Coverage: 84
+Uncompressed length: 168
+Encoding length: 112
+Compression factor: 1.5
+Number of occurrence sets: 5
+
+
+
+Log:
+       19892353 ms             11 ms  computeMaximalTransformablePatterns starts
+       19908139 ms          15786 ms  computeMaximalTransformablePatterns ends
+       19908155 ms             16 ms  computeSizeMTPSetArray ends
+       19908160 ms              5 ms  computePatternTransformationSetPairs ends
+       19908314 ms            154 ms  computeSuperMTPs ends
+       19942809 ms          34495 ms  computeHeterogeneousOccurrenceSets ends
+       19944487 ms           1678 ms  removeDuplicateOccurrenceSets ends
+       19944571 ms             84 ms  removeRedundantTransformations ends
+       19944571 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+       19944598 ms             27 ms  computeSortedOccurrenceSets ends
+       19944606 ms              8 ms  computeEncoding ends
+       19944606 ms              0 ms  Program ends
+
+
+Number of points: 84
+Number of MTPs before removal: 8151
+Number of OSs after removal: 2107
