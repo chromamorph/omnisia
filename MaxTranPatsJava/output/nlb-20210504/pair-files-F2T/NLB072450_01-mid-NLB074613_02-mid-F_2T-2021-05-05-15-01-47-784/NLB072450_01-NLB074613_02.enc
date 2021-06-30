@@ -1,0 +1,36 @@
+CF=2.00, COV=14, UL=28, PL=6, TL=8, Pat=P(p(1890.0,29.0),p(1950.0,29.0),p(2010.0,29.0)), Trans=[T(F_2T,[7800.0, 0.0]), T(F_2T,[7920.0, 0.0]), T(F_2T,[8100.0, -1.0]), T(F_2T,[8400.0, -2.0])], SupMTPs=null
+CF=2.00, COV=12, UL=24, PL=8, TL=4, Pat=P(p(3150.0,30.0),p(3210.0,29.0),p(3270.0,29.0),p(3390.0,30.0)), Trans=[T(F_2T,[6780.0, -1.0]), T(F_2T,[7080.0, -2.0])], SupMTPs=null
+CF=2.00, COV=12, UL=24, PL=6, TL=6, Pat=P(p(1590.0,29.0),p(1650.0,28.0),p(1770.0,27.0)), Trans=[T(F_2T,[1560.0, 1.0]), T(F_2T,[2640.0, 5.0]), T(F_2T,[8580.0, 0.0])], SupMTPs=null
+CF=1.80, COV=9, UL=18, PL=6, TL=4, Pat=P(p(330.0,29.0),p(750.0,29.0),p(1380.0,31.0)), Trans=[T(F_2T,[1260.0, 0.0]), T(F_2T,[10020.0, -2.0])], SupMTPs=null
+CF=1.80, COV=9, UL=18, PL=6, TL=4, Pat=P(p(330.0,29.0),p(1470.0,32.0),p(1530.0,31.0)), Trans=[T(F_2T,[2820.0, 1.0]), T(F_2T,[9180.0, -5.0])], SupMTPs=null
+CF=1.67, COV=10, UL=20, PL=10, TL=2, Pat=P(p(990.0,32.0),p(1050.0,31.0),p(3060.0,31.0),p(4020.0,31.0),p(10350.0,27.0)), Trans=[T(F_2T,[600.0, -3.0])], SupMTPs=null
+CF=1.67, COV=10, UL=20, PL=10, TL=2, Pat=P(p(1260.0,31.0),p(2100.0,28.0),p(10530.0,29.0),p(10710.0,26.0),p(11070.0,27.0)), Trans=[T(F_2T,[960.0, 3.0])], SupMTPs=null
+CF=1.00, COV=27, UL=54, PL=54, TL=0, Pat=P(p(60.0,31.0),p(210.0,31.0),p(390.0,30.0),p(450.0,32.0),p(525.0,31.0),p(585.0,30.0),p(930.0,31.0),p(1140.0,28.0),p(2340.0,33.0),p(2460.0,32.0),p(3450.0,28.0),p(3540.0,27.0),p(3780.0,29.0),p(4110.0,32.0),p(4170.0,35.0),p(4500.0,31.0),p(4740.0,27.0),p(9600.0,29.0),p(10590.0,28.0),p(10860.0,24.0),p(11220.0,28.0),p(11310.0,28.0),p(11580.0,31.0),p(11760.0,27.0),p(11850.0,32.0),p(11940.0,31.0),p(12210.0,29.0)), Trans=[], SupMTPs=null
+
+
+Coverage: 82
+Uncompressed length: 164
+Encoding length: 136
+Compression factor: 1.2058823529411764
+Number of occurrence sets: 8
+
+
+
+Log:
+        4615954 ms              3 ms  computeMaximalTransformablePatterns starts
+        4615966 ms             12 ms  computeMaximalTransformablePatterns ends
+        4615966 ms              0 ms  computeSizeMTPSetArray ends
+        4615966 ms              0 ms  computePatternTransformationSetPairs ends
+        4615973 ms              7 ms  computeSuperMTPs ends
+        4616047 ms             74 ms  computeHeterogeneousOccurrenceSets ends
+        4616064 ms             17 ms  removeDuplicateOccurrenceSets ends
+        4616065 ms              1 ms  removeRedundantTransformations ends
+        4616065 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        4616066 ms              1 ms  computeSortedOccurrenceSets ends
+        4616066 ms              0 ms  computeEncoding ends
+        4616066 ms              0 ms  Program ends
+
+
+Number of points: 82
+Number of MTPs before removal: 562
+Number of OSs after removal: 274
