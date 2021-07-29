@@ -143,7 +143,7 @@ public class PointSet implements Comparable<PointSet>{
 			if (diatonicPitch) {
 				Integer morpheticPitch = note.getPitch().getMorpheticPitch();
 				if (morpheticPitch == null)
-					morpheticPitch = note.getComputedPitch().getMorpheticPitch();
+					morpheticPitch = note. ().getMorpheticPitch();
 				if (morpheticPitch == null)
 					throw new NoMorpheticPitchException("The following note has no morphetic pitch: "+note);
 
