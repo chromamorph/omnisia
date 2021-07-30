@@ -143,7 +143,7 @@ public class PointSet implements Comparable<PointSet>{
 			if (diatonicPitch) {
 				Integer morpheticPitch = note.getPitch().getMorpheticPitch();
 				if (morpheticPitch == null)
-					morpheticPitch = note. ().getMorpheticPitch();
+					morpheticPitch = note.getComputedPitch().getMorpheticPitch();
 				if (morpheticPitch == null)
 					throw new NoMorpheticPitchException("The following note has no morphetic pitch: "+note);
 
@@ -940,6 +940,51 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
+	public static void compressMissingNLBPairFiles() {
+		CheckMissingPairFiles.main(null); //Fills out PAIR_FILE_PRESENT array and NLB_FILE_NAMES ArrayList
+		
+		String inputDir = CheckMissingPairFiles.INPUT_DIR;
+		String outputDir = CheckMissingPairFiles.ROOT_FOLDER + "output/pair-files-F2STR-with-scalexia-missing";
+		
+		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
+			//			new TransformationClass[] {new F_2T()},
+			//			new TransformationClass[] {new F_2TR()},
+			new TransformationClass[] {new F_2STR()},
+			//			new TransformationClass[] {new F_2T(), new F_2TR()},
+			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
+			//			new TransformationClass[] {new F_2STR(), new F_2T()},
+			//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
+		};
+
+		int count = 0;
+		for(int i = 0; i < CheckMissingPairFiles.NLB_FILE_NAMES.size() - 1; i++)
+			for(int j = i + 1; j < CheckMissingPairFiles.NLB_FILE_NAMES.size(); j++)
+				for(TransformationClass[] transformationClassArray : transformationClassArrays) {
+
+					if (!CheckMissingPairFiles.PAIR_FILE_PRESENT[count]) {
+						String fn1 = CheckMissingPairFiles.NLB_FILE_NAMES.get(i);
+						fn1 = fn1.replace(".", "-");
+						String fn2 = CheckMissingPairFiles.NLB_FILE_NAMES.get(j);
+						fn2 = fn2.replace(".","-");
+						String countStr = String.format("%05d", count);
+						String outputFilePrefix = countStr+"-"+fn1+"-"+fn2;
+						
+						encodePairOfPointSetsFromFiles(
+								inputDir+"/"+CheckMissingPairFiles.NLB_FILE_NAMES.get(i),
+								inputDir+"/"+CheckMissingPairFiles.NLB_FILE_NAMES.get(j),
+								transformationClassArray, 
+								true, // pitchSpell
+								true, // midTimePoint
+								"1100",
+								outputDir,
+								true,
+								3,
+								count);		
+					}
+					count++;
+				}
+	}
+	
 	public static void compressNLBPairFiles(int startIndex, int endIndex) {
 		String inputDir = "data/nlb/nlb_datasets/annmidi";
 		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-new-mac";
@@ -1078,11 +1123,12 @@ public class PointSet implements Comparable<PointSet>{
 	}
 	
 	public static void main(String[] args) {
-		int start = 63340, end = 64000;
-		if (args.length > 0) start = Integer.parseInt(args[0]);
-		if (args.length > 1) end = Integer.parseInt(args[1]);
+//		int start = 63340, end = 64000;
+//		if (args.length > 0) start = Integer.parseInt(args[0]);
+//		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(start);
-		compressNLBPairFiles(start,end);
+//		compressNLBPairFiles(start,end);
+		compressMissingNLBPairFiles();
 //		encodeFile();
 //		renameNLBPairFileOutputFiles();
 	}
