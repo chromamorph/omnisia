@@ -1,5 +1,9 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -10,6 +14,29 @@ public class Encoding {
 	
 	public Encoding(ArrayList<OccurrenceSet> occurrenceSets) {
 		setOccurrenceSets(occurrenceSets);
+	}
+	
+	public Encoding(File encodingFile, PointSet dataset) throws IOException, InvalidArgumentException {
+		BufferedReader br = new BufferedReader(new FileReader(encodingFile));
+		String l = br.readLine();
+		while (l != null) {
+			if (l.contains("Pat=") && l.contains("Trans=")) {
+				add(new OccurrenceSet(l, dataset));
+			}
+			l = br.readLine();
+		}
+		br.close();
+		if (getOccurrenceSets() == null) { // Then try alternative encoding format OS(P(p(x1,y1),...),[T(tc,sigma),...],<superMTPs>)
+			br = new BufferedReader(new FileReader(encodingFile));
+			l = br.readLine();
+			while (l != null) {
+				if (l.trim().startsWith("OS(P(p(")) {
+					add(new OccurrenceSet(l, dataset));
+				}
+				l = br.readLine();
+			}
+			br.close();
+		}
 	}
 	
 	public void setOccurrenceSets(ArrayList<OccurrenceSet> occurrenceSets) {

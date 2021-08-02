@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -15,9 +17,16 @@ import javax.sound.midi.InvalidMidiDataException;
 
 import com.chromamorph.notes.Note;
 import com.chromamorph.notes.Notes;
+import com.chromamorph.points022.NoMorpheticPitchException;
+import com.chromamorph.points022.SCALEXIA3Encoding;
+import com.chromamorph.points022.SCALEXIA3Encoding.PVF;
 
 public class PointSet implements Comparable<PointSet>{
 
+	public static long TIME_AT_START_OF_COMPUTING_HETERO_OS = 0l;
+	public static boolean COMPUTE_HETERO_OS_COMPLETED = false;
+	public static long TIME_LIMIT = 1000 * 60 * 30; // 30 minutes
+	
 	private Long ticksPerSecond = null;
 
 	private TreeSet<Point> points = new TreeSet<Point>();
@@ -63,6 +72,24 @@ public class PointSet implements Comparable<PointSet>{
 		for(Point p : points)
 			add(p);
 		resetPointsArray();
+	}
+	
+	public PointSet(String pointSetString) throws InvalidArgumentException {
+		if (!pointSetString.equals("P()")) {
+			if (!pointSetString.startsWith("P(p(") || !pointSetString.endsWith("))"))
+				throw new InvalidArgumentException("PointSet(String) constructor called with invalid argument:\n"+pointSetString);
+			String pointsString = pointSetString.replace("),p(", ";");
+			pointsString = pointsString.substring(4, pointsString.length()-2);
+			String[] ar = pointsString.split(";");
+			for(String s : ar) {
+				String[] a = s.split(",");
+				Double x = Double.parseDouble(a[0]);
+				Double y = Double.parseDouble(a[1]);
+				add(new Point(x,y));
+			}
+		}
+		resetPointsArray();
+		pointComplexity = -1;
 	}
 
 	public PointSet(File file) throws IOException, DimensionalityException {
@@ -133,6 +160,19 @@ public class PointSet implements Comparable<PointSet>{
 										dimensionMask.charAt(2) == '1'?(double)voice:null,
 												dimensionMask.charAt(3) == '1'?(double)duration:null));
 		}
+//		We want to avoid having points with non-integer x values, specifically
+//		we want to avoid having the ".5" that results when a duration is an
+//		odd number of tatums. So we'll check to see if any of the points have ".5"
+//		x values, and if there are any that do, we'll multiply all the onsets by 2.
+		boolean zeroPoint5Present = false;
+		for(Point p : points)
+			if (p.get(0)%1.0 == 0.5) {
+				zeroPoint5Present = true;
+				break;
+			}
+		if (zeroPoint5Present)
+			for (Point p : points)
+				p.set(0, 2 * p.get(0));
 	}
 
 	private void makePointSetFromMIDIFile(File file, boolean pitchSpell, boolean midTimePoint, String dimensionMask) {
@@ -338,9 +378,49 @@ public class PointSet implements Comparable<PointSet>{
 	//	}
 
 
-	public void computeMaximalTransformablePatterns(int minSize) throws Exception {
+	public com.chromamorph.points022.Point getPoint022(Point point) {
+		long x = point.get(0).longValue();
+		int y = point.get(1).intValue();
+		com.chromamorph.points022.Point p022 = new com.chromamorph.points022.Point(x,y);
+		return p022;
+	}
+	
+	public com.chromamorph.points022.PointSet getPoints022PointSet() {
+		com.chromamorph.points022.PointSet ps022 = new com.chromamorph.points022.PointSet();
+		for(Point p : getPoints())
+			ps022.add(getPoint022(p));
+		return ps022;
+	}
+
+	public void computeMTPsWithScalexia(int minSize) {
+		com.chromamorph.points022.PointSet dataset = getPoints022PointSet();
+
+		SCALEXIA3Encoding scalexiaEnc = new SCALEXIA3Encoding(
+				dataset, 
+				minSize, 
+				true, //includeInversions, 
+				0.5, // minCompactness, 
+				1.0 // maxProportionOfObjectPatternInImagePattern
+				);
+		
+//		Now we have to convert the SCALEXIA3Encoding into a TreeSet of TransformationPointSetPairs
+//		stored in this.mtps
+		
+		mtps = new TreeSet<TransformationPointSetPair>();
+		for(PVF pvf : scalexiaEnc.getS()) {
+			Transformation transformation = new Transformation(new F_2STR(),pvf.getSigmaForF2STR());
+			PointSet pattern = new PointSet();
+			com.chromamorph.points022.PointSet ps022 = pvf.getPattern();
+			for(com.chromamorph.points022.Point p022 : ps022.getPoints())
+				pattern.add(new Point(p022.getX()*1.0,p022.getY() * 1.0));
+			pattern.resetPointsArray();
+			mtps.add(new TransformationPointSetPair(transformation, pattern));
+		}
+	}
+
+	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
-			throw new Exception("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
 		TreeSet<TransformationPointSequencePair> transformationObjectBasisPairs = new TreeSet<TransformationPointSequencePair>();
 		for(TransformationClass tc : transformationClasses) {
 			int basisSize = tc.getBasisSize();
@@ -520,9 +600,11 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	public void computeHeterogeneousOccurrenceSets() {
+	public void computeHeterogeneousOccurrenceSets() throws TimeOutException {
 		for(int size : mtpSizes) {
+//			System.out.println("Computing heterogeneous occurrence sets of mtps of size "+size+", of which there are "+occurrenceSets[size].size());
 			for (OccurrenceSet mtp : occurrenceSets[size]) {
+//				System.out.println(mtp);
 				mtp.addAllTransformations(mtp.getSuperMTPTransformations());
 				mtp.setSuperMTPs(null);
 			}
@@ -564,24 +646,24 @@ public class PointSet implements Comparable<PointSet>{
 			System.gc();
 			occurrenceSets[size].addAll(sortedDeDupedList);
 		}
-//		for(int i = 0; i < occurrenceSets[size].size() - 1; i++) {
-//			for(int j = i+1; j < occurrenceSets[size].size(); j++) {
-//				OccurrenceSet os1 = occurrenceSets[size].get(i);
-//				OccurrenceSet os2 = occurrenceSets[size].get(j);
-//				if (os1.getPattern().equals(os2.getPattern())) {
-//					occurrenceSets[size].remove(j);
-//					j--;
-//				} else {
-//					for(Transformation f : os1.getTransformations()) {
-//						if (os2.getPattern().equals(f.phi(os1.getPattern()))) {
-//							occurrenceSets[size].remove(j);
-//							j--;
-//							break;
-//						}
-//					}
-//				}
-//			}
-//		}
+		//		for(int i = 0; i < occurrenceSets[size].size() - 1; i++) {
+		//			for(int j = i+1; j < occurrenceSets[size].size(); j++) {
+		//				OccurrenceSet os1 = occurrenceSets[size].get(i);
+		//				OccurrenceSet os2 = occurrenceSets[size].get(j);
+		//				if (os1.getPattern().equals(os2.getPattern())) {
+		//					occurrenceSets[size].remove(j);
+		//					j--;
+		//				} else {
+		//					for(Transformation f : os1.getTransformations()) {
+		//						if (os2.getPattern().equals(f.phi(os1.getPattern()))) {
+		//							occurrenceSets[size].remove(j);
+		//							j--;
+		//							break;
+		//						}
+		//					}
+		//				}
+		//			}
+		//		}
 	}
 
 	public void removeOccurrenceSetsWithEmptyTransformationSets() {
@@ -606,9 +688,10 @@ public class PointSet implements Comparable<PointSet>{
 
 	/**
 	 * Assumes sortedOccurenceSets holds a list of OccurrenceSets in descending order of quality.
+	 * @throws SuperMTPsNotNullException 
 	 * @throws Exception
 	 */
-	public void computeEncoding() throws Exception {
+	public void computeEncoding() throws SuperMTPsNotNullException {
 		ArrayList<OccurrenceSet> encoding = new ArrayList<OccurrenceSet>();
 
 		// Assumes first occurrence set in list is the "best"
@@ -633,14 +716,24 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses) throws Exception {
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3);
+	}
+	public static void encodePointSet (
+			PointSet ps, 
+			String outputFilePath, 
+			TransformationClass[] transformationClasses,
+			boolean useScalexia,
+			int minSize) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
-		PrintWriter output = new PrintWriter(outputFileName);
 
 		ps.addTransformationClasses(transformationClasses);		
 
 		log.add(new LogInfo("computeMaximalTransformablePatterns starts", true));
-		ps.computeMaximalTransformablePatterns(3);
+		if (useScalexia)
+			ps.computeMTPsWithScalexia(minSize);
+		else
+			ps.computeMaximalTransformablePatterns(minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
 		int numMTPsBeforeRemoval = ps.getMTPs().size();
@@ -653,6 +746,8 @@ public class PointSet implements Comparable<PointSet>{
 		ps.computeSuperMTPs();
 		log.add(new LogInfo("computeSuperMTPs ends", true));
 
+		TIME_AT_START_OF_COMPUTING_HETERO_OS = Calendar.getInstance().getTimeInMillis();
+		COMPUTE_HETERO_OS_COMPLETED = false;
 		ps.computeHeterogeneousOccurrenceSets();
 		log.add(new LogInfo("computeHeterogeneousOccurrenceSets ends", true));
 
@@ -697,6 +792,7 @@ public class PointSet implements Comparable<PointSet>{
 
 		log.add(new LogInfo("Program ends\n\n", true));
 
+		PrintWriter output = new PrintWriter(outputFilePath);
 		Utility.println(output, ps.getEncoding());
 
 		Utility.println(output, "\n\nLog:");
@@ -727,9 +823,12 @@ public class PointSet implements Comparable<PointSet>{
 			boolean pitchSpell, 
 			boolean midTimePoint, 
 			String dimensionMask, 
-			String outputDirectory) {
+			String outputDirectory,
+			boolean useScalexia,
+			int minSize,
+			int count) {
+		String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 		try {
-			String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses);
 			PointSet ps1 = new PointSet(
 					new File(filePath1), 
 					pitchSpell, 
@@ -747,14 +846,19 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (TimeOutException e) {
+			Utility.moveOutputFilesToFailedDir(outputFileName);
+			System.out.println("ERROR: Computing of heterogeneous occurrence sets timed out on file, "+new File(outputFileName).getParent());
+		} catch (NoTransformationClassesDefinedException e) {
 			e.printStackTrace();
-		}
+		} catch (SuperMTPsNotNullException e) {
+			e.printStackTrace();
+		} 
 	}
 
 	public static void encodePointSetFromFile(
@@ -772,6 +876,32 @@ public class PointSet implements Comparable<PointSet>{
 					midTimePoint,
 					dimensionMask);
 			encodePointSet(ps, outputFileName, transformationClasses);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (DimensionalityException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void encodePointSetFromFile(
+			String fileName, 
+			TransformationClass[] transformationClasses, 
+			boolean pitchSpell,
+			boolean midTimePoint,
+			String dimensionMask,
+			String outputDir,
+			boolean useScalexia,
+			int minSize) {
+		try {
+			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
+			PointSet ps = new PointSet(
+					new File(fileName), 
+					pitchSpell, 
+					midTimePoint,
+					dimensionMask);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -804,14 +934,18 @@ public class PointSet implements Comparable<PointSet>{
 						true, // pitchSpell
 						true, // midTimePoint
 						"1100",
-						"output/nlb-20210504/single-files-with-quantization");
+						"output/nlb-20210504/single-files-with-scalexia",
+						true,
+						3);
 		}
 	}
 
-	public static void compressNLBPairFiles(int startIndex, int endIndex) {
-		String inputDir = "data/nlb/nlb_datasets/annmidi";
-		String[] nlbFileNames = Utility.getInputFileNames(inputDir);
-
+	public static void compressMissingNLBPairFiles() {
+		CheckMissingPairFiles.main(null); //Fills out PAIR_FILE_PRESENT array and NLB_FILE_NAMES ArrayList
+		
+		String inputDir = CheckMissingPairFiles.INPUT_DIR;
+		String outputDir = CheckMissingPairFiles.ROOT_FOLDER + "output/pair-files-F2STR-with-scalexia-missing";
+		
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
 			//			new TransformationClass[] {new F_2T()},
 			//			new TransformationClass[] {new F_2TR()},
@@ -823,24 +957,180 @@ public class PointSet implements Comparable<PointSet>{
 		};
 
 		int count = 0;
-		for(int i = 0; i < nlbFileNames.length - 1; i++)
-			for(int j = i + 1; j < nlbFileNames.length; j++)
+		for(int i = 0; i < CheckMissingPairFiles.NLB_FILE_NAMES.size() - 1; i++)
+			for(int j = i + 1; j < CheckMissingPairFiles.NLB_FILE_NAMES.size(); j++)
 				for(TransformationClass[] transformationClassArray : transformationClassArrays) {
-					if (count >= startIndex && (count < endIndex || endIndex == 0))
+
+					if (!CheckMissingPairFiles.PAIR_FILE_PRESENT[count]) {
+						String fn1 = CheckMissingPairFiles.NLB_FILE_NAMES.get(i);
+						fn1 = fn1.replace(".", "-");
+						String fn2 = CheckMissingPairFiles.NLB_FILE_NAMES.get(j);
+						fn2 = fn2.replace(".","-");
+						String countStr = String.format("%05d", count);
+						String outputFilePrefix = countStr+"-"+fn1+"-"+fn2;
+						
 						encodePairOfPointSetsFromFiles(
-								inputDir+"/"+nlbFileNames[i],
-								inputDir+"/"+nlbFileNames[j],
+								inputDir+"/"+CheckMissingPairFiles.NLB_FILE_NAMES.get(i),
+								inputDir+"/"+CheckMissingPairFiles.NLB_FILE_NAMES.get(j),
 								transformationClassArray, 
 								true, // pitchSpell
 								true, // midTimePoint
 								"1100",
-								"output/nlb-20210504/pair-files-F2STR-with-deduping");		
+								outputDir,
+								true,
+								3,
+								count);		
+					}
+					count++;
+				}
+	}
+	
+	public static void compressNLBPairFiles(int startIndex, int endIndex) {
+		String inputDir = "data/nlb/nlb_datasets/annmidi";
+		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-new-mac";
+		
+//		Find file pairs within the range between startIndex and endIndex for which there is
+//		no output file in the outputDir
+		
+		String[] existingOutputFilesArray = new File(outputDir).list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return (new File(dir, name).isDirectory() && !name.startsWith("."));
+			}
+			
+		});
+		TreeSet<String> existingOutputFiles = new TreeSet<String>();
+		for(String name : existingOutputFilesArray)
+			existingOutputFiles.add(name.substring(0, name.indexOf("F_")-1));
+		
+		System.out.println("\n"+existingOutputFiles.size()+" files in output directory:");
+		for(String name : existingOutputFiles)
+			System.out.println("  "+name);
+		
+///////////////////////////////
+		
+//		Get input file names in alphabetical order - note it is necessary to sort the names
+//		because the ordering returned by the operating system is different on a Mac from a PC
+		
+		String[] nlbFileNamesArray = Utility.getInputFileNames(inputDir);
+		ArrayList<String> nlbFileNames = new ArrayList<String>();
+		for (String nlbFileName : nlbFileNamesArray)
+			nlbFileNames.add(nlbFileName);
+		nlbFileNames.sort(null);
+
+///////////////////////////////
+		
+		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
+			//			new TransformationClass[] {new F_2T()},
+			//			new TransformationClass[] {new F_2TR()},
+			new TransformationClass[] {new F_2STR()},
+			//			new TransformationClass[] {new F_2T(), new F_2TR()},
+			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
+			//			new TransformationClass[] {new F_2STR(), new F_2T()},
+			//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
+		};
+
+		int count = 0;
+		for(int i = 0; i < nlbFileNames.size() - 1; i++)
+			for(int j = i + 1; j < nlbFileNames.size(); j++)
+				for(TransformationClass[] transformationClassArray : transformationClassArrays) {
+
+					String fn1 = nlbFileNames.get(i);
+					fn1 = fn1.replace(".", "-");
+					String fn2 = nlbFileNames.get(j);
+					fn2 = fn2.replace(".","-");
+					String countStr = String.format("%05d", count);
+					String outputFilePrefix = countStr+"-"+fn1+"-"+fn2;
+					
+					if (!existingOutputFiles.contains(outputFilePrefix) 
+							&& count >= startIndex 
+							&& (count < endIndex || endIndex == 0)) {
+						encodePairOfPointSetsFromFiles(
+								inputDir+"/"+nlbFileNames.get(i),
+								inputDir+"/"+nlbFileNames.get(j),
+								transformationClassArray, 
+								true, // pitchSpell
+								true, // midTimePoint
+								"1100",
+								outputDir,
+								true,
+								3,
+								count);		
+					}
 					count++;
 				}
 	}
 
-	public static void main(String[] args) {
-		//		compressNLBSingleFiles(startIndex);
-		compressNLBPairFiles(0,0);
+	public static void encodeFile() {
+		encodePointSetFromFile(
+				"data/nlb/nlb_datasets/annmidi/NLB072912_01.mid", 
+//				"data/test/test/F_2STR-simple-test-dataset.lisp",
+				new TransformationClass[] {new F_2STR()}, 
+				true, // pitchSpell
+				true, // midTimePoint
+				"1100",
+				"output/nlb-20210504/single-files-with-scalexia",
+				true, // useScalexia
+				3 //minSize
+				);
 	}
+	
+	private static void renameNLBPairFileOutputFiles() {
+		String inputFileDir = "data/nlb/nlb_datasets/annmidi";
+		String outputFileDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia";
+
+		String[] nlbFileNamesArray = Utility.getInputFileNames(inputFileDir);
+		ArrayList<String> nlbFileNames = new ArrayList<String>();
+		for (String nlbFileName : nlbFileNamesArray)
+			nlbFileNames.add(nlbFileName);
+		nlbFileNames.sort(null);
+
+		String[] existingOutputFilesArray = new File(outputFileDir).list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return (new File(dir, name).isDirectory() && !name.startsWith("."));
+			}
+			
+		});
+		TreeSet<String> existingOutputFiles = new TreeSet<String>();
+		for(String name : existingOutputFilesArray)
+			existingOutputFiles.add(name);
+
+		int count = 0;
+		for(int i = 0; i < nlbFileNames.size() - 1; i++)
+			for(int j = i + 1; j < nlbFileNames.size(); j++){
+
+					String fn1 = nlbFileNames.get(i);
+					fn1 = fn1.replace(".", "-");
+					String fn2 = nlbFileNames.get(j);
+					fn2 = fn2.replace(".","-");
+					String outputFilePrefix = fn1+"-"+fn2;
+
+					String existingFileName = existingOutputFiles.ceiling(outputFilePrefix);
+					
+					if (existingFileName != null && existingFileName.startsWith(outputFilePrefix)) {
+						String newCountStr = String.format("%05d",count);
+						boolean success = new File(outputFileDir+"/"+existingFileName).renameTo(new File(outputFileDir+"/"+newCountStr+"-"+existingFileName));
+						if (!success)
+							System.out.println("ERROR: Failed to rename "+existingFileName);
+					} else {
+						System.out.println("ERROR: Failed to find existing file starting with "+outputFilePrefix);
+					}
+					count++;
+				}
+	}
+	
+	public static void main(String[] args) {
+//		int start = 63340, end = 64000;
+//		if (args.length > 0) start = Integer.parseInt(args[0]);
+//		if (args.length > 1) end = Integer.parseInt(args[1]);
+//		compressNLBSingleFiles(start);
+//		compressNLBPairFiles(start,end);
+		compressMissingNLBPairFiles();
+//		encodeFile();
+//		renameNLBPairFileOutputFiles();
+	}
+
 }
