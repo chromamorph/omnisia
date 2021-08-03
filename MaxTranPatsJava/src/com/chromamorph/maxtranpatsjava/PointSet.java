@@ -941,34 +941,18 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public static void compressMissingNLBPairFiles() {
-		CheckMissingPairFiles.main(null); //Fills out PAIR_FILE_PRESENT array and NLB_FILE_NAMES ArrayList
-		
+		CheckMissingPairFiles.main(null); //Fills out PAIR_FILE_PRESENT array and NLB_FILE_NAMES ArrayList		
 		String inputDir = CheckMissingPairFiles.INPUT_DIR;
-		String outputDir = CheckMissingPairFiles.ROOT_FOLDER + "output/pair-files-F2STR-with-scalexia-missing";
-		
+		String outputDir = CheckMissingPairFiles.ROOT_FOLDER + "output/pair-files-F2STR-with-scalexia-missing";		
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
-			//			new TransformationClass[] {new F_2T()},
-			//			new TransformationClass[] {new F_2TR()},
 			new TransformationClass[] {new F_2STR()},
-			//			new TransformationClass[] {new F_2T(), new F_2TR()},
-			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
-			//			new TransformationClass[] {new F_2STR(), new F_2T()},
-			//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
 		};
-
 		int count = 0;
 		for(int i = 0; i < CheckMissingPairFiles.NLB_FILE_NAMES.size() - 1; i++)
 			for(int j = i + 1; j < CheckMissingPairFiles.NLB_FILE_NAMES.size(); j++)
 				for(TransformationClass[] transformationClassArray : transformationClassArrays) {
 
 					if (!CheckMissingPairFiles.PAIR_FILE_PRESENT[count]) {
-						String fn1 = CheckMissingPairFiles.NLB_FILE_NAMES.get(i);
-						fn1 = fn1.replace(".", "-");
-						String fn2 = CheckMissingPairFiles.NLB_FILE_NAMES.get(j);
-						fn2 = fn2.replace(".","-");
-						String countStr = String.format("%05d", count);
-						String outputFilePrefix = countStr+"-"+fn1+"-"+fn2;
-						
 						encodePairOfPointSetsFromFiles(
 								inputDir+"/"+CheckMissingPairFiles.NLB_FILE_NAMES.get(i),
 								inputDir+"/"+CheckMissingPairFiles.NLB_FILE_NAMES.get(j),
