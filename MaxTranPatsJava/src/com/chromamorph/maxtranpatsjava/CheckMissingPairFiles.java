@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 public class CheckMissingPairFiles {
 	
-	public static String ROOT_FOLDER = "/home/dave/Repos/nlb20210504/";
+	public static String ROOT_FOLDER = "/Users/susanne/Repos/nlb20210504/";
 
 	public static String INPUT_DIR = ROOT_FOLDER + "data/nlb/nlb_datasets/annmidi";
 	
