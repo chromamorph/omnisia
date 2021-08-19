@@ -26,6 +26,7 @@ public class PointSet implements Comparable<PointSet>{
 	public static long TIME_AT_START_OF_COMPUTING_HETERO_OS = 0l;
 	public static boolean COMPUTE_HETERO_OS_COMPLETED = false;
 	public static long TIME_LIMIT = 1000 * 60 * 30; // 30 minutes
+	public static boolean NO_TIME_LIMIT = true;
 	
 	private Long ticksPerSecond = null;
 

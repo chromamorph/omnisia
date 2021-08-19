@@ -113,7 +113,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 
 	public TreeSet<Transformation> getSuperMTPTransformations()  throws TimeOutException {
 		long time = Calendar.getInstance().getTimeInMillis();
-		if (time - PointSet.TIME_AT_START_OF_COMPUTING_HETERO_OS > PointSet.TIME_LIMIT)
+		if (!PointSet.NO_TIME_LIMIT && time - PointSet.TIME_AT_START_OF_COMPUTING_HETERO_OS > PointSet.TIME_LIMIT)
 			throw new TimeOutException("getSupeMTPTransformations timed out");
 		TreeSet<Transformation> superMTPTransformations = new TreeSet<Transformation>();
 		if (superMTPs == null)
