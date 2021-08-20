@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 import javax.sound.midi.InvalidMidiDataException;
 
@@ -601,14 +603,25 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
+	
 	public void computeHeterogeneousOccurrenceSets() throws TimeOutException {
+		int processors = Runtime.getRuntime().availableProcessors();
+        System.out.println(Integer.toString(processors) + " processor"
+                + (processors != 1 ? "s are " : " is ")
+                + "available");
+ 
+		
 		for(int size : mtpSizes) {
-//			System.out.println("Computing heterogeneous occurrence sets of mtps of size "+size+", of which there are "+occurrenceSets[size].size());
-			for (OccurrenceSet mtp : occurrenceSets[size]) {
-//				System.out.println(mtp);
-				mtp.addAllTransformations(mtp.getSuperMTPTransformations());
-				mtp.setSuperMTPs(null);
-			}
+//			Each iteration runs on all mtps of a particular size
+			AddSuperMTPTransformationsRecursiveAction addSuperMTPTransformations = new AddSuperMTPTransformationsRecursiveAction(occurrenceSets[size]);
+			ForkJoinPool pool = new ForkJoinPool();
+			pool.invoke(addSuperMTPTransformations);
+//			for (OccurrenceSet mtp : occurrenceSets[size]) {
+////				This loop can be done in parallel
+////				System.out.println(mtp);
+//				mtp.addAllTransformations(mtp.getSuperMTPTransformations());
+//				mtp.setSuperMTPs(null);
+//			}
 		}
 		System.gc();
 	}
@@ -971,8 +984,10 @@ public class PointSet implements Comparable<PointSet>{
 	}
 	
 	public static void compressNLBPairFiles(int startIndex, int endIndex) {
-		String inputDir = "data/nlb/nlb_datasets/annmidi";
-		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-new-mac";
+//		String inputDir = "data/nlb/nlb_datasets/annmidi";
+		String inputDir = "D:\\Repos\\nlb20210504\\data\\nlb\\nlb_datasets\\annmidi";
+//		String outputDir = "output/nlb-20210504/pair-files-F2STR-with-scalexia-new-mac";
+		String outputDir = "D:\\Repos\\nlb20210504\\output\\parallel-test";
 		
 //		Find file pairs within the range between startIndex and endIndex for which there is
 //		no output file in the outputDir
@@ -1108,12 +1123,12 @@ public class PointSet implements Comparable<PointSet>{
 	}
 	
 	public static void main(String[] args) {
-//		int start = 63340, end = 64000;
+		int start = 0, end = 5;
 //		if (args.length > 0) start = Integer.parseInt(args[0]);
 //		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(start);
-//		compressNLBPairFiles(start,end);
-		compressMissingNLBPairFiles();
+		compressNLBPairFiles(start,end);
+//		compressMissingNLBPairFiles();
 //		encodeFile();
 //		renameNLBPairFileOutputFiles();
 	}

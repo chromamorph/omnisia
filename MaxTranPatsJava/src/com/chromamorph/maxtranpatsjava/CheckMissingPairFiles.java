@@ -17,7 +17,8 @@ public class CheckMissingPairFiles {
 			"output/pair-files-F2STR-with-scalexia-corsair",
 			"output/pair-files-F2STR-with-scalexia-mac2010",
 			"output/pair-files-F2STR-with-scalexia-new-mac",
-			"output/pair-files-F2STR-with-scalexia-p50"
+			"output/pair-files-F2STR-with-scalexia-p50",
+			"output/pair-files-F2STR-with-scalexia-missing"
 	};
 
 	public static boolean[] PAIR_FILE_PRESENT = new boolean[64620];
