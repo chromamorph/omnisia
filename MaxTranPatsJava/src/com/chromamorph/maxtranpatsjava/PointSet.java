@@ -38,7 +38,7 @@ public class PointSet implements Comparable<PointSet>{
 	private TreeSet<TransformationPointSetPair> mtps;
 	private ArrayList<TransformationPointSetPair>[] sizeMTPSetArray;
 	private ArrayList<Integer> mtpSizes = new ArrayList<Integer>();
-	private ArrayList<OccurrenceSet>[] occurrenceSets;
+	private ArrayList<OccurrenceSet>[] mtpOccurrenceSets;
 	private ArrayList<OccurrenceSet> sortedOccurrenceSets;
 	private TreeSet<TransformationClass> transformationClasses;
 	@SuppressWarnings("unused")
@@ -563,10 +563,10 @@ public class PointSet implements Comparable<PointSet>{
 	 * patterns of a specific size.
 	 */
 	@SuppressWarnings("unchecked")
-	public void computePatternTransformationSetPairs() {
-		occurrenceSets = (ArrayList<OccurrenceSet>[])new ArrayList[size()+1];
+	public void computeMTPOccurrenceSets() {
+		mtpOccurrenceSets = (ArrayList<OccurrenceSet>[])new ArrayList[size()+1];
 		for(int size : mtpSizes) {
-			occurrenceSets[size] = new ArrayList<OccurrenceSet>();
+			mtpOccurrenceSets[size] = new ArrayList<OccurrenceSet>();
 			ArrayList<TransformationPointSetPair> mtpsForThisSize = sizeMTPSetArray[size];
 			PointSet currentPattern = mtpsForThisSize.get(0).getPointSet();
 			OccurrenceSet currentMergedMTP = new OccurrenceSet(currentPattern,this);
@@ -576,23 +576,23 @@ public class PointSet implements Comparable<PointSet>{
 				if (thisMTP.getPointSet().equals(currentPattern))
 					currentMergedMTP.addTransformation(thisMTP.getTransformation());
 				else {
-					occurrenceSets[size].add(currentMergedMTP);
+					mtpOccurrenceSets[size].add(currentMergedMTP);
 					currentPattern = thisMTP.getPointSet();
 					currentMergedMTP = new OccurrenceSet(currentPattern,this);
 					currentMergedMTP.addTransformation(thisMTP.getTransformation());
 				}
 			}
-			occurrenceSets[size].add(currentMergedMTP);
+			mtpOccurrenceSets[size].add(currentMergedMTP);
 		}
 	}
 
 	public void computeSuperMTPs() {
 		for(int i = 0; i < mtpSizes.size()-1; i++) {
 			int size = mtpSizes.get(i);
-			ArrayList<OccurrenceSet> mtpsOfThisSize = occurrenceSets[size];
+			ArrayList<OccurrenceSet> mtpsOfThisSize = mtpOccurrenceSets[size];
 			for(OccurrenceSet mtp : mtpsOfThisSize) {
 				for (int j = i+1;j < mtpSizes.size();j++) {
-					ArrayList<OccurrenceSet> largerMTPs = occurrenceSets[mtpSizes.get(j)];
+					ArrayList<OccurrenceSet> largerMTPs = mtpOccurrenceSets[mtpSizes.get(j)];
 					for(OccurrenceSet largerMTP : largerMTPs) {
 						PointSet largerPattern = largerMTP.getPattern();
 						if (largerPattern.contains(mtp.getPattern()))
@@ -629,7 +629,7 @@ public class PointSet implements Comparable<PointSet>{
 	public void computeSortedOccurrenceSets(Comparator<OccurrenceSet> comparator) {
 		sortedOccurrenceSets = new ArrayList<OccurrenceSet>();
 		for(int size : mtpSizes) {
-			for(OccurrenceSet os : occurrenceSets[size]) {
+			for(OccurrenceSet os : mtpOccurrenceSets[size]) {
 				sortedOccurrenceSets.add(os);
 			}
 		}
@@ -640,7 +640,7 @@ public class PointSet implements Comparable<PointSet>{
 		//		For each MTP, remove more complex transformations that map the pattern
 		//		onto the same image pattern as less complex transformations
 		for(int size : mtpSizes) {
-			for (OccurrenceSet mtp : occurrenceSets[size]) {
+			for (OccurrenceSet mtp : mtpOccurrenceSets[size]) {
 				mtp.removeRedundantTransformations();
 			}
 		}
@@ -653,12 +653,12 @@ public class PointSet implements Comparable<PointSet>{
 	public void removeDuplicateOccurrenceSets() {
 		for(int size : mtpSizes) {
 			TreeSet<OccurrenceSet> sortedDeDupedList = new TreeSet<OccurrenceSet>();
-			for(OccurrenceSet os : occurrenceSets[size]) {
+			for(OccurrenceSet os : mtpOccurrenceSets[size]) {
 				sortedDeDupedList.add(os);
 			}
-			occurrenceSets[size] = new ArrayList<OccurrenceSet>();
+			mtpOccurrenceSets[size] = new ArrayList<OccurrenceSet>();
 			System.gc();
-			occurrenceSets[size].addAll(sortedDeDupedList);
+			mtpOccurrenceSets[size].addAll(sortedDeDupedList);
 		}
 		//		for(int i = 0; i < occurrenceSets[size].size() - 1; i++) {
 		//			for(int j = i+1; j < occurrenceSets[size].size(); j++) {
@@ -680,11 +680,11 @@ public class PointSet implements Comparable<PointSet>{
 		//		}
 	}
 
-	public void removeOccurrenceSetsWithEmptyTransformationSets() {
+	public void removeOccurrenceSetsWithNoTransformations() {
 		for(int size : mtpSizes)
-			for(int i = 0; i < occurrenceSets[size].size(); i++) {
-				if (occurrenceSets[size].get(i).getTransformations().isEmpty()) {
-					occurrenceSets[size].remove(i);
+			for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+				if (mtpOccurrenceSets[size].get(i).getTransformations().isEmpty()) {
+					mtpOccurrenceSets[size].remove(i);
 					i--;
 				}
 			}
@@ -754,7 +754,7 @@ public class PointSet implements Comparable<PointSet>{
 		ps.computeSizeMTPSetArray();
 		log.add(new LogInfo("computeSizeMTPSetArray ends", true));
 
-		ps.computePatternTransformationSetPairs();
+		ps.computeMTPOccurrenceSets();
 		log.add(new LogInfo("computePatternTransformationSetPairs ends", true));
 
 		ps.computeSuperMTPs();
@@ -771,7 +771,7 @@ public class PointSet implements Comparable<PointSet>{
 		ps.removeRedundantTransformations();
 		log.add(new LogInfo("removeRedundantTransformations ends", true));
 
-		ps.removeOccurrenceSetsWithEmptyTransformationSets();
+		ps.removeOccurrenceSetsWithNoTransformations();
 		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
 
 		ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
