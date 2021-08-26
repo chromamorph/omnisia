@@ -1,6 +1,7 @@
 package com.chromamorph.maxtranpatsjava;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeSet;
@@ -8,7 +9,7 @@ import java.util.TreeSet;
 public class CheckMissingPairFiles {
 
 	
-	public static String ROOT_FOLDER = "D:/Repos/nlb20210504/";
+	public static String ROOT_FOLDER = "../../nlb20210504/";
 
 	public static String INPUT_DIR = ROOT_FOLDER + "data/nlb/nlb_datasets/annmidi";
 
@@ -32,7 +33,15 @@ public class CheckMissingPairFiles {
 			b = false;
 		for(String outputFolder : OUTPUT_FOLDERS) {
 			File dir = new File(ROOT_FOLDER + outputFolder);
-			String[] fileList = dir.list();
+			String[] fileList = dir.list(
+					new FilenameFilter() {
+
+						@Override
+						public boolean accept(File dir, String name) {
+							return !name.startsWith(".");
+						}
+						
+					});
 			for(String fileName : fileList) {
 				int i = Integer.parseInt(fileName.substring(0,5));
 				PAIR_FILE_PRESENT[i] = true;
