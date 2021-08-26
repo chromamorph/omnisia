@@ -1,0 +1,22 @@
+Fork/Join takes advantage of multiple processors
+used for tasks that can be divided up recursively
+aims to use all available processing power
+implements ExecutorService interface
+uses work-stealing algorithm
+
+ForkJoinPool class 
+	extends AbstractExecutorService
+	executes ForkJoinTask processes
+
+if (work is small enough)
+	do it directly
+else
+	split work into two pieces
+	invoke both pieces in parallel
+	wait for results
+
+wrap this in a subclass of the ForkJoinTask class
+	e.g., RecursiveTask or RecursiveAction
+
+create ForkJoinTask object that represents the work to be done
+pass it to the invoke() method of a ForkJoinPool object
