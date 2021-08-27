@@ -38,7 +38,20 @@ public class CheckMissingPairFiles {
 
 						@Override
 						public boolean accept(File dir, String name) {
-							return !name.startsWith(".");
+							if (name.startsWith("."))
+								return false;
+							File f = new File(dir, name);
+							if (!(f.isDirectory()))
+								return false;
+							String[] d = f.list();
+							if (d.length != 1)
+								return false;
+							if (!d[0].endsWith(".enc"))
+								return false;
+							for(int i = 0; i < 5; i++)
+								if (!Character.isDigit(name.charAt(i)))
+									return false;
+							return true;
 						}
 						
 					});

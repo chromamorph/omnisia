@@ -5,6 +5,10 @@ import java.util.concurrent.RecursiveAction;
 
 public class AddSuperMTPTransformationsRecursiveAction extends RecursiveAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<OccurrenceSet> mtps;
 	
 	public AddSuperMTPTransformationsRecursiveAction(ArrayList<OccurrenceSet> mtps) {
