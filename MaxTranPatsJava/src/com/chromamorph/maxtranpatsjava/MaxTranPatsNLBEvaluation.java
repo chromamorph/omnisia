@@ -1,4 +1,4 @@
-package com.chromamorph.points022;
+package com.chromamorph.maxtranpatsjava;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,15 +14,20 @@ import java.util.TreeSet;
  * @author David Meredith
  * 
  * Running this file generates all result tables for 
- * JNMR paper on COSIATEC.
+ * experiment of Max Tran Pats on NLB.
+ * 
+ * Uses essentially same code as JNMR2014Evaluation.java in 
+ * package com.chromamorph.points022
  *  
  */
-public class JNMR2014Evaluation {
+public class MaxTranPatsNLBEvaluation {
 
 	private static String[] filter = {};
 	private static String filterString = getFilterString();
-	private static String nlbRootDirectoryPath = "/Users/susanne/Archive/DMB12/LOTOFSPACE/Work/Research/Data/NLB/OUTPUT/NLB";
-	private static String nlbGroundTruthFilePath = "/Users/susanne/Archive/DMB12/LOTOFSPACE/Work/Research/Data/NLB/nlb_datasets/ann_labels.txt";
+	//	private static String nlbRootDirectoryPath = "/Users/susanne/Archive/DMB12/LOTOFSPACE/Work/Research/Data/NLB/OUTPUT/NLB";
+	private static String nlbRootDirectoryPath = "/Users/susanne/Repos/nlb20210504/20210827-output";
+
+	private static String nlbGroundTruthFilePath = "/Users/susanne/Repos/nlb20210504/data/nlb/nlb_datasets/ann_labels.txt";
 	private static String nlbResultsTableTexFilePath = "/Users/susanne/Repos/nlb20210504/output/results/20210504-nlbresults"+filterString+".tex";
 
 	private static String getFilterString() {
@@ -32,7 +37,7 @@ public class JNMR2014Evaluation {
 			sb.append("-"+filter[i]);
 		return sb.toString(); 
 	}
-	
+
 	static class DistanceNode implements Comparable<DistanceNode> {
 		String tune1, tune2, distanceString;
 		double distance;
@@ -184,7 +189,10 @@ public class JNMR2014Evaluation {
 		String[] nlbFileNames = new File(nlbRootDirectoryPath+"/"+algorithm+"/NLB").list();
 		ArrayList<String> compressedFileNames = new ArrayList<String>();
 		for(String nlbFileName : nlbFileNames) {
-			if (algorithm.equals("SIACTTECCompress") || (algorithm.equals("SIARTECCompress")) || (algorithm.equals("SIARCTTECCompress"))) {
+			if (algorithm.startsWith("F2")) {
+				if (nlbFileName.endsWith(".enc"))
+					compressedFileNames.add(nlbRootDirectoryPath+"/"+algorithm+"/NLB/"+nlbFileName);
+			} else if (algorithm.equals("SIACTTECCompress") || (algorithm.equals("SIARTECCompress")) || (algorithm.equals("SIARCTTECCompress"))) {
 				if (nlbFileName.endsWith("-TECCompress"))
 					compressedFileNames.add(nlbRootDirectoryPath+"/"+algorithm+"/NLB/"+nlbFileName);
 			} else if (algorithm.startsWith("Forth")) {
@@ -203,15 +211,17 @@ public class JNMR2014Evaluation {
 		String logFileKey = "Compression ratio: ";
 		if (algorithm.equals("COSIATEC+BZIP2"))
 			logFileKey = "Compression ratio from PointSet to BZIP (in bytes): ";
+		if (algorithm.startsWith("F2"))
+			logFileKey = "Compression factor: ";
 		return computeMeanCR(compressedFileNames, logFileKey);
 	}
 
 	private static double computeMeanCRForForth(ArrayList<String> filePaths) throws IOException {
 		double sum = 0.0;
 		for(String filePath : filePaths) {
-			Integer encodingLength = NLBNCD.getIntegerValueFromStringKey("Encoding length: ", filePath);
-			Integer numberOfPointsInDataset = NLBNCD.getIntegerValueFromStringKey("Number of points in dataset: ", filePath);
-			Integer totalNumberOfPointsCovered = NLBNCD.getIntegerValueFromStringKey("Total number of points covered: ", filePath);
+			Integer encodingLength = MaxTranPatsNLBNCD.getIntegerValueFromStringKey("Encoding length: ", filePath);
+			Integer numberOfPointsInDataset = MaxTranPatsNLBNCD.getIntegerValueFromStringKey("Number of points in dataset: ", filePath);
+			Integer totalNumberOfPointsCovered = MaxTranPatsNLBNCD.getIntegerValueFromStringKey("Total number of points covered: ", filePath);
 			double cr = (1.0*numberOfPointsInDataset)/(1.0*encodingLength+numberOfPointsInDataset-totalNumberOfPointsCovered);
 			sum += cr;
 		}
@@ -223,7 +233,10 @@ public class JNMR2014Evaluation {
 		String[] nlbPairFiles = new File(nlbRootDirectoryPath+"/"+algorithm+"/NLB-PAIRS").list();
 		ArrayList<String> compressedFileNames = new ArrayList<String>();
 		for(String pairFile : nlbPairFiles) {
-			if (algorithm.equals("SIACTTECCompress") || algorithm.equals("SIARTECCompress") || algorithm.equals("SIARCTTECCompress")) {
+			if (algorithm.startsWith("F2")) {
+				if (pairFile.endsWith(".enc"))
+					compressedFileNames.add(nlbRootDirectoryPath+"/"+algorithm+"/NLB-PAIRS/"+pairFile);
+			} else if (algorithm.equals("SIACTTECCompress") || algorithm.equals("SIARTECCompress") || algorithm.equals("SIARCTTECCompress")) {
 				if (pairFile.endsWith("-TECCompress"))
 					compressedFileNames.add(nlbRootDirectoryPath+"/"+algorithm+"/NLB-PAIRS/"+pairFile);
 			} else if (algorithm.startsWith("Forth")) {
@@ -243,6 +256,8 @@ public class JNMR2014Evaluation {
 		String logFileKey = "Compression ratio: ";
 		if (algorithm.equals("COSIATEC+BZIP2"))
 			logFileKey = "Compression ratio from PointSet to BZIP (in bytes): ";
+		if (algorithm.startsWith("F2"))
+			logFileKey = "Compression factor: ";
 		return computeMeanCR(compressedFileNames, logFileKey);
 	}
 

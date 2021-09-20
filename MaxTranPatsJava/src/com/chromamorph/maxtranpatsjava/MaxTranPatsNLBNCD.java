@@ -1,4 +1,4 @@
-package com.chromamorph.points022;
+package com.chromamorph.maxtranpatsjava;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,19 +14,25 @@ import java.util.TreeSet;
  * Calculates the normalized compression distance for each pair of tunes
  * in the annotated corpus of the Dutch Song Databank.
  * 
+ * Stores the distances in a file, distances.txt, which is stored in the algorithm folder alongside
+ * the NLB and NLB-PAIRS directories. These directories need to contain the full set of single files
+ * and pair files.
+ * 
  * 
  * @author David Meredith
  *
  */
-public class NLBNCD {
+public class MaxTranPatsNLBNCD {
 
-	static String algorithm = "COSIATEC";
+//	static String algorithm = "F2STR-scalexia";
+//	static String algorithm = "F2T";
+	static String algorithm = "F2TR";
 
 	public static void main(String[] args) {
-		String rootNLBDirectory = "/Users/susanne/Archive/DMB12/LOTOFSPACE/Work/Research/Data/NLB/OUTPUT/NLB/";
+		String rootNLBDirectory = "/Users/susanne/Repos/nlb20210504/20210827-output/";
 		String nlbOutputDirectoryName = rootNLBDirectory+algorithm+"/NLB";
 		String nlbPairDirectoryName = rootNLBDirectory+algorithm+"/NLB-PAIRS";
-		String outputFileName = rootNLBDirectory+algorithm+"/new-distances.txt";
+		String outputFileName = rootNLBDirectory+algorithm+"/distances.txt";
 
 		String[] nlbPairFileList = new File(nlbPairDirectoryName).list();
 		System.out.println("nlbPairFileList.length="+nlbPairFileList.length);
@@ -36,7 +42,8 @@ public class NLBNCD {
 		TreeSet<String> nlbLogFileNames = new TreeSet<String>();
 		for(String nlbLogFileName : nlbOutputFileList)
 			if (nlbLogFileName.endsWith(".log") || (algorithm.startsWith("Forth") && nlbLogFileName.endsWith(".alltecs"))
-					|| (algorithm.endsWith("TECCompress") && nlbLogFileName.endsWith("-TECCompress")))
+					|| (algorithm.endsWith("TECCompress") && nlbLogFileName.endsWith("-TECCompress"))
+					|| (algorithm.startsWith("F2") && nlbLogFileName.endsWith(".enc")))
 				nlbLogFileNames.add(nlbLogFileName);
 		
 		System.out.println(nlbLogFileNames.size()+" log files found");
@@ -44,7 +51,8 @@ public class NLBNCD {
 		TreeSet<String> nlbPairLogFileNames = new TreeSet<String>();
 		for(String nlbPairLogFileName : nlbPairFileList)
 			if (nlbPairLogFileName.endsWith(".log") || (algorithm.startsWith("Forth") && nlbPairLogFileName.endsWith(".alltecs"))
-					|| (algorithm.endsWith("TECCompress") && nlbPairLogFileName.endsWith("-TECCompress")))
+					|| (algorithm.endsWith("TECCompress") && nlbPairLogFileName.endsWith("-TECCompress"))
+					|| (algorithm.startsWith("F2") && nlbPairLogFileName.endsWith(".enc")))
 				nlbPairLogFileNames.add(nlbPairLogFileName);
 
 		System.out.println(nlbPairLogFileNames.size()+" pair log files found");

@@ -939,13 +939,13 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static void compressNLBSingleFiles(int startIndex, int endIndex) {
 		String inputDir = "../../nlb20210504/data/nlb/nlb_datasets/annmidi";
-		String outputDir = "../../nlb20210504/output/debug-hetero-occ-sets-test";
+		String outputDir = "../../nlb20210504/output/single-files-F2T";
 		String[] nlbFileNames = Utility.getInputFileNames(inputDir);
 
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
-			//			new TransformationClass[] {new F_2T()},
-			//			new TransformationClass[] {new F_2TR()},
-			new TransformationClass[] {new F_2STR()},
+						new TransformationClass[] {new F_2T()},
+//						new TransformationClass[] {new F_2TR()},
+//			new TransformationClass[] {new F_2STR()},
 			//			new TransformationClass[] {new F_2T(), new F_2TR()},
 			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
 			//			new TransformationClass[] {new F_2STR(), new F_2T()},
@@ -1038,7 +1038,7 @@ public class PointSet implements Comparable<PointSet>{
 
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
 			//			new TransformationClass[] {new F_2T()},
-			//			new TransformationClass[] {new F_2TR()},
+//						new TransformationClass[] {new F_2TR()},
 			new TransformationClass[] {new F_2STR()},
 			//			new TransformationClass[] {new F_2T(), new F_2TR()},
 			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
@@ -1141,7 +1141,7 @@ public class PointSet implements Comparable<PointSet>{
 		int start = 25, end = 26;
 		//		if (args.length > 0) start = Integer.parseInt(args[0]);
 		//		if (args.length > 1) end = Integer.parseInt(args[1]);
-//		compressNLBSingleFiles(0, 1);
+//		compressNLBSingleFiles(0, 360);
 //		compressNLBPairFiles(start,end);
 		compressMissingNLBPairFiles();
 		//		encodeFile();
