@@ -563,7 +563,7 @@ public class PointSet implements Comparable<PointSet>{
 	 * patterns of a specific size.
 	 */
 	@SuppressWarnings("unchecked")
-	public void computeMTPOccurrenceSets() {
+	public void mergeMTPs() {
 		mtpOccurrenceSets = (ArrayList<OccurrenceSet>[])new ArrayList[size()+1];
 		for(int size : mtpSizes) {
 			mtpOccurrenceSets[size] = new ArrayList<OccurrenceSet>();
@@ -766,7 +766,7 @@ public class PointSet implements Comparable<PointSet>{
 		ps.computeSizeMTPSetArray();
 		log.add(new LogInfo("computeSizeMTPSetArray ends", true));
 
-		ps.computeMTPOccurrenceSets();
+		ps.mergeMTPs();
 		log.add(new LogInfo("computePatternTransformationSetPairs ends", true));
 
 		ps.computeSuperMTPs();
