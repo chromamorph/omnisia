@@ -416,11 +416,11 @@ public class SCALEXIA3Encoding extends Encoding {
 //										"data/simple/scalingExample01.pts",
 //										"data/simple/inversion-example.pts",
 //										"data/simple/scalexia-example.pts",
-//										"data/Haydn/MenuettoAlRovescio.opnd",
+										"data/Haydn/MenuettoAlRovescio.opnd",
 //										"data/Die Kunst der Fuge/ContrapunctusVIStart.opnd",
 //										"data/WTCI-FUGUES-FOR-JNMR-2014/bwv847b-done.opnd",
 //										"data/Die Kunst der Fuge/ContrapunctusVI.opnd",
-					args[0],
+//					args[0],
 					PitchRepresentation.CHROMATIC_PITCH,
 //					PitchRepresentation.MORPHETIC_PITCH,
 					minPatternSize, //minPatternSize 20 for rovescio, 5 for contrapunctus
@@ -431,7 +431,7 @@ public class SCALEXIA3Encoding extends Encoding {
 //			System.out.println(encoding);
 //			for(PatternPair patternPair : encoding.patternPairs)
 //				System.out.println(patternPair);
-			encoding.draw();
+			encoding.drawOccurrenceSetsToFile("data/Haydn/MenuettoAlRovescio.png", false);;
 		} catch (NoMorpheticPitchException | IOException
 				| UnimplementedInputFileFormatException
 				| InvalidMidiDataException e) {
