@@ -39,8 +39,8 @@ public class DrawPoints extends PApplet {
 	public static int drawWindowHeight = 400;
 	public static int drawWindowWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static int maxNumberOfIntervals = 20;
-	private int pointWidth = 4;
-	private int pointHeight = 4;
+	private int pointWidth = 8;
+	private int pointHeight = 8;
 	private int lineWidth = 2;
 
 	private PatternVectorSetPairList patternVectorSetPairs = null;
@@ -85,6 +85,16 @@ public class DrawPoints extends PApplet {
 		this.points = points;
 		this.diatonicPitch = diatonicPitch;
 		this.saveImageFile = saveImageFile;
+	}
+
+	public DrawPoints(PointSet points, boolean diatonicPitch, boolean saveImageFile, String outputFilePath) {
+		super();
+		tecs = null;
+		patternPairs = null;
+		this.points = points;
+		this.diatonicPitch = diatonicPitch;
+		this.saveImageFile = saveImageFile;
+		this.outputFilePath = outputFilePath;
 	}
 
 	public DrawPoints(PointSet points, String title, boolean diatonicPitch) {
