@@ -428,6 +428,51 @@ public class Utility {
 		return fileRenamed && fileDeleted && dirDeleted;
 	}
 	
+	public static ArrayList<Integer> computeCombinationIndexSequence(int N, int k) {
+		ArrayList<Integer> indexSequence = new ArrayList<Integer>();
+		int newN = N;
+//		Find the largest (ck,k) not larger than N
+		for (int i = 0; i < k; i++) {
+			int prevCkk = 0, ckk = 0;
+			for(int ck = k-1; ckk <= newN; ck++) {
+				prevCkk = ckk;
+				ckk = computeNumCombinations(ck,k);
+			}
+			indexSequence.add(prevCkk);
+			newN -= prevCkk;			
+		}
+		return indexSequence;
+	}
+	
+	public static int computeNumCombinations(int n, int k) {
+		if (k > n || k < 0) return 0;
+		if (k == n || k == 0) return 1;
+		if (k == 1) return n;
+		double numCombinations = 1;
+		for(int j = n, i = 1; j > n - k; j--, i++)
+			numCombinations = numCombinations * j/i;
+		return (int)Math.round(numCombinations);
+	}
+	
+	/**
+	 * Input is a sequence of integers. Output is the combinatorial number for that
+	 * sequence of integers.
+	 * 
+	 * The combinatorial number, N, is given by
+	 * 
+	 * N = (ck,k)
+	 * @param combination
+	 * @return
+	 */
+	public static int computeCombinatorialNumberForCombination(int... combination) {
+		Arrays.sort(combination);
+		int N = 0;
+		for(int i = combination.length-1; i >= 0; i--) {
+			N += computeNumCombinations(combination[i],i+1);
+		}
+		return N;
+	}
+	
 	public static void main(String[] args) {
 //		ArrayList<Double> a = new ArrayList<Double>();
 //		a.add(1.0);
@@ -494,9 +539,16 @@ public class Utility {
 //		System.out.println(gcd(9,15,30));
 
 	
-		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_1/test_file_1.txt");
-		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_2/test_file_2.txt");
+//		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_1/test_file_1.txt");
+//		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_2/test_file_2.txt");
 
+//		for(int n = 15; n < 20; n++)
+//			for(int k = 0; k <= n; k++)
+//				System.out.println("("+n+","+k+") = "+computeNumCombinations(n,k));
+//		System.out.println(computeNumCombinations(14,10));
+//		System.out.println(computeCombinatorialNumberForCombination(0,1,2,3));
+		for(int i = 0; i < 20; i++)
+			System.out.println(computeCombinationIndexSequence(i,3));
 	}
 
 	

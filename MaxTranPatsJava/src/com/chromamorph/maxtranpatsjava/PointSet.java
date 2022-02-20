@@ -421,18 +421,53 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
+	/**
+	 * 
+	 * @param basisSize
+	 * @param basisIndex
+	 * @return A PointSequence object containing the basisSize-combination of
+	 * Points from this PointSet specified by basisIndex.
+	 * 
+	 * basisIndex is converted into a bit vector of length basisSize
+	 * 
+	 * We want the ith element in the effective enumeration of the b-combinations
+	 * of this point set.
+	 * 
+	 * Suppose we have a dataset where n = 10 and our basis size is 4. We assume
+	 * our dataset is actually a sequence where each point has a fixed position
+	 * in this sequence. Then the enumeration of the combination index sequences
+	 * would be
+	 * 0 ->		0 1 2 3
+	 * 1 -> 	0 1 2 4
+	 * ...
+	 * 6 -> 	0 1 2 9
+	 * 7 -> 	0 1 3 4
+	 * 8 -> 	0 1 3 5
+	 * ...
+	 * 12 -> 	0 1 3 9
+	 * 13 -> 	0 1 4 5
+	 * 
+	 */
+	public PointSequence computeObjectBasis(int basisSize, int basisIndex) {
+		ArrayList<Integer> basisIndexSequence = Utility.computeCombinationIndexSequence(size(),basisSize,basisIndex);
+	}
+	
 	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
 		TreeSet<TransformationPointSequencePair> transformationObjectBasisPairs = new TreeSet<TransformationPointSequencePair>();
 		for(TransformationClass tc : transformationClasses) {
 			int basisSize = tc.getBasisSize();
-			ArrayList<PointSequence> objectBases = computeObjectBases(basisSize);
+//			ArrayList<PointSequence> objectBases = computeObjectBases(basisSize); 
+				// n!/(b!(n-b)!) distinct object bases, where n is size of dataset
+				// and b is basis size
+			int numObjectBases = Utility.computeNumCombinations(size(),basisSize);
 			int[][] perms = Utility.computePermutationIndexSequences(basisSize);
-			for(int objIndex = 0; objIndex < objectBases.size(); objIndex++) {
-				PointSequence objectBasis = objectBases.get(objIndex);
-				for(int imgIndex = objIndex; imgIndex < objectBases.size(); imgIndex++) {
-					PointSequence imageBasis = objectBases.get(imgIndex);
+			for(int objIndex = 0; objIndex < numObjectBases; objIndex++) {
+//				PointSequence objectBasis = objectBases.get(objIndex);
+				PointSequence objectBasis = computeObjectBasis(basisSize, objIndex);
+				for(int imgIndex = objIndex; imgIndex < numObjectBases; imgIndex++) {
+					PointSequence imageBasis = computeObjectBasis(basisSize, imgIndex);
 					for(int[] perm : perms) {
 						PointSequence imgBasisPerm = new PointSequence();
 						for(int i = 0; i< basisSize; i++)
