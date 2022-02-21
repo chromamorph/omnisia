@@ -421,40 +421,28 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	/**
-	 * 
-	 * @param basisSize
-	 * @param basisIndex
-	 * @return A PointSequence object containing the basisSize-combination of
-	 * Points from this PointSet specified by basisIndex.
-	 * 
-	 * basisIndex is converted into a bit vector of length basisSize
-	 * 
-	 * We want the ith element in the effective enumeration of the b-combinations
-	 * of this point set.
-	 * 
-	 * Suppose we have a dataset where n = 10 and our basis size is 4. We assume
-	 * our dataset is actually a sequence where each point has a fixed position
-	 * in this sequence. Then the enumeration of the combination index sequences
-	 * would be
-	 * 0 ->		0 1 2 3
-	 * 1 -> 	0 1 2 4
-	 * ...
-	 * 6 -> 	0 1 2 9
-	 * 7 -> 	0 1 3 4
-	 * 8 -> 	0 1 3 5
-	 * ...
-	 * 12 -> 	0 1 3 9
-	 * 13 -> 	0 1 4 5
-	 * 
-	 */
-	public PointSequence computeObjectBasis(int basisSize, int basisIndex) {
-		ArrayList<Integer> basisIndexSequence = Utility.computeCombinationIndexSequence(size(),basisSize,basisIndex);
+	public PointSequence computeBasis(int basisSize, int basisIndex) {
+		ArrayList<Integer> basisIndexSequence = Utility.computeCombinationIndexSequence(basisIndex,basisSize,size());
+		PointSequence basis = new PointSequence();
+		for(int i : basisIndexSequence)
+			basis.add(get(i));
+		return basis;
 	}
 	
 	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+//		Storing <f,b> pairs in a TreeSet, will result in having to sort O(n^2beta) items.
+//		Need to compute all the <f,b> pairs in parallel, then store them in a "vector table"
+//		Then use the orderedness of this table to help with sorting them in parallel.
+//		Another strategy could be to merge incoming <f,b> pairs as they arrive into maximal
+//		patterns. If the number of patterns is a lot less than the number of <f,b> pairs.
+//		The <f,b> pairs are being computed in parallel, so they will come into the table
+//		in parallel. For each distinct f, there will be a pair, <f,M>, in the table, where
+//		M becomes the max tran pat for f. The table can be a hash table and we need to be able to
+//		lock each slot in the table while a new basis is being added to it. <f,b> pairs can
+//		be added in parallel to different slots in the table.
+		
 		TreeSet<TransformationPointSequencePair> transformationObjectBasisPairs = new TreeSet<TransformationPointSequencePair>();
 		for(TransformationClass tc : transformationClasses) {
 			int basisSize = tc.getBasisSize();
@@ -465,12 +453,15 @@ public class PointSet implements Comparable<PointSet>{
 			int[][] perms = Utility.computePermutationIndexSequences(basisSize);
 			for(int objIndex = 0; objIndex < numObjectBases; objIndex++) {
 //				PointSequence objectBasis = objectBases.get(objIndex);
-				PointSequence objectBasis = computeObjectBasis(basisSize, objIndex);
+				PointSequence objectBasis = computeBasis(basisSize, objIndex);
+//				Note that imgIndex starts at objIndex because for each <objIndex, imgIndexPerm> pair, we compute
+//				both the functions that map objIndex onto imgIndexPerm and the functions that map imgIndexPerm
+//				onto objIndex.
 				for(int imgIndex = objIndex; imgIndex < numObjectBases; imgIndex++) {
-					PointSequence imageBasis = computeObjectBasis(basisSize, imgIndex);
+					PointSequence imageBasis = computeBasis(basisSize, imgIndex);
 					for(int[] perm : perms) {
 						PointSequence imgBasisPerm = new PointSequence();
-						for(int i = 0; i< basisSize; i++)
+						for(int i = 0; i < basisSize; i++)
 							imgBasisPerm.add(imageBasis.get(perm[i]));
 						ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
 						for(Transformation transformation : transformations) {
@@ -972,6 +963,37 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
+	public static void encodeFilesInFolder(String inputFolder, String outputFolder, String filter) {
+		String[] inputFileNames = Utility.getInputFileNames(inputFolder);
+		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
+//			new TransformationClass[] {new F_2T()},
+//			new TransformationClass[] {new F_2TR()},
+			new TransformationClass[] {new F_2STR()},
+//			new TransformationClass[] {new F_2T(), new F_2TR()},
+//			new TransformationClass[] {new F_2TR(), new F_2STR()},
+//			new TransformationClass[] {new F_2STR(), new F_2T()},
+//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
+		};
+		for(int i = 0; i < inputFileNames.length; i++) {
+			String fileName = inputFileNames[i];
+			for(TransformationClass[] transformationClassArray : transformationClassArrays) {
+				if (fileName.startsWith(filter)) {
+					encodePointSetFromFile(
+							inputFolder+"/"+fileName, 
+							transformationClassArray, 
+							true, // pitchSpell
+							true, // midTimePoint
+							"1100", //dimensionMask
+							outputFolder,
+							false, //useScalexia
+							3 // minSize
+							);
+				}
+			}
+		}
+
+	}
+	
 	public static void compressNLBSingleFiles(int startIndex, int endIndex) {
 		String inputDir = "../../nlb20210504/data/nlb/nlb_datasets/annmidi";
 		String outputDir = "../../nlb20210504/output/single-files-F2T";
@@ -1171,16 +1193,19 @@ public class PointSet implements Comparable<PointSet>{
 				count++;
 			}
 	}
-
+	
 	public static void main(String[] args) {
-		int start = 25, end = 26;
+//		int start = 25, end = 26;
 		//		if (args.length > 0) start = Integer.parseInt(args[0]);
 		//		if (args.length > 1) end = Integer.parseInt(args[1]);
 //		compressNLBSingleFiles(0, 360);
 //		compressNLBPairFiles(start,end);
-		compressMissingNLBPairFiles();
+//		compressMissingNLBPairFiles();
 		//		encodeFile();
 		//		renameNLBPairFileOutputFiles();
+		encodeFilesInFolder("data/JMM2020-experiment",
+				"output/JMM-2020-experiment-combinatorial-test",
+				"bwv846b-050");
 	}
 
 }
