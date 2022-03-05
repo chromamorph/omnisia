@@ -347,7 +347,9 @@ public class PointSet implements Comparable<PointSet>{
 
 
 	public void addTransformationClass(TransformationClass transformationClass) {
-		this.transformationClasses.add(transformationClass);
+		if (transformationClasses == null)
+			transformationClasses = new TreeSet<TransformationClass>();
+		transformationClasses.add(transformationClass);
 	}
 
 	public void addTransformationClasses(TransformationClass[] transformationClasses) {
@@ -1178,7 +1180,22 @@ public class PointSet implements Comparable<PointSet>{
 //		compressMissingNLBPairFiles();
 		//		encodeFile();
 		//		renameNLBPairFileOutputFiles();
-		encodeFilesInFolder("data/JMM2020-experiment", "JMM-2020-experiment-comb-test-master", "bwv846b-050");
+//		encodeFilesInFolder("data/JMM2020-experiment", "JMM-2020-experiment-comb-test-master", "bwv846b-050");
+		try {
+			PointSet ps = new PointSet(new File("data/test/f2str-test-simple.lisp"));
+			ps.addTransformationClass(new F_2STR());
+			ps.computeMaximalTransformablePatterns(1);
+			System.out.println("INPUT:\n"+ps);
+			System.out.println("OUTPUT:");
+			for(TransformationPointSetPair mtp : ps.getMTPs())
+				System.out.println(mtp);
+		} catch (IOException | DimensionalityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoTransformationClassesDefinedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
