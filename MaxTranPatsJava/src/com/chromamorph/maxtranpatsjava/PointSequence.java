@@ -61,6 +61,12 @@ public class PointSequence implements Comparable<PointSequence> {
 		sb.append(")");
 		return sb.toString();
 	}
+	
+	public PointSet toPointSet() {
+		PointSet ps = new PointSet();
+		ps.addAll(this);
+		return ps;
+	}
 
 	
 }

@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sound.midi.InvalidMidiDataException;
 
@@ -428,35 +429,37 @@ public class PointSet implements Comparable<PointSet>{
 			basis.add(get(i));
 		return basis;
 	}
-	
+
 	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
-//		Storing <f,b> pairs in a TreeSet, will result in having to sort O(n^2beta) items.
-//		Need to compute all the <f,b> pairs in parallel, then store them in a "vector table"
-//		Then use the orderedness of this table to help with sorting them in parallel.
-//		Another strategy could be to merge incoming <f,b> pairs as they arrive into maximal
-//		patterns. If the number of patterns is a lot less than the number of <f,b> pairs.
-//		The <f,b> pairs are being computed in parallel, so they will come into the table
-//		in parallel. For each distinct f, there will be a pair, <f,M>, in the table, where
-//		M becomes the max tran pat for f. The table can be a hash table and we need to be able to
-//		lock each slot in the table while a new basis is being added to it. <f,b> pairs can
-//		be added in parallel to different slots in the table.
-		
-		TreeSet<TransformationPointSequencePair> transformationObjectBasisPairs = new TreeSet<TransformationPointSequencePair>();
+		//		Storing <f,b> pairs in a TreeSet, will result in having to sort O(n^2beta) items.
+		//		Need to compute all the <f,b> pairs in parallel, then store them in a "vector table"
+		//		Then use the orderedness of this table to help with sorting them in parallel.
+		//		Another strategy could be to merge incoming <f,b> pairs as they arrive into maximal
+		//		patterns. If the number of patterns is a lot less than the number of <f,b> pairs.
+		//		The <f,b> pairs are being computed in parallel, so they will come into the table
+		//		in parallel. For each distinct f, there will be a pair, <f,M>, in the table, where
+		//		M becomes the max tran pat for f. The table can be a hash table and we need to be able to
+		//		lock each slot in the table while a new basis is being added to it. <f,b> pairs can
+		//		be added in parallel to different slots in the table.
+
+
+		int hashTableSize = 1000000;
+		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[hashTableSize];
+
 		for(TransformationClass tc : transformationClasses) {
 			int basisSize = tc.getBasisSize();
-//			ArrayList<PointSequence> objectBases = computeObjectBases(basisSize); 
-				// n!/(b!(n-b)!) distinct object bases, where n is size of dataset
-				// and b is basis size
+			//			ArrayList<PointSequence> objectBases = computeObjectBases(basisSize); 
+			// n!/(b!(n-b)!) distinct object bases, where n is size of dataset
+			// and b is basis size
 			int numObjectBases = Utility.computeNumCombinations(size(),basisSize);
 			int[][] perms = Utility.computePermutationIndexSequences(basisSize);
 			for(int objIndex = 0; objIndex < numObjectBases; objIndex++) {
-//				PointSequence objectBasis = objectBases.get(objIndex);
 				PointSequence objectBasis = computeBasis(basisSize, objIndex);
-//				Note that imgIndex starts at objIndex because for each <objIndex, imgIndexPerm> pair, we compute
-//				both the functions that map objIndex onto imgIndexPerm and the functions that map imgIndexPerm
-//				onto objIndex.
+				//				Note that imgIndex starts at objIndex because for each <objIndex, imgIndexPerm> pair, we compute
+				//				both the functions that map objIndex onto imgIndexPerm and the functions that map imgIndexPerm
+				//				onto objIndex.
 				for(int imgIndex = objIndex; imgIndex < numObjectBases; imgIndex++) {
 					PointSequence imageBasis = computeBasis(basisSize, imgIndex);
 					for(int[] perm : perms) {
@@ -465,41 +468,64 @@ public class PointSet implements Comparable<PointSet>{
 							imgBasisPerm.add(imageBasis.get(perm[i]));
 						ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
 						for(Transformation transformation : transformations) {
-							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation,objectBasis));
-							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation.getInverse(),imageBasis));
-							tc.addTransformationInstance(transformation);
-							tc.addTransformationInstance(transformation.getInverse());
+							int i = transformation.hashCode()%hashTableSize;
+							if (mtpArray[i] == null)
+								mtpArray[i] = new ListOfTransformationPointSetPairs();
+							mtpArray[i].add(transformation,objectBasis);
+							i = transformation.getInverse().hashCode()%hashTableSize;
+							if (mtpArray[i] == null)
+								mtpArray[i] = new ListOfTransformationPointSetPairs();
+							mtpArray[i].add(transformation.getInverse(),imageBasis);
+							//							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation,objectBasis));
+							//							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation.getInverse(),imageBasis));
+							//							tc.addTransformationInstance(transformation);
+							//							tc.addTransformationInstance(transformation.getInverse());
 						}
 					}
 				}
 			}
 		}
 
-		//		Compute transformation class sigma complexities
-		//		for(TransformationClass tc : transformationClasses) {
-		//			tc.getSigmaComplexity();
-		//		}
+		/*
+		 * We now have to store the MTPs in the mtps array. We need to iterate over the array, mtps.
+		 * Each element in the array is a list of <transformation, point-set> pairs that
+		 * represents a maximal transformable pattern. We need to print out each of these
+		 * pairs.		
+		 */
 
-		mtps = new TreeSet<TransformationPointSetPair>();
-		if (transformationObjectBasisPairs.size() > 0) {
-			PointSet ps = null;
-			Transformation f = null;
-			for(TransformationPointSequencePair tpsp : transformationObjectBasisPairs ) {
-				if (ps == null && f == null) {
-					f = tpsp.getTransformation();
-					ps = new PointSet(tpsp.getPointSequence());
-				} else if (tpsp.getTransformation().equals(f)) {
-					ps.addAll(tpsp.getPointSequence());
-				} else {
-					if (ps.size() >= minSize)
-						mtps.add(new TransformationPointSetPair(f,ps));
-					f = tpsp.getTransformation();
-					ps = new PointSet(tpsp.getPointSequence());
+		for(ListOfTransformationPointSetPairs mtpList : mtpArray) {
+			mtps = new TreeSet<TransformationPointSetPair>();
+			if (mtpList != null)
+				for (TransformationPointSetPair mtp : mtpList.pairs) {
+					mtps.add(mtp);
 				}
-			}
-			if (ps.size() >= minSize)
-				mtps.add(new TransformationPointSetPair(f,ps));
 		}
+
+		//		Compute transformation class sigma complexities
+		//				for(TransformationClass tc : transformationClasses) {
+		//					tc.getSigmaComplexity();
+		//				}
+
+		//		mtps = new TreeSet<TransformationPointSetPair>();
+		//		if (transformationObjectBasisPairs.size() > 0) {
+		//			PointSet ps = null;
+		//			Transformation f = null;
+		//			for(TransformationPointSequencePair tpsp : transformationObjectBasisPairs ) {
+		//				if (ps == null && f == null) {
+		//					f = tpsp.getTransformation();
+		//					ps = new PointSet(tpsp.getPointSequence());
+		//				} else if (tpsp.getTransformation().equals(f)) {
+		//					ps.addAll(tpsp.getPointSequence());
+		//				} else {
+		//					if (ps.size() >= minSize)
+		//						mtps.add(new TransformationPointSetPair(f,ps));
+		//					f = tpsp.getTransformation();
+		//					ps = new PointSet(tpsp.getPointSequence());
+		//				}
+		//			}
+		//			if (ps.size() >= minSize)
+		//				mtps.add(new TransformationPointSetPair(f,ps));
+		//		}
 	}
 
 	public boolean contains(Point point) {
@@ -966,13 +992,13 @@ public class PointSet implements Comparable<PointSet>{
 	public static void encodeFilesInFolder(String inputFolder, String outputFolder, String filter) {
 		String[] inputFileNames = Utility.getInputFileNames(inputFolder);
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
-//			new TransformationClass[] {new F_2T()},
-//			new TransformationClass[] {new F_2TR()},
+			//			new TransformationClass[] {new F_2T()},
+			//			new TransformationClass[] {new F_2TR()},
 			new TransformationClass[] {new F_2STR()},
-//			new TransformationClass[] {new F_2T(), new F_2TR()},
-//			new TransformationClass[] {new F_2TR(), new F_2STR()},
-//			new TransformationClass[] {new F_2STR(), new F_2T()},
-//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
+			//			new TransformationClass[] {new F_2T(), new F_2TR()},
+			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
+			//			new TransformationClass[] {new F_2STR(), new F_2T()},
+			//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
 		};
 		for(int i = 0; i < inputFileNames.length; i++) {
 			String fileName = inputFileNames[i];
@@ -993,16 +1019,16 @@ public class PointSet implements Comparable<PointSet>{
 		}
 
 	}
-	
+
 	public static void compressNLBSingleFiles(int startIndex, int endIndex) {
 		String inputDir = "../../nlb20210504/data/nlb/nlb_datasets/annmidi";
 		String outputDir = "../../nlb20210504/output/single-files-F2T";
 		String[] nlbFileNames = Utility.getInputFileNames(inputDir);
 
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
-						new TransformationClass[] {new F_2T()},
-//						new TransformationClass[] {new F_2TR()},
-//			new TransformationClass[] {new F_2STR()},
+			new TransformationClass[] {new F_2T()},
+			//						new TransformationClass[] {new F_2TR()},
+			//			new TransformationClass[] {new F_2STR()},
 			//			new TransformationClass[] {new F_2T(), new F_2TR()},
 			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
 			//			new TransformationClass[] {new F_2STR(), new F_2T()},
@@ -1095,7 +1121,7 @@ public class PointSet implements Comparable<PointSet>{
 
 		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
 			//			new TransformationClass[] {new F_2T()},
-//						new TransformationClass[] {new F_2TR()},
+			//						new TransformationClass[] {new F_2TR()},
 			new TransformationClass[] {new F_2STR()},
 			//			new TransformationClass[] {new F_2T(), new F_2TR()},
 			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
@@ -1193,19 +1219,40 @@ public class PointSet implements Comparable<PointSet>{
 				count++;
 			}
 	}
-	
+
+	public void computeMaximalTransformablePatterns(int minSize, TransformationClass... tcs) throws NoTransformationClassesDefinedException {
+		transformationClasses = new TreeSet<TransformationClass>();
+		for (TransformationClass tc : tcs)
+			addTransformationClass(tc);
+		computeMaximalTransformablePatterns(minSize);
+	}
+
 	public static void main(String[] args) {
-//		int start = 25, end = 26;
+		//		int start = 25, end = 26;
 		//		if (args.length > 0) start = Integer.parseInt(args[0]);
 		//		if (args.length > 1) end = Integer.parseInt(args[1]);
-//		compressNLBSingleFiles(0, 360);
-//		compressNLBPairFiles(start,end);
-//		compressMissingNLBPairFiles();
+		//		compressNLBSingleFiles(0, 360);
+		//		compressNLBPairFiles(start,end);
+		//		compressMissingNLBPairFiles();
 		//		encodeFile();
 		//		renameNLBPairFileOutputFiles();
-		encodeFilesInFolder("data/JMM2020-experiment",
-				"output/JMM-2020-experiment-combinatorial-test",
-				"bwv846b-050");
+		//		encodeFilesInFolder("data/JMM2020-experiment",
+		//				"output/JMM-2020-experiment-combinatorial-test",
+		//				"bwv846b-050");
+
+
+		try {
+			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/F_2STR-test-dataset.lisp"));
+			ps.computeMaximalTransformablePatterns(1,new F_2STR());
+			System.out.println("\nInput: " + ps);
+			System.out.println("\nOutput: \n");
+			for (TransformationPointSetPair mtp : ps.getMTPs())
+				System.out.println("\t" + mtp);
+		} catch (IOException | DimensionalityException e) {
+			e.printStackTrace();
+		} catch (NoTransformationClassesDefinedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
