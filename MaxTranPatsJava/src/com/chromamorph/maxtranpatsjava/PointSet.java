@@ -30,6 +30,7 @@ public class PointSet implements Comparable<PointSet>{
 	public static boolean COMPUTE_HETERO_OS_COMPLETED = false;
 	public static long TIME_LIMIT = 1000 * 60 * 30; // 30 minutes
 	public static boolean NO_TIME_LIMIT = true;
+	public static int HASH_TABLE_SIZE = 10000001;
 
 	private Long ticksPerSecond = null;
 
@@ -433,9 +434,9 @@ public class PointSet implements Comparable<PointSet>{
 	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
-		int hashTableSize = 1000000;
-		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[hashTableSize];
+		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
 
+		TreeSet<Integer> hashValues = new TreeSet<Integer>();
 		for(TransformationClass tc : transformationClasses) {
 			int basisSize = tc.getBasisSize();
 			int numObjectBases = Utility.computeNumCombinations(size(),basisSize);
@@ -450,11 +451,14 @@ public class PointSet implements Comparable<PointSet>{
 							imgBasisPerm.add(imageBasis.get(perm[i]));
 						ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
 						for(Transformation transformation : transformations) {
-							int i = transformation.hashCode()%hashTableSize;
+							int i = transformation.hash(HASH_TABLE_SIZE);
+							hashValues.add(i);
 							if (mtpArray[i] == null)
 								mtpArray[i] = new ListOfTransformationPointSetPairs();
 							mtpArray[i].add(transformation,objectBasis);
-							i = transformation.getInverse().hashCode()%hashTableSize;
+							
+							i = transformation.getInverse().hash(HASH_TABLE_SIZE);
+							hashValues.add(i);
 							if (mtpArray[i] == null)
 								mtpArray[i] = new ListOfTransformationPointSetPairs();
 							mtpArray[i].add(transformation.getInverse(),imageBasis);
@@ -466,20 +470,25 @@ public class PointSet implements Comparable<PointSet>{
 			}
 		}
 
-		/*
-		 * We now have to store the MTPs in the mtps array. We need to iterate over the array, mtps.
-		 * Each element in the array is a list of <transformation, point-set> pairs that
-		 * represents a maximal transformable pattern. We need to print out each of these
-		 * pairs.		
-		 */
-
 		mtps = new TreeSet<TransformationPointSetPair>();
-		for(ListOfTransformationPointSetPairs mtpList : mtpArray) {
-			if (mtpList != null)
-				for (TransformationPointSetPair mtp : mtpList.pairs) {
-					mtps.add(mtp);
-				}
+		int maxLoad = 0;
+		for(int i : hashValues) {
+			if (mtpArray[i].size() > maxLoad)
+				maxLoad = mtpArray[i].size();
+			for (TransformationPointSetPair mtp : mtpArray[i].getPairs()) {
+				mtps.add(mtp);
+			}
 		}
+		
+		int[] loadHistogram = new int[maxLoad+1];
+		for(int i : hashValues)
+			loadHistogram[mtpArray[i].size()]++;
+		
+		for(int i = 0; i < loadHistogram.length; i++)
+			if (loadHistogram[i] > 0) {
+				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
+			}
+		
 	}
 
 	public boolean contains(Point point) {
@@ -748,14 +757,15 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses) throws Exception {
-		encodePointSet(ps, outputFileName, transformationClasses, false, 3);
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE);
 	}
 	public static void encodePointSet (
 			PointSet ps, 
 			String outputFilePath, 
 			TransformationClass[] transformationClasses,
 			boolean useScalexia,
-			int minSize) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			int minSize,
+			int hashTableSize) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
 
@@ -878,7 +888,7 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -933,7 +943,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1197,12 +1207,15 @@ public class PointSet implements Comparable<PointSet>{
 
 		try {
 //			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/F_2STR-test-dataset.lisp"));
-			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/f2str-test-simple.lisp"));
+//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/f2str-test-simple.lisp"));
+			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts"));
 			ps.computeMaximalTransformablePatterns(1,new F_2STR());
 			System.out.println("\nInput: " + ps);
 			System.out.println("\nOutput: \n");
-			for (TransformationPointSetPair mtp : ps.getMTPs())
-				System.out.println("\t" + mtp);
+			System.out.println(ps.getMTPs().first());
+			System.out.println("Number of MTPs: "+ps.getMTPs().size());
+//			for (TransformationPointSetPair mtp : ps.getMTPs())
+//				System.out.println(mtp);
 		} catch (IOException | DimensionalityException e) {
 			e.printStackTrace();
 		} catch (NoTransformationClassesDefinedException e) {

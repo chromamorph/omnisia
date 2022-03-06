@@ -120,11 +120,11 @@ public class Transformation implements Comparable<Transformation>{
 	
 	public int hash(int hashTableSize) {
 		int m = hashTableSize;
-		double A = 0.6180339887;
+		double A = 1.6180339887;
 		double h = 1.0;
 		int transformationClassId = getTransformationClass().getId();
 		h = transformationClassId * A;
-		for(double s : getSigma()) h *= s * A;
+		for(double s : getSigma()) h *= Math.abs(s==0.0?0.000001:s) * A;
 		h %= 1.0;
 		return (int)Math.floor(h*m);
 	}

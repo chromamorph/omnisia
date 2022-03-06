@@ -13,6 +13,11 @@ public class PointSequence implements Comparable<PointSequence> {
 			points.add(p);
 	}
 	
+	public PointSequence(Point... points) {
+		for(Point p : points)
+			this.points.add(p);
+	}
+	
 	public PointSequence copy() {
 		PointSequence seq = new PointSequence();
 		for(Point p : points) seq.add(p);
