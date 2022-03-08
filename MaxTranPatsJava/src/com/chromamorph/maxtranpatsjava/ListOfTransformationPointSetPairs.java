@@ -20,6 +20,10 @@ public class ListOfTransformationPointSetPairs {
 		pairs.add(new TransformationPointSetPair(transformation, pointSequence.toPointSet()));
 	}
 	
+	public boolean isEmpty() {
+		return pairs.isEmpty();
+	}
+	
 	public int size() {
 		return pairs.size();
 	}

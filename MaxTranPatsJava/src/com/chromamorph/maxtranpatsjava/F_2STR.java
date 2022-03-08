@@ -34,9 +34,10 @@ public class F_2STR extends TransformationClass {
 		setName("F_2STR");
 		setSigmaLength(4);
 		setBasisSize(2);
+		setPerms();
 		identitySigma = Utility.makeSigma(1.0, 0.0, 0.0, 1.0);
 	}
-
+	
 	@Override
 	Point phi(ArrayList<Double> sigma, Point p) {
 		if (sigma.get(3) != -1 && sigma.get(3) != 1)

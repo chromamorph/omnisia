@@ -349,6 +349,8 @@ public class PointSet implements Comparable<PointSet>{
 
 
 	public void addTransformationClass(TransformationClass transformationClass) {
+		if (this.transformationClasses == null)
+			this.transformationClasses = new TreeSet<TransformationClass>();
 		this.transformationClasses.add(transformationClass);
 	}
 
@@ -431,6 +433,49 @@ public class PointSet implements Comparable<PointSet>{
 		return basis;
 	}
 
+	public void computeMaximalTransformablePatternsForkJoin(int minSize) throws NoTransformationClassesDefinedException {
+		if (transformationClasses == null)
+			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+
+		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
+		for (int i = 0; i < mtpArray.length; i++)
+			mtpArray[i] = new ListOfTransformationPointSetPairs();
+        
+		for (TransformationClass tc : transformationClasses) {
+			int numObjectBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
+			int[][] perms = tc.getPerms();
+			int numComputations = numObjectBases * numObjectBases *perms.length;
+			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases);
+			ForkJoinPool.commonPool().invoke(action);
+		}
+		
+		TreeSet<Integer> hashValues = new TreeSet<Integer>();
+		for(int i = 0; i < mtpArray.length; i++) {
+			if (!(mtpArray[i].isEmpty()))
+				hashValues.add(i);
+		}
+		
+		mtps = new TreeSet<TransformationPointSetPair>();
+		int maxLoad = 0;
+		for(int i : hashValues) {
+			if (mtpArray[i].size() > maxLoad)
+				maxLoad = mtpArray[i].size();
+			for (TransformationPointSetPair mtp : mtpArray[i].getPairs()) {
+				mtps.add(mtp);
+			}
+		}
+		
+		int[] loadHistogram = new int[maxLoad+1];
+		for(int i : hashValues)
+			loadHistogram[mtpArray[i].size()]++;
+		
+		for(int i = 0; i < loadHistogram.length; i++)
+			if (loadHistogram[i] > 0) {
+				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
+			}
+
+	}
+	
 	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -1209,11 +1254,16 @@ public class PointSet implements Comparable<PointSet>{
 //			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/F_2STR-test-dataset.lisp"));
 //			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/f2str-test-simple.lisp"));
 			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts"));
-			ps.computeMaximalTransformablePatterns(1,new F_2STR());
+			ps.addTransformationClass(new F_2STR());
+			long startTime = System.currentTimeMillis();
+			ps.computeMaximalTransformablePatternsForkJoin(1);
+			long endTime = System.currentTimeMillis();
 			System.out.println("\nInput: " + ps);
 			System.out.println("\nOutput: \n");
 			System.out.println(ps.getMTPs().first());
 			System.out.println("Number of MTPs: "+ps.getMTPs().size());
+			System.out.println("Number of points: "+ps.size());
+			System.out.println("Running time: "+(endTime-startTime)+"ms");
 //			for (TransformationPointSetPair mtp : ps.getMTPs())
 //				System.out.println(mtp);
 		} catch (IOException | DimensionalityException e) {
