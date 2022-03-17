@@ -1209,11 +1209,15 @@ public class PointSet implements Comparable<PointSet>{
 //			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/F_2STR-test-dataset.lisp"));
 //			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/f2str-test-simple.lisp"));
 			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts"));
+			long startTime = System.currentTimeMillis();
 			ps.computeMaximalTransformablePatterns(1,new F_2STR());
+			long endTime = System.currentTimeMillis();
 			System.out.println("\nInput: " + ps);
 			System.out.println("\nOutput: \n");
 			System.out.println(ps.getMTPs().first());
+			System.out.println("Number of points: " + ps.size());
 			System.out.println("Number of MTPs: "+ps.getMTPs().size());
+			System.out.println("Running time: "+(endTime-startTime)+"ms");
 //			for (TransformationPointSetPair mtp : ps.getMTPs())
 //				System.out.println(mtp);
 		} catch (IOException | DimensionalityException e) {
