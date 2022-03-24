@@ -305,7 +305,13 @@ public class Utility {
 	}
 
 
-	
+	public static String getOutputFilePath(
+			String outputDir,
+			String inputFilePath, 
+			TransformationClass[] transformationClasses) {
+		return getOutputFilePath(outputDir, inputFilePath, transformationClasses, "enc");
+	}
+
 	/**
 	 * Set outputDir to null if you want the output files to be stored in a subdirectory of 
 	 * the input directory.
@@ -317,7 +323,8 @@ public class Utility {
 	public static String getOutputFilePath(
 			String outputDir,
 			String inputFilePath, 
-			TransformationClass[] transformationClasses) {
+			TransformationClass[] transformationClasses,
+			String outputFileSuffix) {
 		int startOfSuffix = inputFilePath.lastIndexOf('.'); // includes dot
 		int startOfName = inputFilePath.lastIndexOf('/')+1;
 		String inputDir = inputFilePath.substring(0,startOfName); // includes trailing /
@@ -339,7 +346,7 @@ public class Utility {
 		subdirName += "-"+timeString+"/";
 		outputFilePath += subdirName;
 		new File(outputFilePath).mkdirs();
-		outputFilePath += inputFileName + ".enc";
+		outputFilePath += inputFileName + "." + outputFileSuffix;
 		return outputFilePath;
 	}
 	

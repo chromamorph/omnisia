@@ -1,11 +1,19 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TreeSet;
+
+import javax.swing.JFrame;
+
+import com.chromamorph.points022.DrawPoints;
+
+import processing.core.PApplet;
 
 public class Encoding {
 	private ArrayList<OccurrenceSet> occurrenceSets;
@@ -109,5 +117,59 @@ public class Encoding {
 	public double getCompressionFactor() throws Exception {
 		return (1.0*getUncompressedLength())/getEncodingLength();
 	}
+
+	public ArrayList<ArrayList<com.chromamorph.points022.PointSet>> getOccurrenceSetsAsArrayListsOfPointSets() {
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> occSets = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
+	
+		for (OccurrenceSet os : getOccurrenceSets()) {
+			ArrayList<com.chromamorph.points022.PointSet> thisOccSet = new ArrayList<com.chromamorph.points022.PointSet>();
+			occSets.add(thisOccSet);
+			
+//			Add pattern for this occurrence set
+			com.chromamorph.points022.PointSet thisOcc = new com.chromamorph.points022.PointSet();
+			TreeSet<Point> points = os.getPattern().getPoints();
+			for(Point p : points) {
+				thisOcc.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+			}
+			thisOccSet.add(thisOcc);
+			
+			for (Transformation tran : os.getTransformations()) {
+				thisOcc = new com.chromamorph.points022.PointSet();
+				PointSet thisPattern = tran.phi(os.getPattern());
+				points = thisPattern.getPoints();
+				for(Point p : points) {
+					thisOcc.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+				}
+				thisOccSet.add(thisOcc);
+			}
+		}
+		return occSets;
+	}
+	
+	public void drawOccurrenceSets(String outputFilePath) {
+		final PointSet dataset = getOccurrenceSets().get(0).getDataset();
+		final TreeSet<Point> points = dataset.getPoints();
+		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
+		for(Point p : points) {
+			ps.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+		}
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				JFrame frame = new JFrame();
+				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
+				frame.setResizable(false);
+				PApplet embed = new DrawPoints(
+						ps,
+						getOccurrenceSetsAsArrayListsOfPointSets(),
+						outputFilePath,
+						true);
+				frame.add(embed);
+				embed.init();
+				frame.pack();
+				frame.setVisible(true);
+			}
+		});
+	}
+
 	
 }

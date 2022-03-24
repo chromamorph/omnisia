@@ -20,6 +20,7 @@ import javax.sound.midi.InvalidMidiDataException;
 
 import com.chromamorph.notes.Note;
 import com.chromamorph.notes.Notes;
+import com.chromamorph.points022.DrawPoints;
 import com.chromamorph.points022.NoMorpheticPitchException;
 import com.chromamorph.points022.SCALEXIA3Encoding;
 import com.chromamorph.points022.SCALEXIA3Encoding.PVF;
@@ -46,6 +47,14 @@ public class PointSet implements Comparable<PointSet>{
 	@SuppressWarnings("unused")
 	private long pointComplexity = -1;
 	private Encoding encoding = null;
+
+	public ArrayList<OccurrenceSet>[] getMTPOccurrenceSets() {
+		return mtpOccurrenceSets;
+	}
+
+	public ArrayList<Integer> getMTPSizes() {
+		return mtpSizes;
+	}
 
 	public void setEncoding(ArrayList<OccurrenceSet> occurrenceSets) {
 		this.encoding = new Encoding(occurrenceSets);
@@ -440,7 +449,7 @@ public class PointSet implements Comparable<PointSet>{
 		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
 		for (int i = 0; i < mtpArray.length; i++)
 			mtpArray[i] = new ListOfTransformationPointSetPairs();
-        
+
 		for (TransformationClass tc : transformationClasses) {
 			int numObjectBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
 			int[][] perms = tc.getPerms();
@@ -448,13 +457,13 @@ public class PointSet implements Comparable<PointSet>{
 			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases);
 			ForkJoinPool.commonPool().invoke(action);
 		}
-		
+
 		TreeSet<Integer> hashValues = new TreeSet<Integer>();
 		for(int i = 0; i < mtpArray.length; i++) {
 			if (!(mtpArray[i].isEmpty()))
 				hashValues.add(i);
 		}
-		
+
 		mtps = new TreeSet<TransformationPointSetPair>();
 		int maxLoad = 0;
 		for(int i : hashValues) {
@@ -464,18 +473,18 @@ public class PointSet implements Comparable<PointSet>{
 				mtps.add(mtp);
 			}
 		}
-		
+
 		int[] loadHistogram = new int[maxLoad+1];
 		for(int i : hashValues)
 			loadHistogram[mtpArray[i].size()]++;
-		
+
 		for(int i = 0; i < loadHistogram.length; i++)
 			if (loadHistogram[i] > 0) {
 				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
 			}
 
 	}
-	
+
 	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -501,7 +510,7 @@ public class PointSet implements Comparable<PointSet>{
 							if (mtpArray[i] == null)
 								mtpArray[i] = new ListOfTransformationPointSetPairs();
 							mtpArray[i].add(transformation,objectBasis);
-							
+
 							i = transformation.getInverse().hash(HASH_TABLE_SIZE);
 							hashValues.add(i);
 							if (mtpArray[i] == null)
@@ -524,16 +533,16 @@ public class PointSet implements Comparable<PointSet>{
 				mtps.add(mtp);
 			}
 		}
-		
+
 		int[] loadHistogram = new int[maxLoad+1];
 		for(int i : hashValues)
 			loadHistogram[mtpArray[i].size()]++;
-		
+
 		for(int i = 0; i < loadHistogram.length; i++)
 			if (loadHistogram[i] > 0) {
 				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
 			}
-		
+
 	}
 
 	public boolean contains(Point point) {
@@ -644,6 +653,11 @@ public class PointSet implements Comparable<PointSet>{
 			}
 			mtpOccurrenceSets[size].add(currentMergedMTP);
 		}
+	}
+
+	public void computeSuperMTPsForkJoin() {
+		ComputeSuperMTPsAction action = new ComputeSuperMTPsAction(this);
+		ForkJoinPool.commonPool().invoke(action);
 	}
 
 	public void computeSuperMTPs() {
@@ -820,7 +834,8 @@ public class PointSet implements Comparable<PointSet>{
 		if (useScalexia)
 			ps.computeMTPsWithScalexia(minSize);
 		else
-			ps.computeMaximalTransformablePatterns(minSize);
+//			ps.computeMaximalTransformablePatterns(minSize);
+			ps.computeMaximalTransformablePatternsForkJoin(minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
 		int numMTPsBeforeRemoval = ps.getMTPs().size();
@@ -830,7 +845,8 @@ public class PointSet implements Comparable<PointSet>{
 		ps.mergeMTPs();
 		log.add(new LogInfo("computePatternTransformationSetPairs ends", true));
 
-		ps.computeSuperMTPs();
+//		ps.computeSuperMTPs();
+		ps.computeSuperMTPsForkJoin();
 		log.add(new LogInfo("computeSuperMTPs ends", true));
 
 		TIME_AT_START_OF_COMPUTING_HETERO_OS = Calendar.getInstance().getTimeInMillis();
@@ -972,7 +988,7 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	public static void encodePointSetFromFile(
+	public static PointSet encodePointSetFromFile(
 			String fileName, 
 			TransformationClass[] transformationClasses, 
 			boolean pitchSpell,
@@ -989,6 +1005,7 @@ public class PointSet implements Comparable<PointSet>{
 					midTimePoint,
 					dimensionMask);
 			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE);
+			return ps;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -996,6 +1013,7 @@ public class PointSet implements Comparable<PointSet>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	public static void encodeFilesInFolder(String inputFolder, String outputFolder, String filter) {
@@ -1250,27 +1268,27 @@ public class PointSet implements Comparable<PointSet>{
 		//				"bwv846b-050");
 
 
-		try {
-//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/F_2STR-test-dataset.lisp"));
-//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/f2str-test-simple.lisp"));
-			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts"));
-			ps.addTransformationClass(new F_2STR());
-			long startTime = System.currentTimeMillis();
-			ps.computeMaximalTransformablePatternsForkJoin(1);
-			long endTime = System.currentTimeMillis();
-			System.out.println("\nInput: " + ps);
-			System.out.println("\nOutput: \n");
-			System.out.println(ps.getMTPs().first());
-			System.out.println("Number of MTPs: "+ps.getMTPs().size());
-			System.out.println("Number of points: "+ps.size());
-			System.out.println("Running time: "+(endTime-startTime)+"ms");
-//			for (TransformationPointSetPair mtp : ps.getMTPs())
-//				System.out.println(mtp);
-		} catch (IOException | DimensionalityException e) {
-			e.printStackTrace();
-		} catch (NoTransformationClassesDefinedException e) {
-			e.printStackTrace();
-		}
+		//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/F_2STR-test-dataset.lisp"));
+		//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/f2str-test-simple.lisp"));
+		//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts"));
+		TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
+		//			String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts";
+		String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-50.pts";
+//		String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/jmm-2d-dataset.lisp";
+		long startTime = System.currentTimeMillis();
+		//			ps.computeMaximalTransformablePatternsForkJoin(1);
+		PointSet ps = encodePointSetFromFile(fileName, transformationClasses,false,true,"1100","output/test",false,3);
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nInput: " + ps);
+		System.out.println("\nOutput: \n");
+		System.out.println(ps.getMTPs().first());
+		System.out.println("Number of MTPs: "+ps.getMTPs().size());
+		System.out.println("Number of points: "+ps.size());
+		System.out.println("Running time: "+(endTime-startTime)+"ms");
+		System.out.println("Encoding: \n"+ps.getEncoding());
+		String outputDir = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/output/bwv846b-50/";
+		String outputFilePath = Utility.getOutputFilePath(outputDir, fileName, transformationClasses, "png");
+		ps.getEncoding().drawOccurrenceSets(outputFilePath);
 	}
 
 }
