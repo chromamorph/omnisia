@@ -485,7 +485,7 @@ public class PointSet implements Comparable<PointSet>{
 
 	}
 
-	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
+	public void computeMaximalTransformablePatternsWithHashTable(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
 		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
@@ -834,7 +834,7 @@ public class PointSet implements Comparable<PointSet>{
 		if (useScalexia)
 			ps.computeMTPsWithScalexia(minSize);
 		else
-//			ps.computeMaximalTransformablePatterns(minSize);
+//			ps.computeMaximalTransformablePatternsWithHashTable(minSize);
 			ps.computeMaximalTransformablePatternsForkJoin(minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
@@ -1251,7 +1251,7 @@ public class PointSet implements Comparable<PointSet>{
 		transformationClasses = new TreeSet<TransformationClass>();
 		for (TransformationClass tc : tcs)
 			addTransformationClass(tc);
-		computeMaximalTransformablePatterns(minSize);
+		computeMaximalTransformablePatternsWithHashTable(minSize);
 	}
 
 	public static void main(String[] args) {
