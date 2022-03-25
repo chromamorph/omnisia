@@ -485,6 +485,62 @@ public class PointSet implements Comparable<PointSet>{
 
 	}
 
+	public void computeMaximalTransformablePatterns(int minSize) throws NoTransformationClassesDefinedException {
+		if (transformationClasses == null)
+			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+		TreeSet<TransformationPointSequencePair> transformationObjectBasisPairs = new TreeSet<TransformationPointSequencePair>();
+		for(TransformationClass tc : transformationClasses) {
+			int basisSize = tc.getBasisSize();
+			ArrayList<PointSequence> objectBases = computeObjectBases(basisSize);
+			int[][] perms = Utility.computePermutationIndexSequences(basisSize);
+			for(int objIndex = 0; objIndex < objectBases.size(); objIndex++) {
+				PointSequence objectBasis = objectBases.get(objIndex);
+				for(int imgIndex = objIndex; imgIndex < objectBases.size(); imgIndex++) {
+					PointSequence imageBasis = objectBases.get(imgIndex);
+					for(int[] perm : perms) {
+						PointSequence imgBasisPerm = new PointSequence();
+						for(int i = 0; i< basisSize; i++)
+							imgBasisPerm.add(imageBasis.get(perm[i]));
+						ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
+						for(Transformation transformation : transformations) {
+							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation,objectBasis));
+							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation.getInverse(),imageBasis));
+							tc.addTransformationInstance(transformation);
+							tc.addTransformationInstance(transformation.getInverse());
+						}
+					}
+				}
+			}
+		}
+
+		//		Compute transformation class sigma complexities
+		//		for(TransformationClass tc : transformationClasses) {
+		//			tc.getSigmaComplexity();
+		//		}
+
+		mtps = new TreeSet<TransformationPointSetPair>();
+		if (transformationObjectBasisPairs.size() > 0) {
+			PointSet ps = null;
+			Transformation f = null;
+			for(TransformationPointSequencePair tpsp : transformationObjectBasisPairs ) {
+				if (ps == null && f == null) {
+					f = tpsp.getTransformation();
+					ps = new PointSet(tpsp.getPointSequence());
+				} else if (tpsp.getTransformation().equals(f)) {
+					ps.addAll(tpsp.getPointSequence());
+				} else {
+					if (ps.size() >= minSize)
+						mtps.add(new TransformationPointSetPair(f,ps));
+					f = tpsp.getTransformation();
+					ps = new PointSet(tpsp.getPointSequence());
+				}
+			}
+			if (ps.size() >= minSize)
+				mtps.add(new TransformationPointSetPair(f,ps));
+		}
+	}
+
+	
 	public void computeMaximalTransformablePatternsWithHashTable(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
