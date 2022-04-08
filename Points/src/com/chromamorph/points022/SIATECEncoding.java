@@ -162,7 +162,7 @@ public class SIATECEncoding extends Encoding {
 		if (pointSet.size()==1)
 			System.out.println(">>>> pointSet has size 1 in SIATECEncoding constructor <<<<<<");
 		long startTime = System.currentTimeMillis();
-		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset);
+		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset, false);
 		ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
 				dataset,
 				vectorTable,

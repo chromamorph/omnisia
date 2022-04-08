@@ -815,6 +815,8 @@ public class OMNISIA {
 		}
 	}
 
+	
+	
 	private static void analyse(String[] args) throws MissingTieStartNoteException, FileNotFoundException, IncompatibleRecurSIAAlgorithmException {
 		if (OUTPUT_FILE == null)
 			writeSwitchesToFile(args);
@@ -827,6 +829,7 @@ public class OMNISIA {
 			case SIATEC: encoding = runSIATEC(); break;
 			case Forth: encoding = runForth(); break;
 			case RecurSIA: encoding = runRecurSIA(); break;
+			case TTWM: encoding = runTTWM(); break;
 			case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
 			}
 			encoding.setTitle(COMMAND_LINE);
@@ -1003,6 +1006,13 @@ public class OMNISIA {
 		return null;
 	}
 
+	private static TTWMEncoding runTTWM() throws MissingTieStartNoteException, FileNotFoundException {
+		return new TTWMEncoding(
+				INPUT_FILE.getAbsolutePath(),
+				OUTPUT_DIR.getAbsolutePath(),
+				DIATONIC_PITCH);
+	}
+	
 	private static SIATECEncoding runSIATEC() throws MissingTieStartNoteException {
 		try {
 			return new SIATECEncoding(

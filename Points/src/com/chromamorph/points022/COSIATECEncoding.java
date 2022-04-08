@@ -169,7 +169,7 @@ public class COSIATECEncoding extends Encoding {
 			return tec;
 		}
 
-		VectorPointPair[][] vectorTable = SIA.computeVectorTable(points,logPrintStream);
+		VectorPointPair[][] vectorTable = SIA.computeVectorTable(points,logPrintStream, false);
 		ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
 				points, 
 				vectorTable, 

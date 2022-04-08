@@ -308,7 +308,7 @@ public class SIATECCompress implements Encoder {
 
 		ArrayList<TEC> tecs = null;
 
-		VectorPointPair[][] vectorTable = SIA.computeVectorTable(points);
+		VectorPointPair[][] vectorTable = SIA.computeVectorTable(points, false);
 		ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
 				points, 
 				vectorTable, 
