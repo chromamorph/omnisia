@@ -20,13 +20,13 @@ import java.util.TreeSet;
  */
 public class NLBNCD {
 
-	static String algorithm = "ForthRCT";
+	static String algorithm = "COSIATEC";
 
 	public static void main(String[] args) {
-
-		String nlbOutputDirectoryName = "/Users/dave/Documents/Work/Research/Data/NLB/OUTPUT/NLB/"+algorithm+"/NLB";
-		String nlbPairDirectoryName = "/Users/dave/Documents/Work/Research/Data/NLB/OUTPUT/NLB/"+algorithm+"/NLB-PAIRS";
-		String outputFileName = "/Users/dave/Documents/Work/Research/Data/NLB/OUTPUT/NLB/"+algorithm+"/distances.txt";
+		String rootNLBDirectory = "/Users/susanne/Archive/DMB12/LOTOFSPACE/Work/Research/Data/NLB/OUTPUT/NLB/";
+		String nlbOutputDirectoryName = rootNLBDirectory+algorithm+"/NLB";
+		String nlbPairDirectoryName = rootNLBDirectory+algorithm+"/NLB-PAIRS";
+		String outputFileName = rootNLBDirectory+algorithm+"/new-distances.txt";
 
 		String[] nlbPairFileList = new File(nlbPairDirectoryName).list();
 		System.out.println("nlbPairFileList.length="+nlbPairFileList.length);
