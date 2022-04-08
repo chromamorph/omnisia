@@ -7,15 +7,57 @@ import java.util.NavigableSet;
 //import java.util.NavigableSet;
 import java.util.TreeSet;
 
+import com.aparapi.Kernel;
+import com.aparapi.Range;
+
 public class SIA {
 
 	public static int TOTAL_NUMBER_OF_MTPs = 0;
 
-	public static VectorPointPair[][] computeVectorTable(PointSet points) {
-		return computeVectorTable(points,null);
+	public static VectorPointPair[][] computeVectorTable(PointSet points, boolean useGPUAcceleration) {
+		return computeVectorTable(points,null, useGPUAcceleration);
 	}
-
-	public static VectorPointPair[][] computeVectorTable(PointSet points, PrintStream logPrintStream) {
+	
+	@SuppressWarnings("deprecation")
+	public static VectorPointPair[][] computeVectorTableWithGPUAcceleration(PointSet points) {
+		
+		System.out.print("\nComputing vector table with GPU acceleration...");
+		
+		int n = points.size();
+		long pntXValues[] = new long[n];
+		int pntYValues[] = new int[n];
+		long vecXValues[] = new long[n*n];
+		int vecYValues[] = new int[n*n];
+		
+		for(int i = 0; i < n; i++) {
+			Point p = points.get(i);
+			pntXValues[i] = p.getX();
+			pntYValues[i] = p.getY();
+		}
+		
+		Kernel kernel = new Kernel() {
+			public void run() {
+				int gid = getGlobalId();
+				vecXValues[gid] = pntXValues[gid%n] - pntXValues[gid/n];
+				vecYValues[gid] = pntYValues[gid%n] - pntYValues[gid/n];
+			};
+		};
+		
+		Range range = Range.create(n*n);
+		kernel.execute(range);
+		System.out.println("Execution mode = "+kernel.getExecutionMode());
+		
+		VectorPointPair[][] vectorTable = new VectorPointPair[n][n];
+		for (int g = 0; g < n * n; g++) {
+			vectorTable[g/n][g%n] = new VectorPointPair(vecXValues[g],vecYValues[g], 
+														pntXValues[g/n],pntYValues[g%n],
+														g/n);
+		}
+		System.out.println("Done!");
+		return vectorTable;
+	}
+	
+	public static VectorPointPair[][] computeVectorTable(PointSet points, PrintStream logPrintStream, boolean useGPUAcceleration) {
 		LogPrintStream.print(logPrintStream, "computeVectorTable...");
 		TreeSet<Point> pointsTreeSet = points.getPoints();
 		
@@ -29,30 +71,37 @@ public class SIA {
 		
 		
 		VectorPointPair[][] vectorTable = new VectorPointPair[points.size()][points.size()];
-		int i = 0;
-		for(Point p1 : pointsTreeSet) {
-			int j = 0;
-			for(Point p2 : pointsTreeSet) {
-				VectorPointPair vp = new VectorPointPair(p1,p2,i);
-				vectorTable[i][j] = vp;
-
-				//FOLLOWING TO COMPARE WITH LAAKSONEN'S PARALLEL IMPLEMENTATIONS OF SIA
-				if (OMNISIA.NUM_MTPS_ONLY)
-					sortedVectorTable.add(vp.getVector());
-				///////////////////////////////////////////////////////////////////////
-
-				j++;
+		
+		long cvtStartTime = System.currentTimeMillis();
+		if (useGPUAcceleration) {
+			vectorTable = computeVectorTableWithGPUAcceleration(points);
+		} else {
+			int i = 0;
+			for(Point p1 : pointsTreeSet) {
+				int j = 0;
+				for(Point p2 : pointsTreeSet) {
+					VectorPointPair vp = new VectorPointPair(p1,p2,i);
+					vectorTable[i][j] = vp;
+					//FOLLOWING TO COMPARE WITH LAAKSONEN'S PARALLEL IMPLEMENTATIONS OF SIA
+					if (OMNISIA.NUM_MTPS_ONLY)
+						sortedVectorTable.add(vp.getVector());
+					///////////////////////////////////////////////////////////////////////
+					j++;
+				}
+				i++;
+			}			
+			if (OMNISIA.NUM_MTPS_ONLY) {
+				numMtpsOnlyEndTime = System.currentTimeMillis();
+				LogPrintStream.println(logPrintStream, "Number of MTPs: "+ sortedVectorTable.size());
+				double numMtpsOnlyRunningTime = (numMtpsOnlyEndTime - numMtpsOnlyStartTime)/1000.0;
+				LogPrintStream.println(logPrintStream, "Running time for number of MTPs only: " + 
+						String.format("%.4f", numMtpsOnlyRunningTime));
 			}
-			i++;
 		}
-
-		if (OMNISIA.NUM_MTPS_ONLY) {
-			numMtpsOnlyEndTime = System.currentTimeMillis();
-			LogPrintStream.println(logPrintStream, "Number of MTPs: "+ sortedVectorTable.size());
-			double numMtpsOnlyRunningTime = (numMtpsOnlyEndTime - numMtpsOnlyStartTime)/1000.0;
-			LogPrintStream.println(logPrintStream, "Running time for number of MTPs only: " + 
-					String.format("%.4f", numMtpsOnlyRunningTime));
-		}
+		long cvtEndTime = System.currentTimeMillis();
+		
+		LogPrintStream.println(logPrintStream, "computeVectorTable takes " + (cvtEndTime-cvtStartTime) + " ms " + (useGPUAcceleration?"with":"without")+" GPU acceleration");
+		
 		LogPrintStream.println(logPrintStream, "completed");
 		return vectorTable;
 	}
@@ -275,7 +324,7 @@ public class SIA {
 				new Point(0,0), new Point(1,1), new Point(1,0), new Point(0,1), 
 				new Point(3,3), new Point(3,4), new Point(4,3), new Point(4,4),
 				new Point(6,0), new Point(6,1), new Point(7,0), new Point(7,1));
-		VectorPointPair[][] vectorTable = computeVectorTable(dataset);
+		VectorPointPair[][] vectorTable = computeVectorTable(dataset,false);
 		ArrayList<MtpCisPair> mtpCisPairs = computeMtpCisPairs(vectorTable,0);
 		System.out.println(dataset);
 		for(MtpCisPair mtpCisPair : mtpCisPairs)

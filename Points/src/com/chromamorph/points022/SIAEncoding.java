@@ -72,7 +72,8 @@ public class SIAEncoding extends Encoding {
 				false, //bbMode
 				null, //omnisiaOutputFilePath
 				0, //topNPatterns
-				false //withoutChannel10
+				false, //withoutChannel10
+				false //useGPUAcceleration
 				);
 	}
 
@@ -87,7 +88,8 @@ public class SIAEncoding extends Encoding {
 			boolean mirex, boolean segmentMode, boolean bbMode,
 			String omnisiaOutputFilePath,
 			int topNPatterns,
-			boolean withoutChannel10) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withoutChannel10,
+			boolean useGPUAcceleration) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		super(null,
 				inputFilePathName,
 				outputDirectoryPathName,
@@ -101,7 +103,7 @@ public class SIAEncoding extends Encoding {
 				omnisiaOutputFilePath
 				);
 		long startTime = System.currentTimeMillis();
-		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset);
+		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset,useGPUAcceleration);
 
 		if (!OMNISIA.NUM_MTPS_ONLY) {
 			ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
