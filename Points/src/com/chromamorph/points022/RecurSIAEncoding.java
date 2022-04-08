@@ -36,7 +36,9 @@ public class RecurSIAEncoding extends Encoding {
 			Algorithm algorithm,
 			double crLow, double crHigh, double compVLow, double compVHigh, int cMin, double sigmaMin, boolean bbCompactness,
 			boolean fromOMNISIA,
-			boolean sortByPatternSize
+			boolean sortByPatternSize,
+			String tecPriorityString,
+			String dualTecPriorityString
 			) throws MissingTieStartNoteException, FileNotFoundException, IncompatibleRecurSIAAlgorithmException {
 		super(null,inputFilePathString,
 				outputDirectoryPathString,
@@ -70,7 +72,9 @@ public class RecurSIAEncoding extends Encoding {
 				algorithm,
 				crLow, crHigh, compVLow, compVHigh, cMin, sigmaMin, bbCompactness,
 				fromOMNISIA,
-				sortByPatternSize
+				sortByPatternSize,
+				tecPriorityString,
+				dualTecPriorityString
 				));
 
 		long endTime = System.currentTimeMillis();
@@ -100,7 +104,9 @@ public class RecurSIAEncoding extends Encoding {
 			Algorithm algorithm,
 			double crLow, double crHigh, double compVLow, double compVHigh, int cMin, double sigmaMin, boolean bbCompactness,
 			boolean fromOMNISIA,
-			boolean sortByPatternSize
+			boolean sortByPatternSize,
+			String tecPriorityString,
+			String dualTecPriorityString
 			) throws FileNotFoundException, MissingTieStartNoteException, IncompatibleRecurSIAAlgorithmException {
 		Encoding encoding = new Encoding();
 		if (pointSet.isEmpty()) System.out.println(">>>>>> pointSet argument is empty in recurSIA()<<<<<<<<");
@@ -127,7 +133,9 @@ public class RecurSIAEncoding extends Encoding {
 					null, //omnisiaOutputFilePathString
 					topNPatterns,
 					withoutChannel10,
-					sortByPatternSize); 
+					sortByPatternSize,
+					tecPriorityString,
+					dualTecPriorityString); 
 			break;
 		case SIATECCompress:
 			SIATECCompress siatecCompress = new SIATECCompress();
@@ -197,7 +205,9 @@ public class RecurSIAEncoding extends Encoding {
 					algorithm,
 					crLow, crHigh, compVLow, compVHigh, cMin, sigmaMin, bbCompactness,
 					fromOMNISIA,
-					sortByPatternSize);
+					sortByPatternSize,
+					tecPriorityString,
+					dualTecPriorityString);
 			if (patternTecs.size() > 1 || patternTecs.get(0).getTranslatorSetSize() > 1)
 				encodingTEC.setPatternTecs(patternTecs);
 		}
@@ -235,6 +245,8 @@ public class RecurSIAEncoding extends Encoding {
 		boolean bbCompactness = false;
 		boolean fromOMNISIA = false;
 		boolean sortByPatternSize = false;
+		String tecPriorityString = OMNISIA.TEC_PRIORITY_STRING;
+		String dualTecPriorityString = tecPriorityString;
 		for (int n = 846; n < 870; n++) {
 			String inputFilePathString = "/Users/dave/Documents/Work/Research/neon/chromamorph/Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv"+n+"b-done.opnd";
 			try {
@@ -266,7 +278,9 @@ public class RecurSIAEncoding extends Encoding {
 						sigmaMin, 
 						bbCompactness,
 						fromOMNISIA,
-						sortByPatternSize
+						sortByPatternSize,
+						tecPriorityString,
+						dualTecPriorityString
 						);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
