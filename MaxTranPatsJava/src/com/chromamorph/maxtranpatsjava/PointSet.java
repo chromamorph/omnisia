@@ -1310,6 +1310,37 @@ public class PointSet implements Comparable<PointSet>{
 		computeMaximalTransformablePatternsWithHashTable(minSize);
 	}
 
+	public static void encodeFilesInFolder(String inputFolder, String outputFolder, String filter) {
+		String[] inputFileNames = Utility.getInputFileNames(inputFolder);
+		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
+//			new TransformationClass[] {new F_2T()},
+//			new TransformationClass[] {new F_2TR()},
+			new TransformationClass[] {new F_2STR()},
+//			new TransformationClass[] {new F_2T(), new F_2TR()},
+//			new TransformationClass[] {new F_2TR(), new F_2STR()},
+//			new TransformationClass[] {new F_2STR(), new F_2T()},
+//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
+		};
+		for(int i = 0; i < inputFileNames.length; i++) {
+			String fileName = inputFileNames[i];
+			for(TransformationClass[] transformationClassArray : transformationClassArrays) {
+				if (fileName.startsWith(filter)) {
+					encodePointSetFromFile(
+							inputFolder+"/"+fileName, 
+							transformationClassArray, 
+							true, // pitchSpell
+							true, // midTimePoint
+							"1100", //dimensionMask
+							outputFolder,
+							false, //useScalexia
+							3 // minSize
+							);
+				}
+			}
+		}
+
+	}
+
 	public static void main(String[] args) {
 		//		int start = 25, end = 26;
 		//		if (args.length > 0) start = Integer.parseInt(args[0]);
@@ -1345,6 +1376,30 @@ public class PointSet implements Comparable<PointSet>{
 		String outputDir = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/output/bwv846b-50/";
 		String outputFilePath = Utility.getOutputFilePath(outputDir, fileName, transformationClasses, "png");
 		ps.getEncoding().drawOccurrenceSets(outputFilePath);
+    
+//<<<<<<< FROM master branch
+//		compressNLBSingleFiles(0, 360);
+//		compressNLBPairFiles(start,end);
+//		compressMissingNLBPairFiles();
+		//		encodeFile();
+		//		renameNLBPairFileOutputFiles();
+//		encodeFilesInFolder("data/JMM2020-experiment", "JMM-2020-experiment-comb-test-master", "bwv846b-050");
+//		try {
+//			PointSet ps = new PointSet(new File("data/test/f2str-test-simple.lisp"));
+//			ps.addTransformationClass(new F_2STR());
+//			ps.computeMaximalTransformablePatterns(1);
+//			System.out.println("INPUT:\n"+ps);
+//			System.out.println("OUTPUT:");
+//			for(TransformationPointSetPair mtp : ps.getMTPs())
+//				System.out.println(mtp);
+//		} catch (IOException | DimensionalityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (NoTransformationClassesDefinedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//>>>>>>> master
 	}
 
 }
