@@ -72,7 +72,8 @@ public class SIAEncoding extends Encoding {
 				false, //bbMode
 				null, //omnisiaOutputFilePath
 				0, //topNPatterns
-				false //withoutChannel10
+				false, //withoutChannel10
+				false //useGPUAcceleration
 				);
 	}
 
@@ -87,7 +88,8 @@ public class SIAEncoding extends Encoding {
 			boolean mirex, boolean segmentMode, boolean bbMode,
 			String omnisiaOutputFilePath,
 			int topNPatterns,
-			boolean withoutChannel10) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withoutChannel10,
+			boolean useGPUAcceleration) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		super(null,
 				inputFilePathName,
 				outputDirectoryPathName,
@@ -101,40 +103,42 @@ public class SIAEncoding extends Encoding {
 				omnisiaOutputFilePath
 				);
 		long startTime = System.currentTimeMillis();
-		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset);
+		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset,useGPUAcceleration);
 
-		ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
-				dataset, 
-				vectorTable, 
-				forRSubdiagonals, r, 
-				withCompactnessTrawler, a, b, 
-				null, //logPrintStream
-				false, //removeTranslationallyEquivalentMtps
-				true, //mergeVectors
-				minPatternSize,
-				maxPatternSize
-				);
+		if (!OMNISIA.NUM_MTPS_ONLY) {
+			ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
+					dataset, 
+					vectorTable, 
+					forRSubdiagonals, r, 
+					withCompactnessTrawler, a, b, 
+					null, //logPrintStream
+					false, //removeTranslationallyEquivalentMtps
+					true, //mergeVectors
+					minPatternSize,
+					maxPatternSize
+					);
 
-		//Convert mtpCisPairs to mtpVectorSetPairs
-		for(MtpCisPair mtpCisPair : mtpCisPairs) {
-			PointSet mtp = mtpCisPair.getMtp();
-			VectorSet vectorSet = mtpCisPair.getVectorSet();
-			mtpVectorSetPairs.add(new PatternVectorSetPair(mtp,vectorSet));
+			//Convert mtpCisPairs to mtpVectorSetPairs
+			for(MtpCisPair mtpCisPair : mtpCisPairs) {
+				PointSet mtp = mtpCisPair.getMtp();
+				VectorSet vectorSet = mtpCisPair.getVectorSet();
+				mtpVectorSetPairs.add(new PatternVectorSetPair(mtp,vectorSet));
+			}
+
+			long endTime = System.currentTimeMillis();
+			setRunningTime(endTime-startTime);
+			
+			setTECs(new ArrayList<TEC>());
+			for(PatternVectorSetPair patternVectorSetPair : mtpVectorSetPairs) {
+				PointSet pattern = patternVectorSetPair.getMtp();
+				VectorSet vectorSet = patternVectorSetPair.getVectorSet();
+				vectorSet.add(new Vector(0,0));
+				addTEC(new TEC(pattern,vectorSet,dataset));
+			}
+			
+			writeToFile();			
 		}
-
-		long endTime = System.currentTimeMillis();
-		setRunningTime(endTime-startTime);
 		
-		setTECs(new ArrayList<TEC>());
-		for(PatternVectorSetPair patternVectorSetPair : mtpVectorSetPairs) {
-			PointSet pattern = patternVectorSetPair.getMtp();
-			VectorSet vectorSet = patternVectorSetPair.getVectorSet();
-			vectorSet.add(new Vector(0,0));
-			addTEC(new TEC(pattern,vectorSet,dataset));
-		}
-		
-		writeToFile();
-
 	}	
 
 

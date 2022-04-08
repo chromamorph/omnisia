@@ -39,8 +39,8 @@ public class DrawPoints extends PApplet {
 	public static int drawWindowHeight = 400;
 	public static int drawWindowWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static int maxNumberOfIntervals = 20;
-	private int pointWidth = 4;
-	private int pointHeight = 4;
+	private int pointWidth = 8;
+	private int pointHeight = 8;
 	private int lineWidth = 2;
 
 	private PatternVectorSetPairList patternVectorSetPairs = null;
@@ -93,6 +93,16 @@ public class DrawPoints extends PApplet {
 		this.points = points;
 		this.diatonicPitch = diatonicPitch;
 		this.saveImageFile = saveImageFile;
+	}
+
+	public DrawPoints(PointSet points, boolean diatonicPitch, boolean saveImageFile, String outputFilePath) {
+		super();
+		tecs = null;
+		patternPairs = null;
+		this.points = points;
+		this.diatonicPitch = diatonicPitch;
+		this.saveImageFile = saveImageFile;
+		this.outputFilePath = outputFilePath;
 	}
 
 	public DrawPoints(PointSet points, String title, boolean diatonicPitch) {
@@ -158,6 +168,22 @@ public class DrawPoints extends PApplet {
 		this.occurrenceSets = occurrenceSets;
 		this.drawAllOccurrenceSetsAtOnce = drawAllOccurrenceSetsAtOnce;
 		this.occurrenceSetIndex = 0;
+		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
+	}
+
+	public DrawPoints(
+			PointSet dataset, 
+			ArrayList<ArrayList<PointSet>> occurrenceSets, 
+			String imageFilePath,
+			boolean drawAllOccurrenceSetsAtOnce
+			) {
+		super();
+		this.points = dataset;
+		this.occurrenceSets = occurrenceSets;
+		this.drawAllOccurrenceSetsAtOnce = drawAllOccurrenceSetsAtOnce;
+		this.occurrenceSetIndex = 0;
+		this.outputFilePath = imageFilePath;
+		this.saveImageFile = true;
 		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
 	}
 
@@ -321,50 +347,50 @@ public class DrawPoints extends PApplet {
 			for(Point n : points.getPoints()) {
 				drawPoint(n);
 			}
-
-			if (structuralSegmentation != null) {
-				drawStructuralSegmentation();
-			} else if (segmentation) {
-				drawSegmentation();
-				this.noLoop();
-			}
-			else if (drawAllOccurrenceSetsAtOnce) {
-				if (occurrenceSets != null && !occurrenceSets.isEmpty()) {
-					drawAllOccurrenceSetsAtOnce();
-				}
-				noLoop();
-			}
-			else if (occurrenceSets != null)
-				drawOccurrenceSet();
-			else if (tecs != null && !tecs.isEmpty())
-				drawTEC();
-			else if (patternPairs != null) {
-				drawPatternPair();
-			}
-			else if (pointSetCollectionPair != null)
-				drawPointSetCollectionPair();
-			else if (patternVectorSetPair != null)
-				drawPatternVectorSetPair();
-			else if (patterns != null)
-				drawPatterns();
-			String outputImageFile = "outputFile.png";
-			if (outputFilePath != null) {
-				int folderEnd = outputFilePath.lastIndexOf("/")+1;
-				String fileNameWithoutSuffix = outputFilePath.substring(folderEnd,outputFilePath.lastIndexOf("."));
-				outputImageFile = outputFilePath.substring(0, folderEnd) + fileNameWithoutSuffix + ".png";
-				System.out.println("\nOutput image file: "+outputImageFile);
-			}			
-			if (saveImageFile) {
-				this.save(outputImageFile);
-				noLoop();
-				//exit();
-			}
-			if (writeToImageFile) {
-				this.save(outputImageFile);
-				noLoop();
-				//exit();
-			}
 		}
+		if (structuralSegmentation != null) {
+			drawStructuralSegmentation();
+		} else if (segmentation) {
+			drawSegmentation();
+			//this.noLoop();
+		}
+		else if (drawAllOccurrenceSetsAtOnce) {
+			if (occurrenceSets != null && !occurrenceSets.isEmpty()) {
+				drawAllOccurrenceSetsAtOnce();
+			}
+			//noLoop();
+		}
+		else if (occurrenceSets != null)
+			drawOccurrenceSet();
+		else if (tecs != null && !tecs.isEmpty())
+			drawTEC();
+		else if (patternPairs != null) {
+			drawPatternPair();
+		}
+		else if (pointSetCollectionPair != null)
+			drawPointSetCollectionPair();
+		else if (patternVectorSetPair != null)
+			drawPatternVectorSetPair();
+		else if (patterns != null)
+			drawPatterns();
+		String outputImageFile = "outputFile.png";
+		if (outputFilePath != null) {
+			int folderEnd = outputFilePath.lastIndexOf("/")+1;
+			String fileNameWithoutSuffix = outputFilePath.substring(folderEnd,outputFilePath.lastIndexOf("."));
+			outputImageFile = outputFilePath.substring(0, folderEnd) + fileNameWithoutSuffix + ".png";
+			System.out.println("\nOutput image file: "+outputImageFile);
+		}			
+		if (saveImageFile) {
+			this.save(outputImageFile);
+			//noLoop();
+			//exit();
+		}
+		if (writeToImageFile) {
+			this.save(outputImageFile);
+			//noLoop();
+			//exit();
+		}
+		exit();
 	}
 
 	public void keyPressed() {
@@ -500,14 +526,26 @@ public class DrawPoints extends PApplet {
 				continue;
 			ArrayList<PointSet> occurrenceSet = occurrenceSets.get(i);
 			int col = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
-			fill(col);
-			stroke(col);
+			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/4);
 			strokeWeight(2);
+			boolean firstOccurrence = true;
 			for(PointSet occurrence : occurrenceSet) {
+				int c = firstOccurrence?col:col2;
 				Point lastPoint = occurrence.first();
 				for(Point p : occurrence.getPoints()) {
-					drawPoint(p,col,col,1,ROUND,pointWidth+1,pointHeight+1);
-					drawLine(lastPoint,p,col,lineWidth,ROUND);
+					int s = firstOccurrence?col:col2;
+					int f = firstOccurrence?col:col2;
+					float sw = firstOccurrence?2:1;
+					float w = firstOccurrence?pointWidth+2:pointWidth;
+					float h = firstOccurrence?pointHeight+2:pointHeight;
+					if (OMNISIA.RHYTHM_ONLY) { // Draws points and lines with y value equal to TEC number, i
+						drawPoint(p,s,f,sw,ROUND,w,h, i);
+						drawLine(lastPoint, p, s, sw, ROUND, i);
+					}
+					else {
+						drawPoint(p,s,f,sw,ROUND,w,h);
+						drawLine(lastPoint,p,s,sw,ROUND);
+					}
 					//					drawPoint(p,0,0,1,ROUND,pointWidth+1,pointHeight+1);
 					//					drawLine(lastPoint,p,0,lineWidth,ROUND);
 					lastPoint = p;
@@ -515,6 +553,7 @@ public class DrawPoints extends PApplet {
 				//				Point topLeft = occurrence.getTopLeft();
 				//				Point bottomRight = occurrence.getBottomRight();
 				//				drawFilledRectangle(col,topLeft,bottomRight);
+				firstOccurrence = false;
 			}
 			if ((numberOfTecs-i)%500==0)
 				System.out.print(".");
@@ -760,7 +799,7 @@ public class DrawPoints extends PApplet {
 			i++;
 		}
 		//		System.out.println("Got here in drawAxes method - after loop");
-		String pitchString = (diatonicPitch==true?"morphetic pitch":"chromatic pitch");
+		String pitchString = OMNISIA.RHYTHM_ONLY?"TEC number":(diatonicPitch==true?"morphetic pitch":"chromatic pitch");
 		pushMatrix();
 		translate(zeroX-40,minScreenY+(maxScreenY-minScreenY)/2);
 		rotate(-PI/2);
@@ -792,6 +831,17 @@ public class DrawPoints extends PApplet {
 		ellipse(x,y,width,height);
 	}
 
+	private void drawPoint(Point n, int stroke, int fill, float strokeWeight, int strokeCap, float width, float height, int tecNumber) {
+		stroke(stroke);
+		fill(fill);
+		strokeWeight(strokeWeight);
+		strokeCap(strokeCap);
+		Point p = getScreenPoint(n.getX(), tecNumber+1);
+		float x = p.getX();
+		float y = p.getY();
+		ellipse(x,y,width,height);
+	}
+	
 	private void drawLine(Point n1, Point n2, int stroke, float strokeWeight, int strokeCap) {
 		stroke(stroke);
 		strokeWeight(strokeWeight);
@@ -805,38 +855,50 @@ public class DrawPoints extends PApplet {
 		line(x1,y1,x2,y2);
 	}
 
+	private void drawLine(Point n1, Point n2, int stroke, float strokeWeight, int strokeCap, int tecNumber) {
+		stroke(stroke);
+		strokeWeight(strokeWeight);
+		strokeCap(strokeCap);
+		Point p1 = getScreenPoint(n1.getX(), tecNumber+1);
+		Point p2 = getScreenPoint(n2.getX(), tecNumber+1);
+		float x1 = p1.getX();
+		float y1 = p1.getY();
+		float x2 = p2.getX();
+		float y2 = p2.getY();
+		line(x1,y1,x2,y2);
+	}
+
 	private void drawPoint(Point n) {
 		drawPoint(n,color(0,0,0),color(0,0,0),2f,ROUND,pointWidth-2,pointHeight-2);
 	}
 
 	public void setup() {
-		if (!points.isEmpty())  {
-			minScreenX = margin;
-			maxScreenX = drawWindowWidth - margin;
-			minScreenY = margin;
-			maxScreenY = drawWindowHeight - margin;
-			maxDataY = max(points.getMaxY(),1);
-			maxDataX = (long) max(points.getMaxX(),1);
-			minDataY = min(points.getMinY(),0);
-			minDataX = (long) min(points.getMinX(),0);
+		if (points.isEmpty()) exit();
+		minScreenX = margin;
+		maxScreenX = drawWindowWidth - margin;
+		minScreenY = margin;
+		maxScreenY = drawWindowHeight - margin;
+		maxDataY = OMNISIA.RHYTHM_ONLY?max(occurrenceSets.size()+1,1):max(points.getMaxY(),1);
+		maxDataX = (long) max(points.getMaxX(),1);
+		minDataY = min(points.getMinY(),0);
+		minDataX = (long) min(points.getMinX(),0);
 
-			if (printToPDF)
-				size(drawWindowWidth,drawWindowHeight,PDF,outputPDFFilePath);
-			else 
-				size(drawWindowWidth,drawWindowHeight);
-			smooth();
-			background(255);
-			//		font = createFont("Arial", 14);
-			textFont(createFont("Arial", 14));
-			if (tecs != null && tecs.size() > 0) 
-				System.out.println(String.format("%.2f", tec.getCompactness())+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
-			else if (patternPairs != null) {
-				System.out.println(patternPair);
-				System.out.println("Printing pattern pairs");
-				System.out.println(patternPair);
-			} else if (arrayListOfPointSetCollectionPairs != null)
-				System.out.println("Drawing point set collection pairs");
-		}
+		if (printToPDF)
+			size(drawWindowWidth,drawWindowHeight,PDF,outputPDFFilePath);
+		else 
+			size(drawWindowWidth,drawWindowHeight);
+		smooth();
+		background(255);
+		//		font = createFont("Arial", 14);
+		textFont(createFont("Arial", 14));
+		if (tecs != null && tecs.size() > 0) 
+			System.out.println(String.format("%.2f", tec.getCompactness())+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
+		else if (patternPairs != null) {
+			System.out.println(patternPair);
+			System.out.println("Printing pattern pairs");
+			System.out.println(patternPair);
+		} else if (arrayListOfPointSetCollectionPairs != null)
+			System.out.println("Drawing point set collection pairs");
 	}
 
 }

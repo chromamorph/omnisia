@@ -12,6 +12,12 @@ public class VectorPointPair implements Comparable<VectorPointPair>{
 		this.index = columnIndex;
 	}
 	
+	public VectorPointPair(long vecX, int vecY, long pntX, int pntY, int colIndex) {
+		vector = new Vector(vecX, vecY);
+		point = new Point(pntX, pntY);
+		index = colIndex;
+	}
+	
 	public VectorPointPair(Point p1, Point p2) {
 		vector = new Vector(p1,p2);
 		point = p1;

@@ -94,7 +94,12 @@ public class OMNISIA {
 	private static int TOP_N_PATTERNS				= 0; //Limits output to top n patterns (if 0, then all patterns returned)
 	private static Algorithm RECURSIA_ALGORITHM		= Algorithm.COSIATEC;
 	private static boolean SORT_BY_PATTERN_SIZE		= false;
-
+	private static boolean GPU_ACCEL				= false;
+	private static boolean DRAW_POINT_SET			= false;
+	public static boolean RHYTHM_ONLY				= false;
+	public static String TEC_PRIORITY_STRING		= TECQualityComparator.DEFAULT_PRIORITY_STRING;
+	public static String DUAL_TEC_PRIORITY_STRING	= TECQualityComparator.DEFAULT_PRIORITY_STRING;
+	public static boolean NUM_MTPS_ONLY				= false;
 
 	////////////////////
 	//	Switches
@@ -133,7 +138,12 @@ public class OMNISIA {
 	private static String TOP_N_PATTERNS_SWITCH		= "top";
 	private static String RECURSIA_ALGORITHM_SWITCH	= "recalg";
 	private static String SORT_BY_PATTERN_SIZE_SWITCH = "sortpat";
-
+	private static String GPU_ACCEL_SWITCH			= "gpu";
+	private static String DRAW_POINT_SET_SWITCH		= "drawps";
+	private static String RHYTHM_ONLY_SWITCH		= "rhythm";
+	private static String TEC_PRIORITY_SWITCH		= "tecqual";
+	private static String DUAL_TEC_PRIORITY_SWITCH	= "dualtecqual";
+	private static String NUM_MTPS_ONLY_SWITCH		= "nummtpsonly";
 
 
 	////////////////////
@@ -147,6 +157,21 @@ public class OMNISIA {
 			BASIC_ALGORITHM = BasicAlgorithm.valueOf(algStr);
 	}
 
+	private static void getTECPriority(String[] args) {
+		String tecqual = getValue(TEC_PRIORITY_SWITCH, args);
+		if (tecqual != null)
+			TEC_PRIORITY_STRING = tecqual.trim().toLowerCase();
+	}
+
+	private static void getDualTECPriority(String[] args) {
+		String dualtecqual = getValue(DUAL_TEC_PRIORITY_SWITCH, args);
+		if (dualtecqual != null)
+			DUAL_TEC_PRIORITY_STRING = dualtecqual.trim().toLowerCase();
+		else
+			DUAL_TEC_PRIORITY_STRING = TEC_PRIORITY_STRING;
+	}
+
+	
 	private static void getInputFile(String[] args) {
 		String filePathStr = getValue(INPUT_FILE_SWITCH, args);
 		if (filePathStr != null && new File(filePathStr).exists()) {
@@ -201,6 +226,14 @@ public class OMNISIA {
 		OUTPUT_DIR = fullOutputDirPath.toFile();
 	}
 
+	private static void getRhythmOnly(String[] args) {
+		RHYTHM_ONLY = getBooleanValue(RHYTHM_ONLY_SWITCH, args);
+	}
+	
+	private static void getNumMtpsOnly(String[] args) {
+		NUM_MTPS_ONLY = getBooleanValue(NUM_MTPS_ONLY_SWITCH, args);
+	}
+	
 	private static void getDiatonicPitch(String[] args) {
 		if (inputFileIsEncodingFile())
 			DIATONIC_PITCH = INPUT_FILE.toString().toLowerCase().contains("diat");
@@ -212,10 +245,18 @@ public class OMNISIA {
 		SORT_BY_PATTERN_SIZE = getBooleanValue(SORT_BY_PATTERN_SIZE_SWITCH, args);
 	}
 
+	private static void getGPUAccel(String[] args) {
+		GPU_ACCEL = getBooleanValue(GPU_ACCEL_SWITCH, args);
+	}
+	
 	private static void getHelp(String[] args) {
 		HELP = getBooleanValue(HELP_SWITCH, args);
 	}
 
+	private static void getDrawPointSet(String[] args) {
+		DRAW_POINT_SET = getBooleanValue(DRAW_POINT_SET_SWITCH, args);
+ 	}
+	
 	private static void getMIREX(String[] args) {
 		MIREX = getBooleanValue(MIREX_SWITCH, args);
 	}
@@ -544,8 +585,8 @@ public class OMNISIA {
 		}
 	}
 
-	private static void printParsedParameterValues() {
-		println("",
+	public static String getParameterValuesString() {
+		String[] parameterStrings = new String[]{
 				"Parameter values",
 				"================",
 				"Basic algorithm: (-"+ALGORITHM_SWITCH+"): "+BASIC_ALGORITHM,
@@ -582,8 +623,22 @@ public class OMNISIA {
 				"Top N Patterns (-"+TOP_N_PATTERNS_SWITCH+"): " + TOP_N_PATTERNS,
 				"Basic algorithm used by RecurSIA (-"+RECURSIA_ALGORITHM_SWITCH+"): " + RECURSIA_ALGORITHM,
 				"Sort TECs by decreasing pattern size (-"+SORT_BY_PATTERN_SIZE_SWITCH+"): " + SORT_BY_PATTERN_SIZE,
+				"Use GPU acceleration (-"+GPU_ACCEL_SWITCH+"): " + GPU_ACCEL,
+				"Draw input point set (-"+DRAW_POINT_SET_SWITCH+"): " + DRAW_POINT_SET,
+				"Rhythm only (-"+RHYTHM_ONLY_SWITCH+"): " + RHYTHM_ONLY,
+				"TEC quality priority string (-"+TEC_PRIORITY_SWITCH+"): " + TEC_PRIORITY_STRING,
+				"Dual TEC quality priority string (-"+DUAL_TEC_PRIORITY_SWITCH+"): " + DUAL_TEC_PRIORITY_STRING,
+				"Return number of MTPs only (-"+NUM_MTPS_ONLY_SWITCH+"): " + NUM_MTPS_ONLY,
 				""
-				);		
+		};
+		StringBuilder sb = new StringBuilder();
+		for(String s : parameterStrings)
+			sb.append(s+"\n");
+		return sb.toString();
+	}
+	
+	private static void printParsedParameterValues() {
+		println(getParameterValuesString());		
 	}
 
 	private static String getBasicAlgorithms() {
@@ -692,7 +747,37 @@ public class OMNISIA {
 				"",
 				"-"+SORT_BY_PATTERN_SIZE_SWITCH+"\tWhen using COSIATEC, getBestTEC sorts TECs",
 				"\twith preference given to TECs with larger patterns.",
-				""
+				"",
+				"-"+GPU_ACCEL_SWITCH+"\tUse GPU acceleration.",
+				"",
+				"-"+DRAW_POINT_SET_SWITCH+"\tGenerates a PNG file and a PTS file of the input point set.",
+				"\tIf the -"+DIATONIC_PITCH_SWITCH+" switch is selected, then the output point set uses",
+				"\tmorphetic pitch.",
+				"",
+				"-"+RHYTHM_ONLY_SWITCH+"\tRuns the selected analysis algorithm on a rhythmic projection",
+				"\tof the input dataset. That is, it only considers the first co-ordinate of each point,",
+				"\tthe pitch co-ordinate is set to zero for every point.",
+				"",
+				"-"+TEC_PRIORITY_SWITCH+"\t Determines the priority with which heuristics are applied",
+				"\twhen computing the quality of a TEC. The string should be a permutation of cmvswa.",
+				"\tc = compression factor, m = compactness, v = coverage, s = pattern size, w = pattern width,",
+				"\ta = pattern bounding-box area. The heuristics are applied as successive tie-breakers, in",
+				"\tin the order in which they appear in this string. This switch determines only the way these",
+				"\theuristics are applied when comparing two TECs that are not a conjugate pair. The default",
+				"\tvalue for this string is "+TECQualityComparator.DEFAULT_PRIORITY_STRING+".",
+				"",
+				"-"+DUAL_TEC_PRIORITY_SWITCH+"\t Determines the priority with which heuristics are applied",
+				"\twhen computing the quality of a TEC when comparing two TECs that form a conjugate pair.",
+				"\tSee entry in this help for the switch, -"+TEC_PRIORITY_SWITCH+", for details regarding",
+				"\thow to construct the string value for this switch. If neither this switch nor -"+TEC_PRIORITY_SWITCH,
+				"\tare set, then the value of this string is "+TECQualityComparator.DEFAULT_PRIORITY_STRING+".",
+				"\tIf -"+TEC_PRIORITY_SWITCH+" is set, but this switch is not, then the value of this string is",
+				"\t the same as that set for -"+TEC_PRIORITY_SWITCH+".",
+				"",
+				"-"+NUM_MTPS_ONLY_SWITCH+"\t If true, then returns running time for computing vector table, sorting it",
+				"\tand counting number of MTPs. This is in order to generate output that can be compared with Antti",
+				"\t Laaksonen's parallel implementations of this process of 13 June 2021.",
+				""	
 				);
 	}
 
@@ -730,20 +815,63 @@ public class OMNISIA {
 		}
 	}
 
+	
+	
 	private static void analyse(String[] args) throws MissingTieStartNoteException, FileNotFoundException, IncompatibleRecurSIAAlgorithmException {
 		if (OUTPUT_FILE == null)
 			writeSwitchesToFile(args);
 		Encoding encoding = null;
-		switch (BASIC_ALGORITHM) {
-		case COSIATEC: encoding = runCOSIATEC(); break;
-		case SIATECCompress: encoding = runSIATECCompress(); break;
-		case SIA: encoding = runSIA(); break;    
-		case SIATEC: encoding = runSIATEC(); break;
-		case Forth: encoding = runForth(); break;
-		case RecurSIA: encoding = runRecurSIA(); break;
-		case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
-		}
-		encoding.setTitle(COMMAND_LINE);
+		if (!DRAW_POINT_SET) {
+			switch (BASIC_ALGORITHM) {
+			case COSIATEC: encoding = runCOSIATEC(); break;
+			case SIATECCompress: encoding = runSIATECCompress(); break;
+			case SIA: encoding = runSIA(); break;    
+			case SIATEC: encoding = runSIATEC(); break;
+			case Forth: encoding = runForth(); break;
+			case RecurSIA: encoding = runRecurSIA(); break;
+			case TTWM: encoding = runTTWM(); break;
+			case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
+			}
+			encoding.setTitle(COMMAND_LINE);
+			} else //DRAW_POINT_SET is true
+				encoding = new Encoding(
+			//					PointSet dataset,
+								new PointSet(
+									INPUT_FILE.getAbsolutePath(),
+									DIATONIC_PITCH,
+									WITHOUT_CHANNEL_10),
+			//					String inputFilePathString,
+								INPUT_FILE.getAbsolutePath(),
+			//					String outputDirectoryPathString,
+								OUTPUT_DIR==null?null:OUTPUT_DIR.getAbsolutePath(),				
+			//					boolean isDiatonic,
+								DIATONIC_PITCH,
+			//					boolean withoutChannel10,
+								WITHOUT_CHANNEL_10,
+			//					String outputFileExtension,
+								"pts",
+			//					int topNPatterns,
+								TOP_N_PATTERNS,
+			//					boolean forMirex,
+								MIREX,
+			//					boolean segmentMode,
+								SEGMENT_MODE,
+			//					boolean bbMode,
+								BB_MODE,
+			//					String omnisiaOutputFilePathString					
+								(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null)
+								);
+						
+//		switch (BASIC_ALGORITHM) {
+//		case COSIATEC: encoding = runCOSIATEC(); break;
+//		case SIATECCompress: encoding = runSIATECCompress(); break;
+//		case SIA: encoding = runSIA(); break;    
+//		case SIATEC: encoding = runSIATEC(); break;
+//		case Forth: encoding = runForth(); break;
+//		case RecurSIA: encoding = runRecurSIA(); break;
+//		case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
+//		}
+//		encoding.setTitle(COMMAND_LINE);
 
 //		Print dataset used for analysis to file
 		File outputDir;
@@ -765,8 +893,9 @@ public class OMNISIA {
 //			pw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
-		if (DRAW && encoding != null) {
+		}
+		if ((DRAW || DRAW_POINT_SET) && encoding != null) {
+		//if (DRAW && encoding != null) {
 			String outputImageFilePath;
 			if (OUTPUT_FILE == null) {
 				outputDir = OUTPUT_DIR;
@@ -808,7 +937,9 @@ public class OMNISIA {
 				(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
 				TOP_N_PATTERNS,
 				WITHOUT_CHANNEL_10,
-				SORT_BY_PATTERN_SIZE
+				SORT_BY_PATTERN_SIZE,
+				TEC_PRIORITY_STRING,
+				DUAL_TEC_PRIORITY_STRING
 				);
 	}
 
@@ -861,7 +992,8 @@ public class OMNISIA {
 					MIREX, SEGMENT_MODE, BB_MODE,
 					(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
 					TOP_N_PATTERNS,
-					WITHOUT_CHANNEL_10);
+					WITHOUT_CHANNEL_10,
+					GPU_ACCEL);
 		} catch (NoMorpheticPitchException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -874,6 +1006,13 @@ public class OMNISIA {
 		return null;
 	}
 
+	private static TTWMEncoding runTTWM() throws MissingTieStartNoteException, FileNotFoundException {
+		return new TTWMEncoding(
+				INPUT_FILE.getAbsolutePath(),
+				OUTPUT_DIR.getAbsolutePath(),
+				DIATONIC_PITCH);
+	}
+	
 	private static SIATECEncoding runSIATEC() throws MissingTieStartNoteException {
 		try {
 			return new SIATECEncoding(
@@ -982,7 +1121,9 @@ public class OMNISIA {
 				RECURSIA_ALGORITHM,
 				CR_LOW, CR_HIGH, COMP_V_LOW, COMP_V_HIGH, C_MIN, SIGMA_MIN, BB_COMPACTNESS,
 				true, //fromOMNISIA
-				SORT_BY_PATTERN_SIZE
+				SORT_BY_PATTERN_SIZE,
+				TEC_PRIORITY_STRING,
+				DUAL_TEC_PRIORITY_STRING
 				);
 	}
 
@@ -1022,6 +1163,8 @@ public class OMNISIA {
 		getSegmentMode(args);
 		getBBMode(args);
 		getSortByPatternSize(args);
+		getGPUAccel(args);
+		getDrawPointSet(args);
 		try {
 			getCTB(args);
 			getR(args);
@@ -1037,6 +1180,10 @@ public class OMNISIA {
 			closeLogFile();
 			return;
 		}
+		getRhythmOnly(args);
+		getNumMtpsOnly(args);
+		getTECPriority(args);
+		getDualTECPriority(args);
 		try {
 			getCTA(args);
 			getMinTECCompactness(args);

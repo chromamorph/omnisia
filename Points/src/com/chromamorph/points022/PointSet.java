@@ -291,6 +291,15 @@ public class PointSet implements Comparable<PointSet>{
 	public TreeSet<Point> getPoints() {
 		return points;
 	}
+	
+	public PointSet getScalexiaPointSet() {
+		PointSet ps = new PointSet();
+		for(Point p : getPoints()) {
+			Point newPoint = new Point(2 * p.getX() + p.getDuration(),p.getY());
+			ps.add(newPoint);
+		}
+		return ps;
+	}
 
 	/**
 	 * a.diff(b) returns the set of points in a 
@@ -437,6 +446,23 @@ public class PointSet implements Comparable<PointSet>{
 				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
 				frame.setResizable(false);
 				PApplet embed = new DrawPoints(PointSet.this, diatonicPitch, saveImageFile);
+				frame.add(embed);
+				embed.init();
+				frame.pack();
+				frame.setVisible(true);
+			}
+		});
+		return frame;
+	}
+
+	public JFrame draw(final String title, final boolean diatonicPitch, final boolean saveImageFile, final String outputFilePath) {
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				frame = new JFrame();
+				frame.setTitle(title);
+				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
+				frame.setResizable(false);
+				PApplet embed = new DrawPoints(PointSet.this, diatonicPitch, saveImageFile, outputFilePath);
 				frame.add(embed);
 				embed.init();
 				frame.pack();
