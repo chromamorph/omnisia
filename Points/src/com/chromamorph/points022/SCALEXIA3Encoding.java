@@ -38,7 +38,7 @@ public class SCALEXIA3Encoding extends Encoding {
 		
 	}
 	
-	class PVF implements Comparable<PVF>{
+	public class PVF implements Comparable<PVF>{
 		Point p0;
 		PointSet P;
 		Vector v;
@@ -49,6 +49,36 @@ public class SCALEXIA3Encoding extends Encoding {
 			this(p0,P,v,f,false);
 		}
 
+		/**
+		 * f is x-scale factor with p0 kept constant
+		 * v is translation vector
+		 * reflection is in y0, where p0 = (x0,y0)
+		 * 
+		 * In sigma, 
+		 * sig0 is scale factor with x=0 as invariant
+		 * (sig1, sig2) is translation vector after scaling
+		 * sig3 is y-axis scale factor (-1 for inversion, 1 for no inversion) with
+		 *   x axis as line of reflection
+		 * @return
+		 */
+		public ArrayList<Double> getSigmaForF2STR() {
+			double fy = isInv?-1.0:1.0;
+			double[] a = new double[] {
+				f.toDouble(),
+				v.getX() * 1.0 + p0.getX()*1.0*(1.0-f.toDouble()),
+				(v.getY() * 1.0 + p0.getY()*1.0*(1.0-fy))/fy,
+				fy
+			};
+			ArrayList<Double> al = new ArrayList<Double>();
+			for(double d : a)
+				al.add(d);
+			return al;
+		}
+		
+		public PointSet getPattern() {
+			return P;
+		}
+		
 		PVF(Point p0, PointSet P, Vector v, Rational f, boolean isInv) {
 			this.isInv = isInv;
 			Point pMin = P.first();
@@ -280,6 +310,10 @@ public class SCALEXIA3Encoding extends Encoding {
 		patternPairList.toArray(patternPairs);
 	}
 
+	public TreeSet<PVF> getS() {
+		return S;
+	}
+	
 	private void addPatternsToS(TreeSet<FCVCV> LOrLInv, TreeSet<FCVCV> LZerosOrLInvZeros, boolean isInv, int c1, int c2) {
 		Point p0 = dataset.get(c1);
 		Vector v = new Vector(p0,dataset.get(c2));
@@ -397,7 +431,7 @@ public class SCALEXIA3Encoding extends Encoding {
 //			System.out.println(encoding);
 //			for(PatternPair patternPair : encoding.patternPairs)
 //				System.out.println(patternPair);
-			encoding.draw();
+			encoding.drawOccurrenceSetsToFile("data/Haydn/MenuettoAlRovescio.png", false);;
 		} catch (NoMorpheticPitchException | IOException
 				| UnimplementedInputFileFormatException
 				| InvalidMidiDataException e) {

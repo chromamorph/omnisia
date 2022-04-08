@@ -21,9 +21,9 @@ public class JNMR2014Evaluation {
 
 	private static String[] filter = {};
 	private static String filterString = getFilterString();
-	private static String nlbRootDirectoryPath = "/Users/dave/Documents/Work/Research/Data/NLB/OUTPUT/NLB";
-	private static String nlbGroundTruthFilePath = "/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/nlb_datasets/ann_labels.txt";
-	private static String nlbResultsTableTexFilePath = "/Users/dave/Documents/Work/Research/Papers in preparation/2014/2014-03-31-ACM-MM-Orlando-3-7-November/2014-03-19-nlbresults"+filterString+".tex";
+	private static String nlbRootDirectoryPath = "/Users/susanne/Archive/DMB12/LOTOFSPACE/Work/Research/Data/NLB/OUTPUT/NLB";
+	private static String nlbGroundTruthFilePath = "/Users/susanne/Archive/DMB12/LOTOFSPACE/Work/Research/Data/NLB/nlb_datasets/ann_labels.txt";
+	private static String nlbResultsTableTexFilePath = "/Users/susanne/Repos/nlb20210504/output/results/20210504-nlbresults"+filterString+".tex";
 
 	private static String getFilterString() {
 		if (filter.length==0) return "";

@@ -42,6 +42,9 @@ public class TECQualityComparator implements Comparator<TEC> {
 	public static double WIDTH_TOLERANCE = TOLERANCE;
 	public static double BBAREA_TOLERANCE = TOLERANCE;
 
+	private String priorityString = "cmvswa";
+	public static String DEFAULT_PRIORITY_STRING = "cmvswa";
+
 	public TECQualityComparator() {
 		super();
 	}
@@ -74,7 +77,84 @@ public class TECQualityComparator implements Comparator<TEC> {
 		this.powBBArea = powBBArea;
 	}
 
+	public TECQualityComparator(String priorityString) {
+		super();
+		this.priorityString = priorityString.trim().toLowerCase();
+	}
+
+	/**
+	 * Default priority is cmvswa
+	 * c compression factor
+	 * m compactness
+	 * v coverage
+	 * s pattern size
+	 * w pattern width
+	 * a bb area
+	 */
 	public int compare(TEC tec1, TEC tec2) {
+		if (tec1 == null && tec2 == null) return 0;
+		if (tec1 == null) return 1;
+		if (tec2 == null) return -1;
+		double d;
+		double a, b;
+		int aInt, bInt;
+		long aLong, bLong, dLong;
+		for(int i = 0; i < priorityString.length(); i++) {
+			char thisChar = priorityString.charAt(i);
+			String thisCharSeq = priorityString.substring(i,i+1);
+			if (!DEFAULT_PRIORITY_STRING.contains(thisCharSeq))
+				thisChar = DEFAULT_PRIORITY_STRING.charAt(i);
+			switch(thisChar) {
+			case 'c' : //compression factor
+				d = (a = tec2.getCompressionRatio()) - (b = tec1.getCompressionRatio());
+				if (Math.abs(d*1.0)/(Math.max(a, b)) > CR_TOLERANCE) {
+					COMPRESSION_RATIO_USED_FREQ++;
+					return (int)Math.signum(d);
+				}
+				break;
+			case 'm' : // compactness
+				d = (a = tec2.getCompactness())-(b = tec1.getCompactness());
+				if (Math.abs(d*1.0)/(Math.max(a, b)) > COMPACTNESS_TOLERANCE) {
+					COMPACTNESS_USED_FREQ++;
+					return (int)Math.signum(d);
+				}
+				break;
+			case 'v' : // coverage
+				d = (aInt = tec2.getCoverage())-(bInt = tec1.getCoverage());
+				if (Math.abs(d*1.0)/(Math.max(aInt, bInt) * 1.0) > COVERAGE_TOLERANCE) {
+					COVERAGE_USED_FREQ++;
+					return (int)Math.signum(d);
+				}
+				break;
+			case 's' : // pattern size
+				d = (aInt = tec2.getPatternSize()) - (bInt = tec1.getPatternSize());
+				if (Math.abs(d*1.0)/(Math.max(aInt, bInt) * 1.0) > PATTERN_SIZE_TOLERANCE) {
+					PATTERN_SIZE_USED_FREQ++;
+					return (int)Math.signum(d);
+				}
+				break;
+			case 'w' : // pattern width
+				dLong = (aLong = tec1.getPattern().getWidth()) - (bLong = tec2.getPattern().getWidth());
+				if (Math.abs(dLong*1.0)/(Math.max(aLong, bLong) * 1.0) > WIDTH_TOLERANCE) {
+					WIDTH_USED_FREQ++;
+					return (int)Math.signum(dLong);
+				}
+				break;
+			case 'a' : //bb area
+				dLong = (aLong = tec1.getBBArea()) - (bLong = tec2.getBBArea());
+				if (Math.abs(dLong*1.0)/(Math.max(aLong, bLong) * 1.0) > BBAREA_TOLERANCE) {
+					BBAREA_USED_FREQ++;
+					return (int)Math.signum(dLong);
+				}
+				break;
+			}
+		}
+		ZERO_RETURNED_FREQ++;
+		return 0;
+
+	}
+
+	public int compareOld(TEC tec1, TEC tec2) {
 		if (tec1 == null && tec2 == null) return 0;
 		if (tec1 == null) return 1;
 		if (tec2 == null) return -1;
