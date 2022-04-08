@@ -9,6 +9,7 @@ public class F_2T extends TransformationClass {
 		setName("F_2T");
 		setSigmaLength(2);
 		setBasisSize(1);
+		setPerms();
 		identitySigma = Utility.makeSigma(0.0, 0.0);
 	}
 

@@ -1,0 +1,31 @@
+OS(P(p(1.0,6.0),p(1.0,7.0),p(5.0,2.0),p(5.0,3.0)),[T(F_2STR,[-1.25, 9.25, -8.0, -1.0]), T(F_2STR,[-1.0, 7.0, -2.0, 1.0]), T(F_2STR,[-0.5, 6.5, 0.5, 1.0])],null)
+OS(P(p(1.0,2.5),p(1.0,8.0),p(2.0,5.5),p(4.0,4.5),p(4.0,5.5)),[T(F_2STR,[1.0, 2.0, -0.5, 1.0])],null)
+OS(P(p(0.0,0.0),p(2.0,7.0),p(6.0,1.0)),[],null)
+
+
+Coverage: 27
+Uncompressed length: 54
+Encoding length: 40
+Compression factor: 1.35
+Number of occurrence sets: 3
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            239 ms            239 ms  computeMaximalTransformablePatterns ends
+            269 ms             30 ms  computeSizeMTPSetArray ends
+            279 ms             10 ms  computePatternTransformationSetPairs ends
+            515 ms            236 ms  computeSuperMTPs ends
+            522 ms              7 ms  computeHeterogeneousOccurrenceSets ends
+            858 ms            336 ms  removeDuplicateOccurrenceSets ends
+            927 ms             69 ms  removeRedundantTransformations ends
+            928 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            946 ms             18 ms  computeSortedOccurrenceSets ends
+            951 ms              5 ms  computeEncoding ends
+            951 ms              0 ms  Program ends
+
+
+Number of points: 27
+Number of MTPs before removal: 6339
+Number of OSs after removal: 1561
