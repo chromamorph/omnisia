@@ -63,6 +63,14 @@ public class DrawPoints extends PApplet {
 	private boolean writeToImageFile = false; //If true, only writes to image file without displaying analysis.
 
 
+	public DrawPoints() {
+		super();
+		tecs = null;
+		patternPairs = null;
+		points = new PointSet();
+		points.add(new Point(1,2));
+	}
+	
 	public DrawPoints(PointSet points) {
 		super();
 		tecs = null;
@@ -331,14 +339,15 @@ public class DrawPoints extends PApplet {
 	}
 
 	public void draw() {
-		background(255);
+		if (!points.isEmpty()) {
+			background(255);
 
-		drawAxes();
+			drawAxes();
 
-		for(Point n : points.getPoints()) {
-			drawPoint(n);
+			for(Point n : points.getPoints()) {
+				drawPoint(n);
+			}
 		}
-
 		if (structuralSegmentation != null) {
 			drawStructuralSegmentation();
 		} else if (segmentation) {
