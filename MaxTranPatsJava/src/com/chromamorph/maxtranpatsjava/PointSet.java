@@ -13,14 +13,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sound.midi.InvalidMidiDataException;
 
 import com.chromamorph.notes.Note;
 import com.chromamorph.notes.Notes;
-import com.chromamorph.points022.DrawPoints;
 import com.chromamorph.points022.NoMorpheticPitchException;
 import com.chromamorph.points022.SCALEXIA3Encoding;
 import com.chromamorph.points022.SCALEXIA3Encoding.PVF;
@@ -1070,37 +1067,6 @@ public class PointSet implements Comparable<PointSet>{
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public static void encodeFilesInFolder(String inputFolder, String outputFolder, String filter) {
-		String[] inputFileNames = Utility.getInputFileNames(inputFolder);
-		TransformationClass[][] transformationClassArrays = new TransformationClass[][] {
-			//			new TransformationClass[] {new F_2T()},
-			//			new TransformationClass[] {new F_2TR()},
-			new TransformationClass[] {new F_2STR()},
-			//			new TransformationClass[] {new F_2T(), new F_2TR()},
-			//			new TransformationClass[] {new F_2TR(), new F_2STR()},
-			//			new TransformationClass[] {new F_2STR(), new F_2T()},
-			//			new TransformationClass[] {new F_2T(), new F_2TR(), new F_2STR() }
-		};
-		for(int i = 0; i < inputFileNames.length; i++) {
-			String fileName = inputFileNames[i];
-			for(TransformationClass[] transformationClassArray : transformationClassArrays) {
-				if (fileName.startsWith(filter)) {
-					encodePointSetFromFile(
-							inputFolder+"/"+fileName, 
-							transformationClassArray, 
-							true, // pitchSpell
-							true, // midTimePoint
-							"1100", //dimensionMask
-							outputFolder,
-							false, //useScalexia
-							3 // minSize
-							);
-				}
-			}
-		}
-
 	}
 
 	public static void compressNLBSingleFiles(int startIndex, int endIndex) {
