@@ -163,6 +163,22 @@ public class DrawPoints extends PApplet {
 		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
 	}
 
+	public DrawPoints(
+			PointSet dataset, 
+			ArrayList<ArrayList<PointSet>> occurrenceSets, 
+			String imageFilePath,
+			boolean drawAllOccurrenceSetsAtOnce
+			) {
+		super();
+		this.points = dataset;
+		this.occurrenceSets = occurrenceSets;
+		this.drawAllOccurrenceSetsAtOnce = drawAllOccurrenceSetsAtOnce;
+		this.occurrenceSetIndex = 0;
+		this.outputFilePath = imageFilePath;
+		this.saveImageFile = true;
+		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
+	}
+
 	public DrawPoints(PointSet dataset, 
 			ArrayList<ArrayList<PointSet>> occurrenceSets, 
 			boolean drawAllOccurrenceSetsAtOnce,

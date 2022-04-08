@@ -14,8 +14,21 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 	protected int basisSize = 0;
 	protected ArrayList<Double> identitySigma = null;
 	private long sigmaComplexity = -1;
+	int[][] perms;
 	
 	protected TreeSet<Transformation> transformationInstances = new TreeSet<Transformation>();
+	
+	public void setPerms() {
+		perms = Utility.computePermutationIndexSequences(basisSize);
+	}
+	
+	public int[][] getPerms() {
+		return perms;
+	}
+	
+	public int[] getPerm(int i) {
+		return perms[i];
+	}
 	
 	public TreeSet<Transformation> getTransformationInstances() {
 		return transformationInstances;

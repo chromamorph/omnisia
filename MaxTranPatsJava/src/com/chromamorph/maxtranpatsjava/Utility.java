@@ -305,7 +305,13 @@ public class Utility {
 	}
 
 
-	
+	public static String getOutputFilePath(
+			String outputDir,
+			String inputFilePath, 
+			TransformationClass[] transformationClasses) {
+		return getOutputFilePath(outputDir, inputFilePath, transformationClasses, "enc");
+	}
+
 	/**
 	 * Set outputDir to null if you want the output files to be stored in a subdirectory of 
 	 * the input directory.
@@ -317,7 +323,8 @@ public class Utility {
 	public static String getOutputFilePath(
 			String outputDir,
 			String inputFilePath, 
-			TransformationClass[] transformationClasses) {
+			TransformationClass[] transformationClasses,
+			String outputFileSuffix) {
 		int startOfSuffix = inputFilePath.lastIndexOf('.'); // includes dot
 		int startOfName = inputFilePath.lastIndexOf('/')+1;
 		String inputDir = inputFilePath.substring(0,startOfName); // includes trailing /
@@ -339,7 +346,7 @@ public class Utility {
 		subdirName += "-"+timeString+"/";
 		outputFilePath += subdirName;
 		new File(outputFilePath).mkdirs();
-		outputFilePath += inputFileName + ".enc";
+		outputFilePath += inputFileName + "." + outputFileSuffix;
 		return outputFilePath;
 	}
 	
@@ -428,6 +435,106 @@ public class Utility {
 		return fileRenamed && fileDeleted && dirDeleted;
 	}
 	
+	public static int computeNumCombinations(int n, int k) {
+		if (k > n || k < 0) return 0;
+		if (k == n || k == 0) return 1;
+		if (k == 1) return n;
+		double numCombinations = 1;
+		for(int j = n, i = 1; j > n - k; j--, i++)
+			numCombinations = numCombinations * j/i;
+		return (int)Math.round(numCombinations);
+	}
+	/**
+	 * 
+	 * @param N is the combinatorial number
+	 * @param k is the degree, which is equal to the number of elements in the combination (i.e.,
+	 * it is equal to the value k in the binomial coefficient (n k)).
+	 * @param size is the number of elements in the set from which the combinations are selected 
+	 * (i.e., it is the value n in the binomial coefficient, (n k)). 
+	 * @return An ArrayList of Integers containing the zero-based indices of the elements in the 
+	 * ordered superset contained within the combination corresponding to the combinatorial number
+	 * N of degree k.
+	 */
+	public static ArrayList<Integer> computeCombinationIndexSequence(int N, int k, int size) {
+		
+		/*
+		 * We allocate an array of ints of size k to hold the sequence of indices
+		 * that will be returned.
+		 */
+		int[] C = new int[k];
+		
+		/*
+		 * newN is used to hold the sum of the binomial coefficients for the remaining
+		 * indices that have not yet been computed.
+		 */
+		int newN = N;
+		
+		/*
+		 * The combinatorial number, N, is equal to the sum
+		 * (c_k k) + ... + (c_i, i) + (c_1 1)
+		 * where the values c_i are the indices in the output index sequence.
+		 * 
+		 * The variable i indicates the current c_i that is being computed, except
+		 * that we use zero-based indexing, so that c_i in the above expression is
+		 * represented by C[i].
+		 */
+		int i = k-1;
+		
+		/*
+		 * We start by setting c to the maximum value it can take, which is size-1.
+		 * 
+		 * We iterate c over the values from size-1 down to 0, but we stop the
+		 * iteration if either newN is 0.
+		 * 
+		 * If ci = (c i) is less than or equal to the current value of newN, then we
+		 * 		1. subtract ci from newN
+		 * 		2. set C[i] to c
+		 * 		3. decrement i
+		 * 
+		 * When this for loop terminates, newN == 0 and/or c == -1.
+		 */
+		for(int c = size-1; newN > 0 && c >= 0; c--) {
+			int ci = computeNumCombinations(c,i+1);
+			if (ci <= newN) {
+				newN -= ci;
+				C[i] = c;
+				i--;
+			}
+		}
+		
+		/*
+		 * If i >= 0, then we have not yet set all the values in C.
+		 * 
+		 * The remaining i+1 values in C are equal to the values
+		 * 0,1,...,i
+		 */
+		if (i >= 0)
+			for(int j = 0; j <= i; j++)
+				C[j] = j;
+		ArrayList<Integer> outputList = new ArrayList<Integer>();
+		for(int m : C) outputList.add(m);
+		return outputList;
+	}
+
+	/**
+	 * Input is a sequence of integers. Output is the combinatorial number for that
+	 * sequence of integers.
+	 * 
+	 * The combinatorial number, N, is given by
+	 * 
+	 * N = (ck,k)
+	 * @param combination
+	 * @return
+	 */
+	public static int computeCombinatorialNumberForCombination(int... combination) {
+		Arrays.sort(combination);
+		int N = 0;
+		for(int i = combination.length-1; i >= 0; i--) {
+			N += computeNumCombinations(combination[i],i+1);
+		}
+		return N;
+	}
+	
 	public static void main(String[] args) {
 //		ArrayList<Double> a = new ArrayList<Double>();
 //		a.add(1.0);
@@ -494,9 +601,19 @@ public class Utility {
 //		System.out.println(gcd(9,15,30));
 
 	
-		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_1/test_file_1.txt");
-		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_2/test_file_2.txt");
+//		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_1/test_file_1.txt");
+//		moveOutputFilesToFailedDir("output/nlb-20210504/move-files-test/test_folder_2/test_file_2.txt");
 
+//		for(int n = 15; n < 20; n++)
+//			for(int k = 0; k <= n; k++)
+//				System.out.println("("+n+","+k+") = "+computeNumCombinations(n,k));
+//		System.out.println(computeNumCombinations(14,10));
+//		System.out.println(computeCombinatorialNumberForCombination(0,1,2,3));
+		
+		int size = 6, k = 3;
+		int numCombinations = computeNumCombinations(size, k);
+		for(int N = 0; N < numCombinations; N++)
+			System.out.println(N+"\t"+computeCombinationIndexSequence(N,k,size));
 	}
 
 	
