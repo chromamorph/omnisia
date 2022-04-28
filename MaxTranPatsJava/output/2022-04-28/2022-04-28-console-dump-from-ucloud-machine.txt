@@ -1,0 +1,937 @@
+         198015 ms            945 ms  computeEncoding ends
+         198015 ms              0 ms  Program ends
+
+
+Number of points: 100
+Number of MTPs before removal: 4091304
+Number of OSs after removal: 112567
+Exception in thread "AWT-EventQueue-0" java.awt.HeadlessException: 
+No X11 DISPLAY variable was set, but this program performed an operation which requires it.
+        at java.desktop/java.awt.GraphicsEnvironment.checkHeadless(GraphicsEnvironment.java:208)
+        at java.desktop/java.awt.Window.<init>(Window.java:548)
+        at java.desktop/java.awt.Frame.<init>(Frame.java:423)
+        at java.desktop/java.awt.Frame.<init>(Frame.java:388)
+        at java.desktop/javax.swing.JFrame.<init>(JFrame.java:180)
+        at com.chromamorph.maxtranpatsjava.Encoding$1.run(Encoding.java:158)
+        at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:313)
+        at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:770)
+        at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:721)
+        at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:715)
+        at java.base/java.security.AccessController.doPrivileged(Native Method)
+        at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+        at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:740)
+        at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+        at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+        at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+        at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+        at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+        at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+
+omnisia/MaxTranPatsJava/jars on  master [?] via ☕ v11.0.15 took 3m19s 
+❯ git pull
+remote: Enumerating objects: 10, done.
+remote: Counting objects: 100% (10/10), done.
+remote: Total 10 (delta 6), reused 10 (delta 6), pack-reused 0
+Unpacking objects: 100% (10/10), 138.48 KiB | 106.00 KiB/s, done.
+From github.com:chromamorph/omnisia
+   2b96f5bf00..9c5dbe4588  master     -> origin/master
+Updating 2b96f5bf00..9c5dbe4588
+Fast-forward
+ MaxTranPatsJava/jars/mtptest202204281227v11.jar                   | Bin 11577290 -> 11577289 bytes
+ MaxTranPatsJava/src/com/chromamorph/maxtranpatsjava/PointSet.java |   2 +-
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+omnisia/MaxTranPatsJava/jars on  master [?] via ☕ v11.0.15 took 4s 
+❯ git add .
+
+omnisia/MaxTranPatsJava/jars on  master [+] via ☕ v11.0.15 
+❯ git commit -m "output files from running on UCloud"
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: empty ident name (for <ucloud@j-67562-job-0.j-67562.app-kubernetes.svc.cluster.local>) not allowed
+
+omnisia/MaxTranPatsJava/jars on  master [+] via ☕ v11.0.15 
+❯ git config --global user.email "dave@titanmusic.com"
+
+omnisia/MaxTranPatsJava/jars on  master [+] via ☕ v11.0.15 
+❯ git config --global user.name "chromamorph"
+
+omnisia/MaxTranPatsJava/jars on  master [+] via ☕ v11.0.15 
+❯ git commit -m "output files from running on UCloud"
+[master e40af67200] output files from running on UCloud
+ 3 files changed, 94 insertions(+)
+ create mode 100644 MaxTranPatsJava/jars/..output/2022-04-28/bwv846b-050-pts-F_2STR-2022-04-28-14-27-30-912/bwv846b-050.enc
+ create mode 100644 MaxTranPatsJava/jars/..output/2022-04-28/bwv846b-050-pts-F_2STR-2022-04-28-14-27-52-507/bwv846b-050.enc
+ create mode 100644 MaxTranPatsJava/jars/..output/2022-04-28/bwv846b-100-pts-F_2STR-2022-04-28-14-29-02-771/bwv846b-100.enc
+
+omnisia/MaxTranPatsJava/jars on  master [⇡] via ☕ v11.0.15 
+❯ git push
+Enumerating objects: 15, done.
+Counting objects: 100% (15/15), done.
+Delta compression using up to 64 threads
+Compressing objects: 100% (8/8), done.
+Writing objects: 100% (12/12), 2.16 KiB | 2.16 MiB/s, done.
+Total 12 (delta 4), reused 0 (delta 0)
+remote: Resolving deltas: 100% (4/4), completed with 3 local objects.
+To github.com:chromamorph/omnisia.git
+   9c5dbe4588..e40af67200  master -> master
+
+omnisia/MaxTranPatsJava/jars on  master via ☕ v11.0.15 took 2s 
+❯ git pull
+Already up to date.
+
+omnisia/MaxTranPatsJava/jars on  master via ☕ v11.0.15 
+❯ java -jar mtptest202204281227v11.jar ..output/2022-04-28 ../data/bwv846b/bwv846b-050.pts 
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+    1:  186993
+    2:   24619
+    3:    7818
+    4:    3645
+    5:    2107
+    6:    1230
+    7:     812
+    8:     569
+    9:     393
+   10:     312
+   11:     232
+   12:     166
+   13:     129
+   14:     135
+   15:     103
+   16:      79
+   17:      76
+   18:      53
+   19:      59
+   20:      43
+   21:      35
+   22:      34
+   23:      29
+   24:      19
+   25:      16
+   26:       9
+   27:      12
+   28:      14
+   29:      14
+   30:      21
+   31:      12
+   32:       7
+   33:      10
+   34:       8
+   35:       9
+   36:      11
+   37:       9
+   38:       9
+   39:       6
+   40:       4
+   41:       7
+   42:       6
+   43:       1
+   44:       4
+   45:       5
+   46:       3
+   47:       2
+   48:       2
+   49:       4
+   50:       1
+   51:       1
+   52:       3
+   53:       2
+   54:       1
+   55:       4
+   56:       4
+   57:       1
+   58:       2
+   59:       2
+   60:       2
+   62:       2
+   64:       1
+   67:       1
+   69:       2
+   70:       1
+   71:       1
+   73:       1
+   80:       1
+   81:       1
+   82:       1
+   83:       1
+   84:       1
+   86:       1
+   88:       1
+  105:       1
+           4374 ms           4374 ms  computeMaximalTransformablePatterns ends
+           5234 ms            860 ms  computeSizeMTPSetArray ends
+           5571 ms            337 ms  computePatternTransformationSetPairs ends
+           6002 ms            431 ms  computeSuperMTPs ends
+           6100 ms             98 ms  computeHeterogeneousOccurrenceSets ends
+           8678 ms           2578 ms  removeDuplicateOccurrenceSets ends
+           9111 ms            433 ms  removeRedundantTransformations ends
+           9114 ms              3 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           9203 ms             89 ms  computeSortedOccurrenceSets ends
+           9248 ms             45 ms  computeEncoding ends
+           9248 ms              0 ms  Program ends
+
+
+OS(P(p(8.0,24.0),p(28.0,28.0),p(44.0,27.0),p(46.0,26.0),p(48.0,25.0)),[T(F_2STR,[-0.5, 46.0, -52.0, -1.0]), T(F_2STR,[-0.5, 94.0, -56.0, -1.0]), T(F_2STR,[1.0, 48.0, 4.0, 1.0])],null)
+OS(P(p(4.0,23.0),p(8.0,24.0),p(12.0,25.0),p(16.0,26.0)),[T(F_2STR,[-4.0, 120.0, 2.0, 1.0]), T(F_2STR,[-1.0, 68.0, -53.0, -1.0]), T(F_2STR,[-0.5, 50.0, 2.0, 1.0]), T(F_2STR,[-0.5, 58.0, 0.0, 1.0]), T(F_2STR,[-0.5, 66.0, -2.0, 1.0]), T(F_2STR,[-0.5, 98.0, 6.0, 1.0])],null)
+OS(P(p(36.0,27.0),p(68.0,26.0),p(84.0,26.0),p(84.0,31.0),p(86.0,25.0),p(92.0,24.0),p(96.0,27.0),p(98.0,27.0),p(100.0,20.0),p(100.0,26.0),p(100.0,28.0),p(102.0,29.0),p(104.0,21.0)),[],null)
+
+
+Coverage: 50
+Uncompressed length: 100
+Encoding length: 80
+Compression factor: 1.25
+Number of occurrence sets: 3
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+           4374 ms           4374 ms  computeMaximalTransformablePatterns ends
+           5234 ms            860 ms  computeSizeMTPSetArray ends
+           5571 ms            337 ms  computePatternTransformationSetPairs ends
+           6002 ms            431 ms  computeSuperMTPs ends
+           6100 ms             98 ms  computeHeterogeneousOccurrenceSets ends
+           8678 ms           2578 ms  removeDuplicateOccurrenceSets ends
+           9111 ms            433 ms  removeRedundantTransformations ends
+           9114 ms              3 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           9203 ms             89 ms  computeSortedOccurrenceSets ends
+           9248 ms             45 ms  computeEncoding ends
+           9248 ms              0 ms  Program ends
+
+
+Number of points: 50
+Number of MTPs before removal: 336265
+Number of OSs after removal: 8945
+
+omnisia/MaxTranPatsJava/jars on  master [?] via ☕ v11.0.15 took 9s 
+❯ java -jar mtptest202204281227v11.jar ..output/2022-04-28 ../data/bwv846b/bwv846b-100.pts 
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+    1: 1480219
+    2:  354886
+    3:  125679
+    4:   58192
+    5:   33004
+    6:   20467
+    7:   13875
+    8:    9616
+    9:    7357
+   10:    5515
+   11:    4296
+   12:    3502
+   13:    2934
+   14:    2494
+   15:    2003
+   16:    1831
+   17:    1587
+   18:    1371
+   19:    1209
+   20:     998
+   21:     919
+   22:     824
+   23:     725
+   24:     676
+   25:     646
+   26:     543
+   27:     494
+   28:     427
+   29:     393
+   30:     352
+   31:     322
+   32:     329
+   33:     261
+   34:     232
+   35:     245
+   36:     193
+   37:     211
+   38:     160
+   39:     150
+   40:     143
+   41:     120
+   42:     134
+   43:     124
+   44:      94
+   45:      82
+   46:      89
+   47:      73
+   48:      80
+   49:      88
+   50:      65
+   51:      71
+   52:      65
+   53:      53
+   54:      51
+   55:      43
+   56:      45
+   57:      43
+   58:      44
+   59:      35
+   60:      36
+   61:      48
+   62:      35
+   63:      35
+   64:      25
+   65:      31
+   66:      35
+   67:      30
+   68:      24
+   69:      20
+   70:      17
+   71:      26
+   72:      22
+   73:      31
+   74:      16
+   75:      22
+   76:      13
+   77:      18
+   78:      17
+   79:      17
+   80:      14
+   81:      17
+   82:      18
+   83:      13
+   84:      10
+   85:      15
+   86:      13
+   87:      10
+   88:      16
+   89:      16
+   90:      14
+   91:      13
+   92:       7
+   93:      10
+   94:       7
+   95:      10
+   96:       5
+   97:       9
+   98:       6
+   99:       4
+  100:      11
+  101:       4
+  102:      16
+  103:      12
+  104:       3
+  105:      11
+  106:       8
+  107:       6
+  108:       5
+  109:       5
+  110:       6
+  111:       2
+  112:       4
+  113:       5
+  114:       3
+  115:       4
+  116:       4
+  117:       5
+  118:       4
+  119:       2
+  120:       5
+  121:       2
+  122:       6
+  123:       2
+  124:       7
+  125:       6
+  126:       2
+  127:       7
+  128:       2
+  129:       3
+  130:       3
+  132:       4
+  133:       4
+  134:       1
+  135:       2
+  136:       6
+  137:       4
+  138:       2
+  139:       2
+  140:       1
+  141:       1
+  142:       2
+  143:       3
+  144:       1
+  145:       1
+  146:       6
+  147:       2
+  148:       1
+  149:       4
+  150:       2
+  151:       1
+  152:       1
+  153:       2
+  154:       1
+  155:       1
+  156:       1
+  157:       5
+  158:       1
+  159:       2
+  160:       3
+  161:       1
+  163:       2
+  164:       2
+  165:       2
+  166:       1
+  168:       1
+  169:       1
+  171:       2
+  172:       1
+  174:       1
+  176:       2
+  177:       2
+  180:       1
+  181:       1
+  183:       2
+  184:       1
+  186:       1
+  187:       2
+  188:       1
+  192:       4
+  193:       1
+  195:       1
+  196:       1
+  198:       2
+  200:       2
+  205:       1
+  207:       3
+  210:       1
+  212:       1
+  213:       1
+  215:       1
+  216:       3
+  217:       1
+  218:       1
+  221:       2
+  222:       1
+  224:       1
+  228:       2
+  232:       2
+  238:       1
+  240:       1
+  247:       1
+  249:       1
+  250:       1
+  254:       1
+  261:       1
+  263:       1
+  270:       1
+  272:       2
+  279:       1
+  287:       1
+  301:       1
+  311:       1
+  312:       1
+          65522 ms          65522 ms  computeMaximalTransformablePatterns ends
+          75385 ms           9863 ms  computeSizeMTPSetArray ends
+          79272 ms           3887 ms  computePatternTransformationSetPairs ends
+         129528 ms          50256 ms  computeSuperMTPs ends
+         131975 ms           2447 ms  computeHeterogeneousOccurrenceSets ends
+         176808 ms          44833 ms  removeDuplicateOccurrenceSets ends
+         190608 ms          13800 ms  removeRedundantTransformations ends
+         190719 ms            111 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         192685 ms           1966 ms  computeSortedOccurrenceSets ends
+         193569 ms            884 ms  computeEncoding ends
+         193569 ms              0 ms  Program ends
+
+
+OS(P(p(52.0,27.0),p(56.0,28.0),p(60.0,29.0),p(64.0,30.0),p(70.0,31.0),p(71.0,30.0),p(72.0,29.0),p(76.0,32.0),p(80.0,28.0),p(84.0,31.0),p(90.0,32.0),p(92.0,31.0),p(94.0,30.0),p(96.0,29.0)),[T(F_2STR,[1.0, -48.0, -4.0, 1.0]), T(F_2STR,[1.0, 48.0, -7.0, 1.0])],null)
+OS(P(p(54.0,24.0),p(56.0,23.0),p(58.0,24.0),p(60.0,23.0),p(62.0,22.0),p(64.0,21.0)),[T(F_2STR,[-1.0, 106.0, -49.0, -1.0]), T(F_2STR,[-1.0, 162.0, 6.0, 1.0]), T(F_2STR,[1.0, 56.0, -55.0, -1.0]), T(F_2STR,[1.0, 78.0, 2.0, 1.0])],null)
+OS(P(p(136.0,26.0),p(138.0,25.0),p(140.0,24.0),p(142.0,23.0),p(148.0,25.0)),[T(F_2STR,[-8.0, 1208.0, -50.0, -1.0]), T(F_2STR,[-1.0, 280.0, -53.0, -1.0]), T(F_2STR,[-1.0, 294.0, 1.0, 1.0]), T(F_2STR,[2.0, -172.0, 0.0, 1.0])],null)
+OS(P(p(68.0,26.0),p(84.0,26.0),p(86.0,25.0),p(92.0,24.0),p(96.0,27.0),p(116.0,28.0),p(124.0,27.0),p(124.0,29.0),p(128.0,30.0),p(136.0,31.0),p(148.0,16.0),p(148.0,23.0),p(150.0,27.0),p(152.0,17.0),p(152.0,26.0),p(156.0,18.0),p(156.0,22.0),p(160.0,19.0)),[],null)
+
+
+Coverage: 100
+Uncompressed length: 200
+Encoding length: 126
+Compression factor: 1.5873015873015872
+Number of occurrence sets: 4
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+          65522 ms          65522 ms  computeMaximalTransformablePatterns ends
+          75385 ms           9863 ms  computeSizeMTPSetArray ends
+          79272 ms           3887 ms  computePatternTransformationSetPairs ends
+         129528 ms          50256 ms  computeSuperMTPs ends
+         131975 ms           2447 ms  computeHeterogeneousOccurrenceSets ends
+         176808 ms          44833 ms  removeDuplicateOccurrenceSets ends
+         190608 ms          13800 ms  removeRedundantTransformations ends
+         190719 ms            111 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         192685 ms           1966 ms  computeSortedOccurrenceSets ends
+         193569 ms            884 ms  computeEncoding ends
+         193569 ms              0 ms  Program ends
+
+
+Number of points: 100
+Number of MTPs before removal: 4091304
+Number of OSs after removal: 112567
+
+omnisia/MaxTranPatsJava/jars on  master via ☕ v11.0.15 took 3m13s 
+❯ java -jar mtptest202204281227v11.jar ..output/2022-04-28 ../data/bwv846b/bwv846b-150.pts 
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+    1: 2755517
+    2: 1308587
+    3:  620747
+    4:  320914
+    5:  182935
+    6:  113794
+    7:   76032
+    8:   53256
+    9:   39206
+   10:   29556
+   11:   23204
+   12:   18585
+   13:   14912
+   14:   12312
+   15:   10230
+   16:    8557
+   17:    7289
+   18:    6384
+   19:    5468
+   20:    4802
+   21:    4218
+   22:    3785
+   23:    3382
+   24:    3117
+   25:    2660
+   26:    2409
+   27:    2237
+   28:    2038
+   29:    1823
+   30:    1635
+   31:    1545
+   32:    1431
+   33:    1332
+   34:    1265
+   35:    1206
+   36:    1106
+   37:    1064
+   38:     989
+   39:    1012
+   40:     871
+   41:     851
+   42:     749
+   43:     731
+   44:     709
+   45:     683
+   46:     609
+   47:     611
+   48:     542
+   49:     532
+   50:     493
+   51:     499
+   52:     426
+   53:     417
+   54:     421
+   55:     403
+   56:     378
+   57:     382
+   58:     343
+   59:     312
+   60:     285
+   61:     301
+   62:     298
+   63:     306
+   64:     264
+   65:     248
+   66:     246
+   67:     230
+   68:     220
+   69:     205
+   70:     187
+   71:     214
+   72:     181
+   73:     182
+   74:     153
+   75:     183
+   76:     164
+   77:     135
+   78:     137
+   79:     148
+   80:     126
+   81:     135
+   82:     113
+   83:      91
+   84:     102
+   85:      90
+   86:      91
+   87:      77
+   88:      96
+   89:      69
+   90:      86
+   91:      61
+   92:      80
+   93:      63
+   94:      63
+   95:      57
+   96:      59
+   97:      72
+   98:      51
+   99:      47
+  100:      44
+  101:      45
+  102:      64
+  103:      41
+  104:      49
+  105:      60
+  106:      39
+  107:      44
+  108:      47
+  109:      39
+  110:      39
+  111:      38
+  112:      29
+  113:      37
+  114:      27
+  115:      33
+  116:      24
+  117:      26
+  118:      32
+  119:      28
+  120:      26
+  121:      29
+  122:      22
+  123:      30
+  124:      26
+  125:      33
+  126:      19
+  127:      27
+  128:      34
+  129:      28
+  130:      28
+  131:      20
+  132:      19
+  133:      23
+  134:      18
+  135:      21
+  136:      19
+  137:      22
+  138:      14
+  139:      21
+  140:      18
+  141:      14
+  142:       9
+  143:      25
+  144:      13
+  145:      10
+  146:      20
+  147:      11
+  148:       8
+  149:      19
+  150:      15
+  151:      13
+  152:      14
+  153:      15
+  154:       5
+  155:      15
+  156:      13
+  157:      10
+  158:      17
+  159:      12
+  160:      11
+  161:       5
+  162:       8
+  163:      10
+  164:      13
+  165:      12
+  166:       7
+  167:      11
+  168:      11
+  169:       7
+  170:       7
+  171:       9
+  172:      12
+  173:      12
+  174:       7
+  175:       9
+  176:       4
+  177:      11
+  178:       3
+  179:       9
+  180:       9
+  181:       7
+  182:       5
+  183:       4
+  184:       5
+  185:       6
+  186:       9
+  187:       4
+  188:       7
+  189:       3
+  190:      11
+  191:      14
+  192:       8
+  193:       2
+  194:       8
+  195:       6
+  196:       7
+  197:       8
+  198:       6
+  199:      11
+  200:       2
+  201:       7
+  202:       1
+  203:       3
+  204:       5
+  205:       5
+  206:       4
+  207:       3
+  208:       2
+  209:       2
+  211:       3
+  212:       6
+  213:       8
+  214:       4
+  215:       2
+  216:       2
+  217:       8
+  218:       2
+  219:       4
+  220:       5
+  221:       4
+  222:       3
+  223:       4
+  224:       2
+  225:       1
+  226:       2
+  227:       2
+  228:       3
+  229:       4
+  230:       4
+  231:       5
+  232:       1
+  233:       4
+  234:       2
+  235:       5
+  237:       1
+  238:       3
+  239:       2
+  240:       2
+  241:       2
+  242:       8
+  243:       1
+  245:       3
+  246:       4
+  247:       4
+  248:       1
+  249:       4
+  250:       2
+  251:       1
+  252:       4
+  253:       3
+  254:       1
+  255:       2
+  256:       4
+  257:       2
+  258:       4
+  259:       3
+  261:       2
+  262:       4
+  263:       2
+  265:       4
+  266:       1
+  267:       7
+  268:       3
+  269:       3
+  270:       1
+  271:       5
+  273:       1
+  274:       3
+  275:       1
+  276:       1
+  277:       1
+  278:       3
+  279:       2
+  280:       2
+  284:       1
+  286:       3
+  287:       2
+  289:       1
+  290:       2
+  292:       2
+  293:       1
+  294:       1
+  296:       1
+  297:       1
+  298:       1
+  300:       1
+  301:       1
+  302:       1
+  303:       2
+  305:       1
+  306:       2
+  310:       1
+  311:       1
+  313:       3
+  314:       1
+  315:       1
+  316:       2
+  317:       1
+  318:       1
+  319:       1
+  320:       2
+  325:       2
+  326:       1
+  330:       2
+  331:       1
+  332:       1
+  333:       1
+  335:       2
+  339:       1
+  341:       1
+  346:       2
+  349:       1
+  350:       1
+  351:       1
+  353:       1
+  355:       1
+  357:       2
+  358:       1
+  359:       1
+  362:       3
+  365:       1
+  368:       3
+  369:       1
+  370:       2
+  378:       1
+  379:       1
+  380:       1
+  383:       1
+  385:       2
+  386:       1
+  388:       2
+  389:       1
+  390:       1
+  392:       1
+  393:       1
+  394:       1
+  395:       1
+  397:       2
+  400:       1
+  404:       1
+  405:       1
+  409:       1
+  410:       1
+  412:       1
+  413:       1
+  414:       2
+  416:       1
+  417:       1
+  422:       1
+  425:       1
+  429:       1
+  434:       1
+  435:       2
+  444:       1
+  454:       1
+  459:       1
+  464:       1
+  465:       1
+  475:       1
+  477:       1
+  478:       1
+  481:       1
+  482:       1
+  483:       2
+  495:       1
+  501:       1
+  507:       1
+  531:       1
+  535:       1
+  541:       1
+  560:       1
+  577:       1
+  619:       1
+  622:       1
+         303494 ms         303494 ms  computeMaximalTransformablePatterns ends
+         356208 ms          52714 ms  computeSizeMTPSetArray ends
+         371552 ms          15344 ms  computePatternTransformationSetPairs ends
+        1314404 ms         942852 ms  computeSuperMTPs ends
+        1325837 ms          11433 ms  computeHeterogeneousOccurrenceSets ends
+        1570789 ms         244952 ms  removeDuplicateOccurrenceSets ends
+        1658284 ms          87495 ms  removeRedundantTransformations ends
+        1658375 ms             91 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        1668986 ms          10611 ms  computeSortedOccurrenceSets ends
+        1673941 ms           4955 ms  computeEncoding ends
+        1673941 ms              0 ms  Program ends
+
+
+OS(P(p(84.0,26.0),p(98.0,27.0),p(100.0,28.0),p(102.0,29.0),p(104.0,30.0),p(106.0,29.0),p(108.0,30.0),p(110.0,31.0),p(112.0,32.0)),[T(F_2STR,[1.0, -48.0, -53.0, -1.0]), T(F_2STR,[1.0, 56.0, -2.0, 1.0]), T(F_2STR,[1.0, 96.0, -46.0, -1.0])],null)
+OS(P(p(4.0,23.0),p(8.0,24.0),p(12.0,25.0),p(22.0,27.0),p(23.0,26.0),p(24.0,25.0),p(36.0,27.0)),[T(F_2STR,[1.0, 48.0, 4.0, 1.0]), T(F_2STR,[1.0, 96.0, -3.0, 1.0]), T(F_2STR,[1.0, 144.0, -7.0, 1.0]), T(F_2STR,[2.0, 108.0, -51.0, -1.0])],null)
+OS(P(p(4.0,23.0),p(8.0,24.0),p(16.0,26.0),p(22.0,27.0),p(44.0,27.0),p(46.0,26.0),p(48.0,25.0)),[T(F_2STR,[1.0, 48.0, 4.0, 1.0]), T(F_2STR,[1.0, 92.0, 4.0, 1.0]), T(F_2STR,[1.0, 96.0, -3.0, 1.0]), T(F_2STR,[1.0, 144.0, -7.0, 1.0])],null)
+OS(P(p(84.0,31.0),p(100.0,26.0),p(100.0,28.0),p(124.0,27.0),p(132.0,28.0),p(140.0,29.0)),[T(F_2STR,[-2.0, 352.0, -2.0, 1.0]), T(F_2STR,[0.25, 107.0, -52.0, -1.0]), T(F_2STR,[0.25, 139.0, -54.0, -1.0]), T(F_2STR,[0.25, 155.0, -48.0, -1.0])],null)
+OS(P(p(92.0,24.0),p(152.0,24.0),p(172.0,21.0),p(172.0,23.0),p(192.0,18.0),p(212.0,22.0)),[T(F_2STR,[-0.6, 227.2, -50.0, -1.0]), T(F_2STR,[-0.4, 228.8, -44.0, -1.0]), T(F_2STR,[-0.4, 240.8, -44.0, -1.0]), T(F_2STR,[0.2, 89.6, -48.0, -1.0])],null)
+OS(P(p(124.0,29.0),p(136.0,26.0),p(172.0,26.0),p(196.0,30.0),p(200.0,31.0),p(204.0,32.0),p(208.0,33.0)),[T(F_2STR,[-0.5, 246.0, -5.0, 1.0])],null)
+OS(P(p(28.0,28.0),p(32.0,24.0),p(42.0,28.0),p(68.0,26.0),p(76.0,32.0),p(80.0,28.0),p(86.0,25.0),p(90.0,32.0),p(116.0,32.0),p(118.0,33.0),p(120.0,34.0),p(134.0,25.0),p(148.0,23.0),p(150.0,27.0),p(164.0,24.0),p(176.0,26.0),p(182.0,23.0),p(184.0,27.0),p(208.0,21.0),p(212.0,17.0),p(214.0,34.0)),[],null)
+
+
+Coverage: 150
+Uncompressed length: 300
+Encoding length: 206
+Compression factor: 1.4563106796116505
+Number of occurrence sets: 7
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+         303494 ms         303494 ms  computeMaximalTransformablePatterns ends
+         356208 ms          52714 ms  computeSizeMTPSetArray ends
+         371552 ms          15344 ms  computePatternTransformationSetPairs ends
+        1314404 ms         942852 ms  computeSuperMTPs ends
+        1325837 ms          11433 ms  computeHeterogeneousOccurrenceSets ends
+        1570789 ms         244952 ms  removeDuplicateOccurrenceSets ends
+        1658284 ms          87495 ms  removeRedundantTransformations ends
+        1658375 ms             91 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        1668986 ms          10611 ms  computeSortedOccurrenceSets ends
+        1673941 ms           4955 ms  computeEncoding ends
+        1673941 ms              0 ms  Program ends
+
+
+Number of points: 150
+Number of MTPs before removal: 15654228
+Number of OSs after removal: 431190
+
+omnisia/MaxTranPatsJava/jars on  master via ☕ v11.0.15 took 27m54s 
+❯ git add .
+
+omnisia/MaxTranPatsJava/jars on  master [+] via ☕ v11.0.15 
+❯ git commit -m"Run UCloud machine on 150 point bwv846 file"
+[master 95c93d9876] Run UCloud machine on 150 point bwv846 file
+ 3 files changed, 98 insertions(+)
+ create mode 100644 MaxTranPatsJava/jars/..output/2022-04-28/bwv846b-050-pts-F_2STR-2022-04-28-14-37-22-998/bwv846b-050.enc
+ create mode 100644 MaxTranPatsJava/jars/..output/2022-04-28/bwv846b-100-pts-F_2STR-2022-04-28-14-37-42-368/bwv846b-100.enc
+ create mode 100644 MaxTranPatsJava/jars/..output/2022-04-28/bwv846b-150-pts-F_2STR-2022-04-28-14-41-34-420/bwv846b-150.enc
+
+omnisia/MaxTranPatsJava/jars on  master [⇡] via ☕ v11.0.15 
+❯ git push
+Enumerating objects: 17, done.
+Counting objects: 100% (17/17), done.
+Delta compression using up to 64 threads
+Compressing objects: 100% (8/8), done.
+Writing objects: 100% (12/12), 2.80 KiB | 2.80 MiB/s, done.
+Total 12 (delta 4), reused 0 (delta 0)
+remote: Resolving deltas: 100% (4/4), completed with 3 local objects.
+To github.com:chromamorph/omnisia.git
+   e40af67200..95c93d9876  master -> master
+
+❯ java -jar mtptest202204281227v11.jar ..output/2022-04-28 ../data/bwv846b/bwv846b-200.pts 
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+        at java.base/java.util.TreeMap.put(TreeMap.java:575)
+        at java.base/java.util.TreeSet.add(TreeSet.java:255)
+        at com.chromamorph.maxtranpatsjava.PointSet.computeMaximalTransformablePatternsForkJoin(PointSet.java:470)
+        at com.chromamorph.maxtranpatsjava.PointSet.encodePointSet(PointSet.java:892)
+        at com.chromamorph.maxtranpatsjava.PointSet.encodePointSetFromFile(PointSet.java:1070)
+        at com.chromamorph.maxtranpatsjava.PointSet.main(PointSet.java:1331)
+
+omnisia/MaxTranPatsJava/jars on  master via ☕ v11.0.15 took 14m44s 
+❯ 
