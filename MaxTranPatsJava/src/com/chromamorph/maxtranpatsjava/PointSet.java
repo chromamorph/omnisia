@@ -1323,9 +1323,13 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public static void main(String[] args) {
-		TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
-		String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/bwv846b/bwv846b-100.pts";
-		encodePointSetFromFile(fileName, transformationClasses,false,true,"1100","output/2022-04-28",false,3, true);
+		if (args.length < 2) {
+			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file>");
+		} else {
+			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
+			String fileName = args[1];
+			encodePointSetFromFile(fileName, transformationClasses,false,true,"1100",args[0],false,3, true);
+		}
 	}
 
 }
