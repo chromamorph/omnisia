@@ -1328,7 +1328,7 @@ public class PointSet implements Comparable<PointSet>{
 		} else {
 			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
 			String fileName = args[1];
-			encodePointSetFromFile(fileName, transformationClasses,false,true,"1100",args[0],false,3, true);
+			encodePointSetFromFile(fileName, transformationClasses,false,true,"1100",args[0],false,3, false);
 		}
 	}
 
