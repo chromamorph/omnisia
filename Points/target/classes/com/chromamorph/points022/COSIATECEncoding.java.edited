@@ -1,0 +1,569 @@
+package com.chromamorph.points018;
+
+import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+
+import javax.sound.midi.InvalidMidiDataException;
+import javax.swing.JFrame;
+
+import com.chromamorph.notes.Notes;
+
+import processing.core.PApplet;
+
+public class COSIATECEncoding implements Encoding {
+
+        private ArrayList<TEC> tecs = new ArrayList<TEC>();
+        private PointSet residualPointSet = null;
+        private PointSet dataset = null;
+        private PrintStream logPrintStream = null;
+
+        public ArrayList<TEC> getTECs() {return tecs;}
+
+        public COSIATECEncoding(String encodingFileName) {
+                //First read in each line of the COS file.
+
+                ArrayList<String> tecStrings = new ArrayList<String>();
+                try {
+                        BufferedReader br = new BufferedReader(new FileReader(encodingFileName));
+                        for(String l = br.readLine(); l != null; l = br.readLine())
+                                if (l.trim().length() > 0)
+                                        tecStrings.add(l.trim());
+                        br.close();
+                } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+
+                //Now parse each tecString in tecStrings to get a TEC and
+                //store these TECs in a new list.
+
+                for(int i = 0; i < tecStrings.size(); i++)
+                        tecs.add(new TEC(tecStrings.get(i)));
+
+                //Now we need to find the complete set of points covered
+                //by the set of TECs that we've just read in.
+
+                PointSet pointSet = new PointSet();
+                for(TEC tec : tecs) {
+                        pointSet.addAll(tec.getCoveredPoints());
+                }
+
+                dataset = pointSet;
+
+                for(TEC tec : tecs)
+                        tec.setDataset(pointSet);
+
+                TEC lastTEC = tecs.get(tecs.size()-1);
+                if (lastTEC.getTranslatorSetSize() == 1 || lastTEC.getPatternSize() == 1)
+                        residualPointSet = lastTEC.getCoveredPoints();
+
+        }
+
+        public COSIATECEncoding(
+                        String inputFilePathName,
+                        String outputDirectoryPathName,
+                        int minPatternSize,
+                        PitchRepresentation pitchRepresentation,
+                        boolean drawOutput) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException {
+                this(new PointSet(inputFilePathName, pitchRepresentation),
+                                inputFilePathName.substring(inputFilePathName.lastIndexOf("/")+1,inputFilePathName.lastIndexOf(".")),
+                                outputDirectoryPathName,
+                                pitchRepresentation.equals(PitchRepresentation.MORPHETIC_PITCH),
+                                inputFilePathName);
+                if (drawOutput)
+                        draw();
+        }
+
+<<<<<<< .mine
+        public COSIATECEncoding(
+                        String inputFilePath,
+                        String outputDirectoryPath,
+                        boolean forRSuperdiagonals, int r,
+                        boolean withCompactnessTrawler, double a, int b
+                        ) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException {
+                this(new PointSet(inputFilePath, PitchRepresentation.MORPHETIC_PITCH),
+                        inputFilePath.substring(inputFilePath.lastIndexOf("/")+1),
+                        outputDirectoryPath,
+                        true, //diatonic pitch
+                        inputFilePath,
+                        true, //mirex
+                        withCompactnessTrawler,
+                        a,
+                        b,
+                        forRSuperdiagonals,
+                        r);
+        }
+       
+        public COSIATECEncoding(PointSet dataset, String inputFileName, String outputFolderName, boolean diatonicPitch, String fullFileName) {
+                this(dataset, inputFileName, outputFolderName, diatonicPitch, fullFileName, false, false, 0.0, 0, false, 0);
+        }
+=======
+	public COSIATECEncoding(
+			String inputFilePath,
+			String outputDirectoryPath,
+			boolean forRSuperdiagonals, int r,
+			boolean withCompactnessTrawler, double a, int b,
+			boolean mirex
+			) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException {
+		this(new PointSet(inputFilePath, PitchRepresentation.MORPHETIC_PITCH), 
+			inputFilePath.substring(inputFilePath.lastIndexOf("/")+1), 
+			outputDirectoryPath, 
+			true, //diatonic pitch
+			inputFilePath, 
+			mirex, //mirex
+			withCompactnessTrawler,
+			a,
+			b,
+			forRSuperdiagonals,
+			r);
+	}
+
+	
+	public COSIATECEncoding(
+			String inputFilePath,
+			String outputDirectoryPath,
+			boolean forRSuperdiagonals, int r,
+			boolean withCompactnessTrawler, double a, int b
+			) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException {
+		this(new PointSet(inputFilePath, PitchRepresentation.MORPHETIC_PITCH), 
+			inputFilePath.substring(inputFilePath.lastIndexOf("/")+1), 
+			outputDirectoryPath, 
+			true, //diatonic pitch
+			inputFilePath, 
+			true, //mirex
+			withCompactnessTrawler,
+			a,
+			b,
+			forRSuperdiagonals,
+			r);
+	}
+	
+	public COSIATECEncoding(PointSet dataset, String inputFileName, String outputFolderName, boolean diatonicPitch, String fullFileName) {
+		this(dataset, inputFileName, outputFolderName, diatonicPitch, fullFileName, false, false, 0.0, 0, false, 0);
+	}
+>>>>>>> .r373
+
+        public COSIATECEncoding(PointSet dataset) {
+                this(dataset, null, null, true, null, true, false, 0.0, 0, false, 0);
+        }
+
+        public COSIATECEncoding(PointSet dataset, double a, int b, int r) {
+                this(dataset,null,null,true,null,true,(a > 0?true:false),a,b,(r>0?true:false),r);
+        }
+
+        public COSIATECEncoding(PointSet dataset,
+                        String inputFileName,
+                        String outputFolderName,
+                        boolean diatonicPitch,
+                        String fullFileName,
+                        boolean mirex,
+                        boolean withCompactnessTrawler,
+                        double a,
+                        int b,
+                        boolean forRSuperdiagonals,
+                        int r) {
+
+                try {
+                        File outputFolder = new File(outputFolderName);
+                        if (!outputFolder.exists()) outputFolder.mkdir();
+                       
+                        String outputFileNameWithoutSuffix = null;
+
+                        if (!mirex) {
+//                              Calendar cal = Calendar.getInstance();
+//                              String dateStamp = cal.get(Calendar.YEAR)+"-"+(1+cal.get(Calendar.MONTH))+"-"+cal.get(Calendar.DAY_OF_MONTH)+"-"+cal.get(Calendar.HOUR_OF_DAY)+"-"+cal.get(Calendar.MINUTE)+"-"+cal.get(Calendar.SECOND);
+//                              outputFileNameWithoutSuffix = outputFolderName+"/"+inputFileName+(diatonicPitch?"-diat":"-chrom")+"-"+dateStamp;
+                                outputFileNameWithoutSuffix = outputFolderName+"/"+inputFileName+(diatonicPitch?"-diat":"-chrom");
+                                String logFileName = outputFileNameWithoutSuffix+".log";
+                                logPrintStream = new PrintStream(logFileName);
+                        }
+
+                        String thisEncoderName = this.getClass().toString();
+
+                        LogPrintStream.println(logPrintStream, "Encoder: "+thisEncoderName);
+                        if (!mirex) LogPrintStream.println(logPrintStream, "Input file: "+fullFileName);
+                        if (!mirex) LogPrintStream.println(logPrintStream, "Output file set: "+outputFileNameWithoutSuffix);
+
+                        long startTime = System.currentTimeMillis();
+
+                        this.dataset = dataset;
+
+                        PointSet points = dataset.copy();
+                        TEC bestTEC = null;
+
+                        while (!points.isEmpty()) {
+                                bestTEC = getBestTEC(points, withCompactnessTrawler, a, b, forRSuperdiagonals, r);
+                                tecs.add(bestTEC);
+                                points.remove(bestTEC.getCoveredPoints());
+                        }
+                        long endTime = System.currentTimeMillis();
+                        LogPrintStream.println(logPrintStream, "\n"+(endTime-startTime)+" ms taken to analyse "+dataset.size()+" points\n");
+
+                        if (tecs.size() > 0) {
+                                TEC lastTEC = tecs.get(tecs.size()-1);
+                                if (lastTEC.getTranslatorSetSize() == 1 || lastTEC.getPatternSize() == 1)
+                                        residualPointSet = lastTEC.getCoveredPoints();
+                        }
+                        LogPrintStream.println(logPrintStream, this.toString());
+                        LogPrintStream.println(logPrintStream, "Number of TECs: "+tecs.size());
+                        LogPrintStream.println(logPrintStream, "Encoding length: "+getEncodingLength());
+                        LogPrintStream.println(logPrintStream, "Encoding length without residual point set: "+getEncodingLengthWithoutResidualPointSet());
+                        LogPrintStream.println(logPrintStream, "Number and proportion of residual points: "+getNumberOfResidualPoints()+", "+String.format("%.2f",getPercentageOfResidualPoints())+"%");
+                        LogPrintStream.println(logPrintStream, "Compression ratio: "+String.format("%.2f",getCompressionRatio()));
+                        LogPrintStream.println(logPrintStream, "Compression ratio excluding residual point set: "+String.format("%.2f",getCompressionRatioWithoutResidualPointSet()));
+                        LogPrintStream.println(logPrintStream, "Maximum time in tatums: "+dataset.getMaxX());
+                        LogPrintStream.println(logPrintStream, "Minimum time in tatums: "+dataset.getMinX());
+                        LogPrintStream.println(logPrintStream, "Maximum pitch: "+dataset.getMaxY());
+                        LogPrintStream.println(logPrintStream, "Minimum pitch: "+dataset.getMinY());
+                        LogPrintStream.println(logPrintStream, "Running time: "+(endTime-startTime));
+
+                        if (!mirex) {
+                                String outputFileName = outputFileNameWithoutSuffix +".cos";
+                                String uncompressedFileName = outputFileNameWithoutSuffix+".unc";
+                                LogPrintStream.println(logPrintStream, outputFileName);
+                                FileWriter out = new FileWriter(outputFileName);
+                                out.write(this.toString());
+                                out.close();
+                                out = new FileWriter(uncompressedFileName);
+                                out.write(new TEC(dataset,dataset).toString());
+                                out.close();
+                                logPrintStream.close();
+                        }
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+        }
+
+//      private void LogPrintStream.println(logPrintStream, String s) {
+//              System.out.println(s);
+//              if (logPrintStream != null) LogPrintStream.println(logPrintStream, s);
+//      }
+//
+//      private void logPrintStreamPrint(String s) {
+//              System.out.print(s);
+//              if (logPrintStream != null) logPrintStream.print(s);
+//      }
+
+        private int getEncodingLength() {
+                int n = 0;
+                for (TEC tec : tecs)
+                        n += tec.getEncodingLength();
+                return n;
+        }
+
+        private int getEncodingLengthWithoutResidualPointSet() {
+                return getEncodingLength() - (residualPointSet == null?0:residualPointSet.size());
+        }
+
+        private int getNumberOfResidualPoints() {
+                return (residualPointSet == null?0:residualPointSet.size());
+        }
+
+        private double getPercentageOfResidualPoints() {
+                return 100.0 * (getNumberOfResidualPoints()*1.0)/dataset.size();
+        }
+
+        private double getCompressionRatioWithoutResidualPointSet() {
+                return (1.0 * (dataset.size() - getNumberOfResidualPoints()))/(getEncodingLength()-getNumberOfResidualPoints());
+        }
+
+        private double getCompressionRatio() {
+                return dataset.size()/(1.0 * getEncodingLength());
+        }
+
+        private TEC getBestTEC(PointSet points,
+                                                   boolean withCompactnessTrawler, double a, int b,
+                                                   boolean forRSuperdiagonals, int r) {
+                if (points.isEmpty())
+                        throw new IllegalArgumentException("getBestTEC called with empty point set!");
+                System.out.println("getBestTEC:");
+                if (points.size() == 1)
+                        return new TEC(points, new VectorSet(new Vector(0,0)), points);
+
+                VectorPointPair[][] vectorTable = SIA.computeVectorTable(points,logPrintStream);
+                ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
+                                points,
+                                vectorTable,
+                                forRSuperdiagonals, r,
+                                withCompactnessTrawler, a, b,
+                                logPrintStream,
+                                true, //remove tran equiv mtps
+                                false, //no merge vectors
+                                0
+                                );
+
+//              ArrayList<MtpCisPair> mtpCisPairs = null;
+//              if (forRSuperdiagonals)
+//                      mtpCisPairs = SIAR.run(points, r);
+//              else {
+//                      logPrintStreamPrint("computeMtpCisPairs...");
+//                      mtpCisPairs = ComputeMtpCisPairs.run(vectorTable,0);
+//                      LogPrintStream.println(logPrintStream, "completed: "+mtpCisPairs.size()+" MTPs found");
+//              }
+//              logPrintStreamPrint("removeTranslationallyEquivalentMtps");
+//              mtpCisPairs = VectorizedMtpCisPair.removeTranslationallyEquivalentMtps(mtpCisPairs);
+//              if (withCompactnessTrawler) {
+//                      mtpCisPairs = CompactnessTrawler.trawl(mtpCisPairs, a, b);
+//                      if (!mtpCisPairs.isEmpty())
+//                              mtpCisPairs = VectorizedMtpCisPair.removeTranslationallyEquivalentMtps(mtpCisPairs);
+//              }
+                LogPrintStream.println(logPrintStream, "...DONE: "+mtpCisPairs.size()+" translationally distinct MTPs");
+
+                if (mtpCisPairs.isEmpty()) {
+                        LogPrintStream.println(logPrintStream, "No remaining patterns after trawling, so remainder of dataset returned as TEC!");
+                        TEC bestTEC = new TEC(points.copy(), new VectorSet(new Vector(0,0)), dataset);
+                        LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness())+ ") "+bestTEC.toString());
+                        return bestTEC;
+                }
+                       
+                       
+                TECQualityComparator tecQualityComparator = new TECQualityComparator();
+
+                MtpCisPair mtpCisPair;
+                TEC bestTEC = null;
+                LogPrintStream.println(logPrintStream, "Finding best TEC");
+                for(int i = 0; i < mtpCisPairs.size(); i++) {
+
+                        if (i%500==0 && i != 0) {
+                                System.out.print(".");
+                                System.out.flush();
+                        } else if (i%25000==0 && i != 0) {
+                                System.out.println();
+                                System.out.flush();
+                        }
+
+                        mtpCisPair = mtpCisPairs.get(i);
+
+                        //Find the TEC and its dual for this mtpCisPair
+                        TEC thisTEC = getTECForMTP(mtpCisPair, vectorTable, points);
+                        TEC dualTEC = thisTEC.getDual();
+
+                        //Remove redundant translators from thisTEC and dualTEC
+                        thisTEC.removeRedundantTranslators();
+                        dualTEC.removeRedundantTranslators();
+
+                        //Check to see if thisTEC is better than bestTEC. If it is, then set bestTEC to point at thisTEC.
+                        if (bestTEC == null || tecQualityComparator.compare(thisTEC, bestTEC) < 0) bestTEC = thisTEC;
+                        if (tecQualityComparator.compare(dualTEC,bestTEC) < 0) bestTEC = dualTEC;
+                }
+
+                LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness())+ ") "+bestTEC.toString());
+                return bestTEC;
+        }
+
+        /*
+         * This doesn't work - gives different answers on different runs... :(
+         */
+        //      private ArrayList<MtpCisPair> removeTranslationallyEquivalentMtps(ArrayList<MtpCisPair> mtpCisPairs) {
+        //              logPrintStreamPrint("removeTranslationallyEquivalentMtps...");
+        //              
+        //              TreeSet<MtpCisPairTranEq> tranDistinctMtps = new TreeSet<MtpCisPairTranEq>();
+        //              for(MtpCisPair mcp : mtpCisPairs)
+        //                      tranDistinctMtps.add(new MtpCisPairTranEq(mcp));
+        //              
+        //              ArrayList<MtpCisPair> newMtpCisPairList = new ArrayList<MtpCisPair>();
+        //              for(MtpCisPairTranEq mcpte : tranDistinctMtps)
+        //                      newMtpCisPairList.add(mcpte.getMtpCisPair());
+        //              LogPrintStream.println(logPrintStream, "completed: "+newMtpCisPairList.size()+" MTPs after removing translational equivalents");
+        //              return newMtpCisPairList;
+        //              
+        //      }
+
+        //      private ArrayList<MtpCisPair> removeTranslationallyEquivalentMtps(ArrayList<MtpCisPair> mtpCisPairs) {
+        //              logPrintStreamPrint("removeTranslationallyEquivalentMtps");
+        //              //Put the MTPs into order of size - then only have to compare each MTP
+        //              //with other MTPs of the same size when removing translationally
+        //              //equivalent MTPs.
+        //
+        //              PointSetSizeComparator pointSetSizeComparator = new PointSetSizeComparator();
+        //              Collections.sort(mtpCisPairs, pointSetSizeComparator);
+        //
+        //              //Remove MTPs that are translationally equivalent to other MTPs
+        //              //so that we don't have to compute the same TEC more than once.
+        //
+        //              ArrayList<MtpCisPair> newMtpCisPairList = new ArrayList<MtpCisPair>();
+        //
+        //              MtpCisPair s1, s2;
+        //              int n = mtpCisPairs.size();
+        //              for(int i = 0; i < n; i++) {
+        //                      if (i%500 == 0 && i != 0) {
+        //                              System.out.print(".");
+        //                              System.out.flush();
+        //                      }
+        //                      if (i%25000 == 0) {
+        //                              System.out.println();
+        //                              System.out.flush();
+        //                      }
+        //                      s1 = mtpCisPairs.get(i);
+        //                      int x = s1.getMtp().size();
+        //                      boolean found = false;
+        //                      for(int j = i + 1; !found && j < n && (s2 = mtpCisPairs.get(j)).getMtp().size() == x; j++) {
+        //                              if (s1.getMtp().translationallyEquivalentTo(s2.getMtp()))
+        //                                      found = true;
+        //                      }
+        //                      if (!found)
+        //                              newMtpCisPairList.add(s1);
+        //              }
+        //
+        //              LogPrintStream.println(logPrintStream, "\ncompleted: "+newMtpCisPairList.size()+" MTPs after removing translational equivalents");
+        //              return newMtpCisPairList;
+        //      }
+
+
+        private TEC getTECForMTP(MtpCisPair mtpCisPair, VectorPointPair[][] vectorTable, PointSet points) {
+                VectorSet translators = new VectorSet();
+                Integer[] cols = new Integer[mtpCisPair.getCis().size()];
+                mtpCisPair.getCis().toArray(cols);
+                int patSize = mtpCisPair.getCis().size();
+                int[] rows = new int[patSize];
+                rows[0] = 0;
+                while(rows[0] <= points.size() - patSize) { //For each vector in the first pattern point column
+                        for(int j = 1; j < patSize; j++) rows[j] = rows[0]+j; //Initialize the indices for the other pattern point columns
+                        Vector v0 = vectorTable[cols[0]][rows[0]].getVector();
+                        boolean found = false;
+                        for(int col = 1; col < patSize; col++) { //For each pattern point
+                                while(rows[col] < points.size() && vectorTable[cols[col]][rows[col]].getVector().compareTo(v0) < 0) {
+                                        rows[col]++; //Increment CI for this pattern point until >= v0
+                                }
+                                if (rows[col] >= points.size() || !v0.equals(vectorTable[cols[col]][rows[col]].getVector())) break; //If not equal then break
+                                if (col == patSize-1) found = true;
+                        }
+                        if (found || patSize == 1) translators.add(v0);
+                        rows[0]++;
+                }
+
+                return new TEC(mtpCisPair.getMtp(),translators,this.dataset);
+        }
+
+//      private VectorPointPair[][] computeVectorTable(PointSet points) {
+//              logPrintStreamPrint("computeVectorTable...");
+//              TreeSet<Point> pointsTreeSet = points.getPoints();
+//              VectorPointPair[][] vectorTable = new VectorPointPair[points.size()][points.size()];
+//              int i = 0;
+//              for(Point p1 : pointsTreeSet) {
+//                      int j = 0;
+//                      for(Point p2 : pointsTreeSet) {
+//                              VectorPointPair vp = new VectorPointPair(p1,p2,i);
+//                              vectorTable[i][j] = vp;
+//                              j++;
+//                      }
+//                      i++;
+//              }
+//
+//              LogPrintStream.println(logPrintStream, "completed");
+//              return vectorTable;
+//      }
+
+        /**
+         * Computes a set of translationally distinct MTP-CIS pairs from the vector table.
+         * @param vectorTable
+         * @return
+         */
+//      private ArrayList<MtpCisPair> computeMtpCisPairs(VectorPointPair[][] vectorTable) {
+//              TreeSet<VectorPointPair> sortedSIAVectorTable = new TreeSet<VectorPointPair>();
+//
+//              for(int i = 0; i < vectorTable.length; i++)
+//                      for(int j = i+1; j < vectorTable.length; j++)
+//                              sortedSIAVectorTable.add(vectorTable[i][j]);
+//
+//              ArrayList<PointSet> MTPs = new ArrayList<PointSet>();
+//              ArrayList<ArrayList<Integer>> CISs = new ArrayList<ArrayList<Integer>>();
+//              VectorPointPair firstVP = sortedSIAVectorTable.first();
+//              Vector v = firstVP.getVector();
+//              PointSet mtp = new PointSet();
+//              ArrayList<Integer> cis = new ArrayList<Integer>();
+//              mtp.add(firstVP.getPoint());
+//              cis.add(firstVP.getIndex());
+//              NavigableSet<VectorPointPair> rest = sortedSIAVectorTable.tailSet(firstVP, false);
+//              for(VectorPointPair vp : rest) {
+//                      if (vp.getVector().equals(v)) {
+//                              mtp.add(vp.getPoint());
+//                              cis.add(vp.getIndex());
+//                      } else { //mtp and cis are now complete
+//                              //                              if (mtpIsTranslationallyDistinct(mtp,MTPs)) { //mtp is translationally distinct from all the mtps currently in MTPs
+//                              MTPs.add(mtp);
+//                              CISs.add(cis);
+//                              //                              }
+//                              mtp = new PointSet();
+//                              cis = new ArrayList<Integer>();
+//                              v = vp.getVector();
+//                              mtp.add(vp.getPoint());
+//                              cis.add(vp.getIndex());
+//                      }
+//              }              
+//
+//              //              if (mtpIsTranslationallyDistinct(mtp,MTPs)) {
+//              MTPs.add(mtp);
+//              CISs.add(cis);
+//              //              }
+//
+//              ArrayList<MtpCisPair> mtpCisPairs = new ArrayList<MtpCisPair>();
+//
+//              for(int i = 0; i < MTPs.size(); i++) {
+//                      mtpCisPairs.add(new MtpCisPair(MTPs.get(i),CISs.get(i)));
+//              }
+//
+//              return mtpCisPairs;
+//
+//      }
+
+        //      private boolean mtpIsTranslationallyDistinct(PointSet mtp, ArrayList<PointSet> MTPs) {
+        //              for(PointSet mtp2 : MTPs)
+        //                      if (mtp.translationallyEquivalentTo(mtp2))
+        //                              return false;
+        //              return true;
+        //      }
+
+
+        @Override
+        public void draw() {
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                                JFrame frame = new JFrame();
+                                frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
+                                frame.setResizable(false);
+                                PApplet embed = new DrawPoints(dataset,tecs);
+                                frame.add(embed);
+                                embed.init();
+                                frame.pack();
+                                frame.setVisible(true);
+                        }
+                });
+        }
+
+        public String toString() {
+                StringBuilder sb = new StringBuilder();
+                for (TEC tec : tecs)
+                        sb.append(tec+"\n");
+                return sb.toString();
+        }
+
+        public boolean compareWithPointSet(PointSet pointSet) {
+                return dataset.equals(pointSet);
+        }
+
+        public static boolean compareEncodingWithPointSet() throws NoMorpheticPitchException, IOException {
+                //Get encoding
+                String encodingFileName = MIREX2013Entries.getFileName("Choose encoding file", "./");
+                String pointSetFileName = MIREX2013Entries.getFileName("Choose OPND file", "./");
+                COSIATECEncoding encoding = new COSIATECEncoding(encodingFileName);
+                boolean diatonic = false;
+                if (encodingFileName.contains("diat"))
+                        diatonic = true;
+                PointSet pointSet = new PointSet(Notes.fromOPND(pointSetFileName),diatonic);
+                return encoding.compareWithPointSet(pointSet);  
+        }
+
+        public static boolean compareEncodingWithPointSet(COSIATECEncoding encoding, PointSet pointSet) {
+                return encoding.compareWithPointSet(pointSet);
+        }
+
+}

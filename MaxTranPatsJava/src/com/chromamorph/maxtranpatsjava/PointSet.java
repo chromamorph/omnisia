@@ -868,8 +868,8 @@ public class PointSet implements Comparable<PointSet>{
 		setEncoding(encoding);
 	}
 
-	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses) throws Exception {
-		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE);
+	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw) throws Exception {
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw);
 	}
 	public static void encodePointSet (
 			PointSet ps, 
@@ -877,7 +877,8 @@ public class PointSet implements Comparable<PointSet>{
 			TransformationClass[] transformationClasses,
 			boolean useScalexia,
 			int minSize,
-			int hashTableSize) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			int hashTableSize,
+			boolean draw) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
 
@@ -950,6 +951,12 @@ public class PointSet implements Comparable<PointSet>{
 
 		PrintWriter output = new PrintWriter(outputFilePath);
 		Utility.println(output, ps.getEncoding());
+		
+		if (draw) {
+			int posOfDot = outputFilePath.lastIndexOf(".");
+			String imageFilePath = outputFilePath.substring(0,posOfDot) + ".png";
+			ps.getEncoding().drawOccurrenceSets(imageFilePath);
+		}
 
 		Utility.println(output, "\n\nLog:");
 		for(int i = 0; i < log.size(); i++) {
@@ -982,7 +989,8 @@ public class PointSet implements Comparable<PointSet>{
 			String outputDirectory,
 			boolean useScalexia,
 			int minSize,
-			int count) {
+			int count,
+			boolean draw) {
 		String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 		try {
 			PointSet ps1 = new PointSet(
@@ -1002,7 +1010,7 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1023,7 +1031,8 @@ public class PointSet implements Comparable<PointSet>{
 			boolean pitchSpell,
 			boolean midTimePoint,
 			String dimensionMask,
-			String outputDir) {
+			String outputDir,
+			boolean draw) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -1031,7 +1040,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses);
+			encodePointSet(ps, outputFileName, transformationClasses, draw);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1049,7 +1058,8 @@ public class PointSet implements Comparable<PointSet>{
 			String dimensionMask,
 			String outputDir,
 			boolean useScalexia,
-			int minSize) {
+			int minSize,
+			boolean draw) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -1057,7 +1067,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw);
 			return ps;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1095,7 +1105,8 @@ public class PointSet implements Comparable<PointSet>{
 						"1100",
 						outputDir,
 						true,
-						3);
+						3,
+						false);
 		}
 	}
 
@@ -1122,7 +1133,8 @@ public class PointSet implements Comparable<PointSet>{
 								outputDir,
 								true,
 								3,
-								count);		
+								count,
+								false);		
 					}
 					count++;
 				}
@@ -1203,7 +1215,8 @@ public class PointSet implements Comparable<PointSet>{
 								outputDir,
 								true,
 								3,
-								count);		
+								count,
+								false);		
 					}
 					count++;
 				}
@@ -1219,7 +1232,8 @@ public class PointSet implements Comparable<PointSet>{
 				"1100",
 				"output/nlb-20210504/single-files-with-scalexia",
 				true, // useScalexia
-				3 //minSize
+				3, //minSize
+				false // draw
 				);
 	}
 
@@ -1299,7 +1313,8 @@ public class PointSet implements Comparable<PointSet>{
 							"1100", //dimensionMask
 							outputFolder,
 							false, //useScalexia
-							3 // minSize
+							3, // minSize
+							false
 							);
 				}
 			}
@@ -1308,64 +1323,9 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public static void main(String[] args) {
-		//		int start = 25, end = 26;
-		//		if (args.length > 0) start = Integer.parseInt(args[0]);
-		//		if (args.length > 1) end = Integer.parseInt(args[1]);
-		//		compressNLBSingleFiles(0, 360);
-		//		compressNLBPairFiles(start,end);
-		//		compressMissingNLBPairFiles();
-		//		encodeFile();
-		//		renameNLBPairFileOutputFiles();
-		//		encodeFilesInFolder("data/JMM2020-experiment",
-		//				"output/JMM-2020-experiment-combinatorial-test",
-		//				"bwv846b-050");
-
-
-		//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/F_2STR-test-dataset.lisp"));
-		//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/f2str-test-simple.lisp"));
-		//			PointSet ps = new PointSet(new File("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts"));
 		TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
-		//			String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-150.pts";
-		String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/bwv846b-50.pts";
-//		String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/test/jmm-2d-dataset.lisp";
-		long startTime = System.currentTimeMillis();
-		//			ps.computeMaximalTransformablePatternsForkJoin(1);
-		PointSet ps = encodePointSetFromFile(fileName, transformationClasses,false,true,"1100","output/test",false,3);
-		long endTime = System.currentTimeMillis();
-		System.out.println("\nInput: " + ps);
-		System.out.println("\nOutput: \n");
-		System.out.println(ps.getMTPs().first());
-		System.out.println("Number of MTPs: "+ps.getMTPs().size());
-		System.out.println("Number of points: "+ps.size());
-		System.out.println("Running time: "+(endTime-startTime)+"ms");
-		System.out.println("Encoding: \n"+ps.getEncoding());
-		String outputDir = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/output/bwv846b-50/";
-		String outputFilePath = Utility.getOutputFilePath(outputDir, fileName, transformationClasses, "png");
-		ps.getEncoding().drawOccurrenceSets(outputFilePath);
-    
-//<<<<<<< FROM master branch
-//		compressNLBSingleFiles(0, 360);
-//		compressNLBPairFiles(start,end);
-//		compressMissingNLBPairFiles();
-		//		encodeFile();
-		//		renameNLBPairFileOutputFiles();
-//		encodeFilesInFolder("data/JMM2020-experiment", "JMM-2020-experiment-comb-test-master", "bwv846b-050");
-//		try {
-//			PointSet ps = new PointSet(new File("data/test/f2str-test-simple.lisp"));
-//			ps.addTransformationClass(new F_2STR());
-//			ps.computeMaximalTransformablePatterns(1);
-//			System.out.println("INPUT:\n"+ps);
-//			System.out.println("OUTPUT:");
-//			for(TransformationPointSetPair mtp : ps.getMTPs())
-//				System.out.println(mtp);
-//		} catch (IOException | DimensionalityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (NoTransformationClassesDefinedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//>>>>>>> master
+		String fileName = "/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/bwv846b/bwv846b-100.pts";
+		encodePointSetFromFile(fileName, transformationClasses,false,true,"1100","output/2022-04-28",false,3, true);
 	}
 
 }
