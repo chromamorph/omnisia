@@ -1,0 +1,81 @@
+ * Hardware Overview:
+
+  Model Name:	MacBook Pro
+  Model Identifier:	MacBookPro16,1
+  Processor Name:	8-Core Intel Core i9
+  Processor Speed:	2.4 GHz
+  Number of Processors:	1
+  Total Number of Cores:	8
+  L2 Cache (per Core):	256 KB
+  L3 Cache:	16 MB
+  Hyper-Threading Technology:	Enabled
+  Memory:	64 GB
+  Boot ROM Version:	1715.81.2.0.0 (iBridge: 19.16.10744.0.0,0)
+  Serial Number (system):	C02DV21KMD6T
+  Hardware UUID:	7C85C2BB-4FD0-5E4E-8101-12E7DDBFE7D3
+  Activation Lock Status:	Enabled
+
+a.cpp
+=====
+
+ * a.cpp compiled with no optimisation:
+ * 	number of MTPs: 7567810
+	running time: 59.2737 s
+
+   a.cpp compiled with -O3 optimisation:
+    number of MTPs: 7567810
+	running time: 11.4801 s
+
+   java -Xms64G -jar JavaCppCompareA.jar ../data/antti-20000-point-dataset/test.in
+number of MTPs: 199990000
+
+running time: 125.241 seconds
+
+Number of MTPs is wrong.
+
+15:42:29:~/Repos/omnisia/JavaCPPCompare/jars on branch master % java -Xms64G -jar JavaCppCompareA02.jar ../data/antti-20000-point-dataset/test.in
+number of MTPs: 7567810
+running time: 58.256 seconds
+
+- this is faster than the non-optimized C++ version!
+
+
+
+b.cpp
+=====
+Non-optimised version of b.cpp:
+16:08:12:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % /usr/local/bin/g++-11 -fopenmp -o b.out b.cpp
+
+16:09:49:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % ./b.out < test.in
+number of MTPs: 7567810
+running time: 25.7746 s
+
+Optimised version of b.cpp:
+16:10:33:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % /usr/local/bin/g++-11 -fopenmp -O3 -o bO3.out b.cpp
+16:20:48:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % ./bO3.out < test.in                                
+number of MTPs: 7567810
+running time: 3.19602 s
+
+
+c.cpp
+=====
+
+16:21:03:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % /usr/local/bin/g++-11 -fopenmp -O3 -o cO3.out c.cpp
+16:23:08:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % ./cO3.out < test.in
+number of MTPs: 7567810
+running time: 2.20456 s
+
+d.cpp
+=====
+
+16:23:23:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % /usr/local/bin/g++-11 -fopenmp -O3 -o dO3.out d.cpp
+16:24:47:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % ./dO3.out < test.in                               
+number of MTPs: 7567810
+running time: 2.17572 s
+16:24:59:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % ./dO3.out < test.in
+number of MTPs: 7567810
+running time: 2.31598 s
+16:25:06:~/Repos/sia-cpp-2022/antti-2021-06-12 on branch master % ./dO3.out < test.in
+number of MTPs: 7567810
+running time: 2.19857 s
+

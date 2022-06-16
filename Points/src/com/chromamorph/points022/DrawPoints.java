@@ -526,7 +526,9 @@ public class DrawPoints extends PApplet {
 				continue;
 			ArrayList<PointSet> occurrenceSet = occurrenceSets.get(i);
 			int col = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
-			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/4);
+//			Following has alpha divided by 4 so that subsequent occurrences are less clear
+//			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/4);
+			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
 			strokeWeight(2);
 			boolean firstOccurrence = true;
 			for(PointSet occurrence : occurrenceSet) {

@@ -610,10 +610,18 @@ public class Utility {
 //		System.out.println(computeNumCombinations(14,10));
 //		System.out.println(computeCombinatorialNumberForCombination(0,1,2,3));
 		
-		int size = 6, k = 3;
-		int numCombinations = computeNumCombinations(size, k);
-		for(int N = 0; N < numCombinations; N++)
-			System.out.println(N+"\t"+computeCombinationIndexSequence(N,k,size));
+//		int size = 6, k = 3;
+//		int numCombinations = computeNumCombinations(size, k);
+//		for(int N = 0; N < numCombinations; N++)
+//			System.out.println(N+"\t"+computeCombinationIndexSequence(N,k,size));
+
+		int[][] pis = computePermutationIndexSequences(5);
+		for(int[] a : pis) {
+			System.out.println();
+			for (int x : a) {
+				System.out.print(x+" ");
+			}
+		}
 	}
 
 	

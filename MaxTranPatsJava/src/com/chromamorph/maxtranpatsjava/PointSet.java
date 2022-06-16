@@ -449,6 +449,8 @@ public class PointSet implements Comparable<PointSet>{
 
 		for (TransformationClass tc : transformationClasses) {
 			int numObjectBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
+			System.out.println("basisSize = " + tc.getBasisSize());
+			System.out.println("numObjectBases = " + numObjectBases);
 			int[][] perms = tc.getPerms();
 			int numComputations = numObjectBases * numObjectBases *perms.length;
 			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases);
@@ -678,6 +680,10 @@ public class PointSet implements Comparable<PointSet>{
 
 			});
 		}
+		System.out.println("mtpSizes:\n");
+		for(int size : mtpSizes) {
+			System.out.println(size + " : " + sizeMTPSetArray[size].size());
+		}
 	}
 
 	/**
@@ -893,6 +899,8 @@ public class PointSet implements Comparable<PointSet>{
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
 		int numMTPsBeforeRemoval = ps.getMTPs().size();
+		System.out.println("Number of MTPs before removal: "+numMTPsBeforeRemoval);
+		
 		ps.computeSizeMTPSetArray();
 		log.add(new LogInfo("computeSizeMTPSetArray ends", true));
 
