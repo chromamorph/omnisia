@@ -117,7 +117,7 @@ public class PointSet implements Comparable<PointSet>{
 						String noteSubstring = text.substring(noteIndex, noteEndIndex);
 						int pitchIndex = noteSubstring.indexOf("<pitch");
 //						Either a pitch...
-						if (pitchIndex >= 0) {
+						if (pitchIndex >= 0 && noteSubstring.indexOf("<tied type=\"stop\"/>") < 0) {
 //							Find step and octave and compute Pitch object
 							int pitchEndIndex = noteSubstring.indexOf("</pitch>");
 							String pitchSubstring = noteSubstring.substring(pitchIndex, pitchEndIndex);
