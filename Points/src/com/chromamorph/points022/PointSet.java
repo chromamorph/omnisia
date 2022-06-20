@@ -28,6 +28,7 @@ import com.chromamorph.maths.Rational;
 import com.chromamorph.notes.Note;
 import com.chromamorph.notes.Notes;
 import com.chromamorph.notes.Notes.MissingTieStartNoteException;
+import com.chromamorph.pitch.Pitch;
 
 import processing.core.PApplet;
 
@@ -85,8 +86,102 @@ public class PointSet implements Comparable<PointSet>{
 			makePointSetObjectFromGVFile(fileName);
 		else if (fileName.toLowerCase().endsWith(".txt"))
 			makePointSetObjectFromCollinsLispFile(fileName, isDiatonic);
+		else if (fileName.toLowerCase().endsWith(".xml") || fileName.toLowerCase().endsWith(".musicxml"))
+			makePointSetObjectFromMusicXMLFile(fileName, isDiatonic);
 	}
 
+	private void makePointSetObjectFromMusicXMLFile(String fileName, boolean isDiatonic) {
+//		Read XML file into a StringBuilder
+		BufferedReader br;
+		StringBuilder sb = new StringBuilder();
+		try {
+			br = new BufferedReader(new FileReader(fileName));
+			String l ;
+			while ((l = br.readLine()) != null)
+				sb.append(l);
+			br.close();
+//			Check that the file is partwise
+			String text = sb.toString();
+			if (text.indexOf("score-partwise") >= 0) {
+//				Check that there is only one part
+				int i = 0;
+				int lastIndex = 0;
+				while ((lastIndex = text.indexOf("</score-part>", lastIndex+1)) >= 0) i++;
+				if (i == 1) {
+//					Read list of <pitch-name, duration> pairs
+					ArrayList<PitchDurationPair> pdps = new ArrayList<PitchDurationPair>();
+					int noteIndex = 0; 
+					while ((noteIndex = text.indexOf("<note",noteIndex+1)) >= 0) {
+						Pitch pitch = null;
+						int noteEndIndex = text.indexOf("</note>",noteIndex+1);
+						String noteSubstring = text.substring(noteIndex, noteEndIndex);
+						int pitchIndex = noteSubstring.indexOf("<pitch");
+//						Either a pitch...
+						if (pitchIndex >= 0) {
+//							Find step and octave and compute Pitch object
+							int pitchEndIndex = noteSubstring.indexOf("</pitch>");
+							String pitchSubstring = noteSubstring.substring(pitchIndex, pitchEndIndex);
+
+							int stepIndex = pitchSubstring.indexOf("<step>")+6;
+							int stepEndIndex = pitchSubstring.indexOf("</step>");
+							String stepString = pitchSubstring.substring(stepIndex,stepEndIndex);
+							
+							int octaveIndex = pitchSubstring.indexOf("<octave>")+8;
+							int octaveEndIndex = pitchSubstring.indexOf("</octave>");
+							String octaveString = pitchSubstring.substring(octaveIndex,octaveEndIndex);
+							
+							int alterIndex = pitchSubstring.indexOf("<alter>");
+							int alter = 0;
+							if (alterIndex >= 0) {
+								alterIndex += 7;
+								int alterEndIndex = pitchSubstring.indexOf("</alter>");
+								String alterString = pitchSubstring.substring(alterIndex,alterEndIndex);
+								alter = Integer.parseInt(alterString);
+							}
+							
+							String accidentalString = "";
+							if (alter == 0)
+								accidentalString += "n";
+							else
+								for(int k = 0; k < Math.abs(alter); k++)
+									accidentalString += (alter < 0)?"f":"s";
+							String pitchName = stepString + accidentalString + octaveString;
+							
+							pitch = new Pitch();
+							pitch.setPitchName(pitchName);
+						}
+//						Find duration
+						int durationIndex = noteSubstring.indexOf("<duration>")+10;
+						int durationEndIndex = noteSubstring.indexOf("</duration>");
+						int duration = Integer.parseInt(noteSubstring.substring(durationIndex, durationEndIndex));
+						
+//						Compute PitchDurationPair and add to list pdps
+						pdps.add(new PitchDurationPair(pitch, duration));
+					}
+//					Re-express durations in tatums
+					
+					
+//					Convert list of <pn,d> pairs to PointSet, using isDiatonic
+					PointSet pointSet = new PointSet();
+					long onset = 0;
+					for(PitchDurationPair pdp : pdps) {
+						if (pdp.getPitch() != null) {
+							int p = isDiatonic?pdp.getPitch().getMorpheticPitch():pdp.getPitch().getChromaticPitch();
+							Point point = new Point(onset,p);
+							pointSet.add(point);
+						}
+						onset += pdp.getDuration();
+					}
+					points = pointSet.points;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void makePointSetObjectFromCollinsLispFile(String collinsLispFilePathName, boolean isDiatonic) {
 		MIREX2013Entries.readLispFileIntoPointSet(collinsLispFilePathName, isDiatonic);
 		points = MIREX2013Entries.DATASET.points;
