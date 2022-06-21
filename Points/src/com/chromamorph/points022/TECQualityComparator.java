@@ -42,8 +42,8 @@ public class TECQualityComparator implements Comparator<TEC> {
 	public static double WIDTH_TOLERANCE = TOLERANCE;
 	public static double BBAREA_TOLERANCE = TOLERANCE;
 
-	private String priorityString = "cmvswa";
-	public static String DEFAULT_PRIORITY_STRING = "cmvswa";
+	private String priorityString = "cvmwsa";
+	public static String DEFAULT_PRIORITY_STRING = "cvmwsa";
 
 	public TECQualityComparator() {
 		super();
