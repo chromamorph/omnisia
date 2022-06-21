@@ -42,8 +42,8 @@ public class TECQualityComparator implements Comparator<TEC> {
 	public static double WIDTH_TOLERANCE = TOLERANCE;
 	public static double BBAREA_TOLERANCE = TOLERANCE;
 
-	private String priorityString = "cvmwsa";
-	public static String DEFAULT_PRIORITY_STRING = "cvmwsa";
+	private String priorityString = "cmvswa";
+	public static String DEFAULT_PRIORITY_STRING = "cmvswa";
 
 	public TECQualityComparator() {
 		super();
@@ -113,7 +113,7 @@ public class TECQualityComparator implements Comparator<TEC> {
 				}
 				break;
 			case 'm' : // compactness
-				d = (a = tec2.getCompactness())-(b = tec1.getCompactness());
+				d = (a = tec2.getCompactness(OMNISIA.COMPACTNESS_TYPE))-(b = tec1.getCompactness(OMNISIA.COMPACTNESS_TYPE));
 				if (Math.abs(d*1.0)/(Math.max(a, b)) > COMPACTNESS_TOLERANCE) {
 					COMPACTNESS_USED_FREQ++;
 					return (int)Math.signum(d);
@@ -154,7 +154,7 @@ public class TECQualityComparator implements Comparator<TEC> {
 
 	}
 
-	public int compareOld(TEC tec1, TEC tec2) {
+	public int compareold(TEC tec1, TEC tec2) {
 		if (tec1 == null && tec2 == null) return 0;
 		if (tec1 == null) return 1;
 		if (tec2 == null) return -1;
@@ -167,7 +167,7 @@ public class TECQualityComparator implements Comparator<TEC> {
 			COMPRESSION_RATIO_USED_FREQ++;
 			return (int)Math.signum(d);
 		}
-		d = (a=tec2.getCompactness())-(b = tec1.getCompactness());
+		d = (a=tec2.getCompactness(OMNISIA.COMPACTNESS_TYPE))-(b = tec1.getCompactness(OMNISIA.COMPACTNESS_TYPE));
 		if (Math.abs(d*1.0)/(Math.max(a, b)) > COMPACTNESS_TOLERANCE) {
 			COMPACTNESS_USED_FREQ++;
 			return (int)Math.signum(d);
@@ -203,7 +203,7 @@ public class TECQualityComparator implements Comparator<TEC> {
 		double f = tec2.getCompressionRatio() - tec1.getCompressionRatio();
 		if (f > 0.0) return 1;
 		if (f < 0.0) return -1;
-		f = tec2.getCompactness()-tec1.getCompactness();
+		f = tec2.getCompactness(OMNISIA.COMPACTNESS_TYPE)-tec1.getCompactness(OMNISIA.COMPACTNESS_TYPE);
 		if (f > 0.0) return 1;
 		if (f < 0.0) return -1;
 		int d = tec2.getCoverage()-tec1.getCoverage();
@@ -230,7 +230,7 @@ public class TECQualityComparator implements Comparator<TEC> {
 	public double getQuality(TEC tec) {
 		return
 				kCompressionRatio 	* 	Math.pow(tec.getCompressionRatio(),powCompressionRatio) *
-				kCompactness		* 	Math.pow(tec.getCompactness(),powCompactness) *
+				kCompactness		* 	Math.pow(tec.getCompactness(OMNISIA.COMPACTNESS_TYPE),powCompactness) *
 				kCoverage 			* 	Math.pow(tec.getCoverage(), powCoverage) *
 				kPatternWidth		* 	Math.pow(tec.getPattern().getWidth(),powPatternWidth) *
 				kPatternSize 		* 	Math.pow(tec.getPatternSize(),powPatternSize) *
@@ -285,8 +285,8 @@ public class TECQualityComparator implements Comparator<TEC> {
 		System.out.println("tec1: cr="+tec1.getCompressionRatio());
 		System.out.println("tec2: cr="+tec2.getCompressionRatio());
 
-		System.out.println("tec1: compactness="+tec1.getCompactness());
-		System.out.println("tec2: compactness="+tec2.getCompactness());
+		System.out.println("tec1: compactness="+tec1.getCompactness(OMNISIA.COMPACTNESS_TYPE));
+		System.out.println("tec2: compactness="+tec2.getCompactness(OMNISIA.COMPACTNESS_TYPE));
 
 		System.out.println("tec1: coverage="+tec1.getCoverage());
 		System.out.println("tec2: coverage="+tec2.getCoverage());

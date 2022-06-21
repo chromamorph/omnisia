@@ -3,13 +3,20 @@ package com.chromamorph.points022;
 import com.chromamorph.pitch.Pitch;
 
 public class PitchDurationPair {
-	private Pitch pitch;
-	private long duration;
+	private Pitch pitch = null;
+	private long duration = 0l;
 	private boolean isEnding = false;
 	private boolean isEndingStart = false;
 	private int endingNumber = 0;
 	private boolean isRepeat = false;
 	private boolean isBackward = false;
+	private boolean isBackup = false;
+	private int backupDuration = 0;
+	
+	public PitchDurationPair(int backupDuration) {
+		setIsBackup(true);
+		setBackupDuration(backupDuration);
+	}
 	
 	public PitchDurationPair(Pitch pitch, int duration) {
 		setPitch(pitch);
@@ -29,6 +36,22 @@ public class PitchDurationPair {
 		setDuration(0);
 		setIsRepeat(true);
 		setIsBackward(isBackward);
+	}
+	
+	public void setIsBackup(boolean isBackup) {
+		this.isBackup = isBackup;
+	}
+	
+	public void setBackupDuration(int backupDuration) {
+		this.backupDuration = backupDuration;
+	}
+	
+	public boolean isBackup() {
+		return isBackup;
+	}
+	
+	public int getBackupDuration() {
+		return backupDuration;
 	}
 	
 	public void setIsRepeat(boolean isRepeat) {
@@ -83,6 +106,8 @@ public class PitchDurationPair {
 	
 	@Override
 	public String toString() {
+		if (isBackup)
+			return "Backup(" + getBackupDuration() + ")";
 		if (getPitch() == null && isRepeat()) 
 			return "Repeat(" + (isBackward()?"backward":"forward")+")";
 		if (getPitch() == null && isEnding())

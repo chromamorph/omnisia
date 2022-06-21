@@ -100,6 +100,7 @@ public class OMNISIA {
 	public static String TEC_PRIORITY_STRING		= TECQualityComparator.DEFAULT_PRIORITY_STRING;
 	public static String DUAL_TEC_PRIORITY_STRING	= TECQualityComparator.DEFAULT_PRIORITY_STRING;
 	public static boolean NUM_MTPS_ONLY				= false;
+	public static CompactnessType COMPACTNESS_TYPE	= CompactnessType.BOUNDING_BOX;
 
 	////////////////////
 	//	Switches
@@ -144,6 +145,7 @@ public class OMNISIA {
 	private static String TEC_PRIORITY_SWITCH		= "tecqual";
 	private static String DUAL_TEC_PRIORITY_SWITCH	= "dualtecqual";
 	private static String NUM_MTPS_ONLY_SWITCH		= "nummtpsonly";
+	private static String COMPACTNESS_TYPE_SWITCH	= "comptype";
 
 
 	////////////////////
@@ -157,6 +159,12 @@ public class OMNISIA {
 			BASIC_ALGORITHM = BasicAlgorithm.valueOf(algStr);
 	}
 
+	private static void getCompactnessType(String[] args) {
+		String compType = getValue(COMPACTNESS_TYPE_SWITCH, args);
+		if (compType != null && compType.toLowerCase().equals("segment"))
+			COMPACTNESS_TYPE = CompactnessType.SEGMENT;
+	}
+	
 	private static void getTECPriority(String[] args) {
 		String tecqual = getValue(TEC_PRIORITY_SWITCH, args);
 		if (tecqual != null)
@@ -629,6 +637,7 @@ public class OMNISIA {
 				"TEC quality priority string (-"+TEC_PRIORITY_SWITCH+"): " + TEC_PRIORITY_STRING,
 				"Dual TEC quality priority string (-"+DUAL_TEC_PRIORITY_SWITCH+"): " + DUAL_TEC_PRIORITY_STRING,
 				"Return number of MTPs only (-"+NUM_MTPS_ONLY_SWITCH+"): " + NUM_MTPS_ONLY,
+				"Compactness type (-"+COMPACTNESS_TYPE_SWITCH+"): " + COMPACTNESS_TYPE,
 				""
 		};
 		StringBuilder sb = new StringBuilder();
@@ -777,7 +786,10 @@ public class OMNISIA {
 				"-"+NUM_MTPS_ONLY_SWITCH+"\t If true, then returns running time for computing vector table, sorting it",
 				"\tand counting number of MTPs. This is in order to generate output that can be compared with Antti",
 				"\t Laaksonen's parallel implementations of this process of 13 June 2021.",
-				""	
+				"",
+				"-"+COMPACTNESS_TYPE_SWITCH+"\t Determines type of compactness used to compare quality of TECs in",
+				"\tCOSIATEC algorithm. Legal values are SEGMENT and BB. Default is BB.",
+				""
 				);
 	}
 
@@ -939,7 +951,8 @@ public class OMNISIA {
 				WITHOUT_CHANNEL_10,
 				SORT_BY_PATTERN_SIZE,
 				TEC_PRIORITY_STRING,
-				DUAL_TEC_PRIORITY_STRING
+				DUAL_TEC_PRIORITY_STRING,
+				COMPACTNESS_TYPE
 				);
 	}
 
@@ -1184,6 +1197,7 @@ public class OMNISIA {
 		getNumMtpsOnly(args);
 		getTECPriority(args);
 		getDualTECPriority(args);
+		getCompactnessType(args);
 		try {
 			getCTA(args);
 			getMinTECCompactness(args);

@@ -112,7 +112,19 @@ public class PointSet implements Comparable<PointSet>{
 					ArrayList<PitchDurationPair> pdps = new ArrayList<PitchDurationPair>();
 					int noteIndex = 0; 
 					for (int j = 0; j < text.length(); j++) {
-						if (j+7 < text.length() && text.substring(j,j+7).equals("<ending")) {
+						if (j+7 < text.length() && text.substring(j,j+7).equals("<backup")) {
+							int backupIndex = j;
+							int backupEndIndex = text.indexOf("</backup>",backupIndex);
+							String backupString = text.substring(backupIndex,backupEndIndex);
+							
+							int backupDurationStart = backupString.indexOf("<duration>") + 10;
+							int backupDurationEnd = backupString.indexOf("</duration>",backupDurationStart);
+							String backupDurationString = backupString.substring(backupDurationStart,backupDurationEnd);
+							
+							int backupDuration = Integer.parseInt(backupDurationString);
+							pdps.add(new PitchDurationPair(backupDuration));
+							
+						} else if (j+7 < text.length() && text.substring(j,j+7).equals("<ending")) {
 							int endingIndex = j;
 							int endingEndIndex = text.indexOf("/>",endingIndex);
 							String endingString = text.substring(endingIndex, endingEndIndex);
@@ -199,7 +211,9 @@ public class PointSet implements Comparable<PointSet>{
 							int blab = 2;
 						}
 						PitchDurationPair pdp = pdps.get(m);
-						if (pdp.getPitch() != null && !inPreviousEnding) {
+						if (pdp.isBackup())
+							onset -= pdp.getBackupDuration();
+						else if (pdp.getPitch() != null && !inPreviousEnding) {
 							int p = isDiatonic?pdp.getPitch().getMorpheticPitch():pdp.getPitch().getChromaticPitch();
 							Point point = new Point(onset,p);
 							pointSet.add(point);
@@ -750,11 +764,15 @@ public class PointSet implements Comparable<PointSet>{
 		return compareTo((PointSet)obj) == 0;
 	}
 
-	public double getCompactness(PointSet dataSet) {
+	public double getCompactness(PointSet dataSet, CompactnessType compactnessType) {
+		if (compactnessType.equals(CompactnessType.SEGMENT)) {
+			PointSet segment = dataSet.getSegment(getMinX(), getMaxX(), true);
+			return size()*1.0/segment.size();
+		} 
 		double N_D = dataSet.getBBSubset(getTopLeft(),getBottomRight()).size();
 		double N_P = size();
 		double C = N_P/N_D;
-		return C;
+		return C;			
 	}
 
 	public boolean translationallyEquivalentTo(PointSet otherPointSet) {

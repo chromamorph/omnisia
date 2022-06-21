@@ -15,6 +15,7 @@ public class TEC implements Comparable<TEC>{
 	private PointSet dataset = null;
 	private boolean isDual = false;
 	private ArrayList<TEC> patternTecs = null;
+	private Double segmentCompactness = null;
 
 	public TEC() {}
 
@@ -24,6 +25,7 @@ public class TEC implements Comparable<TEC>{
 		coveredPoints = null;
 		compactness = null;
 		numPointsInBB = null;
+		segmentCompactness = null;
 	}
 
 	public TEC copy() {
@@ -205,21 +207,34 @@ public class TEC implements Comparable<TEC>{
 	}
 
 	/**
-	 * getCompactness returns the bounding-box compactness of
-	 * the most compact pattern occurrence in this TEC.
-	 * @return Bounding-box compactness of the most compact
+	 * getCompactness returns the compactness of
+	 * the most compact pattern occurrence in this TEC. If compactnessType
+	 * is equal to CompactnessType.SEGMENT, then segment compactness is
+	 * used; otherwise bounding-box compactness is used.
+	 * @param compactnessType Either segment or bounding-box compactness.
+	 * @return Compactness of the most compact
 	 * pattern occurrence in this TEC.
 	 */
-	public double getCompactness() {
+	public double getCompactness(CompactnessType compactnessType) {
 		if (compactness != null) return compactness;
 		compactness = 0.0;
 		for(Vector v : getTranslators().getVectors()) {
-			double c = getPattern().translate(v).getCompactness(getDataset());
+			double c = getPattern().translate(v).getCompactness(getDataset(), compactnessType);
 			if (c > compactness) compactness = c;
 		}
 		return compactness;
 	}
 
+	public double getSegmentCompactness() {
+		if (segmentCompactness != null) return segmentCompactness;
+		segmentCompactness = 0.0;
+		for(Vector v : getTranslators().getVectors()) {
+			double c = getPattern().translate(v).getSegmentCompactness(getDataset());
+			if (c > segmentCompactness) segmentCompactness = c;
+		}
+		return segmentCompactness;
+	}
+	
 	public VectorSet getTranslators() {
 		return translators;
 	}
