@@ -405,12 +405,12 @@ public class DrawPoints extends PApplet {
 			if (tecIndex < tecs.size()-1) {
 				tecIndex++;
 				tec = tecs.get(tecIndex);
-				System.out.println(String.format("%.2f", tec.getCompactness())+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
+				System.out.println(String.format("%.2f", tec.getCompactness(OMNISIA.COMPACTNESS_TYPE))+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
 			} else {
 				System.out.println("Reached end of TECs!!!!! Starting again...");
 				tecIndex = 0;
 				tec = tecs.get(tecIndex);
-				System.out.println(String.format("%.2f", tec.getCompactness())+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
+				System.out.println(String.format("%.2f", tec.getCompactness(OMNISIA.COMPACTNESS_TYPE))+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
 			}
 		} else if (patternPairs != null) {
 			if (patternPairIndex < patternPairs.size()-1) {
@@ -457,7 +457,7 @@ public class DrawPoints extends PApplet {
 				Point topLeft = new Point(occurrence.getTopLeft().getX(),points.maxY);
 				Point bottomRight = new Point(occurrence.getBottomRight().getX(),points.minY);
 				//				Calculate transparency based on segment compactness - more compact = more opaque
-				float opacity = 100f *occurrence.getSegmentCompactness(points);
+				float opacity = 100f * occurrence.getSegmentCompactness(points);
 				drawFilledRectangle(color(colours[i][0],colours[i][1],colours[i][2]),topLeft,bottomRight,opacity);
 			}
 
@@ -894,7 +894,7 @@ public class DrawPoints extends PApplet {
 		//		font = createFont("Arial", 14);
 		textFont(createFont("Arial", 14));
 		if (tecs != null && tecs.size() > 0) 
-			System.out.println(String.format("%.2f", tec.getCompactness())+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
+			System.out.println(String.format("%.2f", tec.getCompactness(OMNISIA.COMPACTNESS_TYPE))+": "+String.format("%.2f",tec.getCompressionRatio())+": "+tec);
 		else if (patternPairs != null) {
 			System.out.println(patternPair);
 			System.out.println("Printing pattern pairs");

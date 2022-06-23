@@ -99,7 +99,8 @@ public class COSIATECEncoding extends Encoding {
 			boolean withoutChannel10,
 			boolean sortPatternsBySize,
 			String tecPriorityString,
-			String dualTecPriorityString) throws MissingTieStartNoteException, FileNotFoundException {
+			String dualTecPriorityString,
+			CompactnessType compactnessType) throws MissingTieStartNoteException, FileNotFoundException {
 		super(dataset,inputFilePathString,
 				outputDirectoryPathString,
 				diatonicPitch,
@@ -130,7 +131,8 @@ public class COSIATECEncoding extends Encoding {
 						maxPatternSize,
 						sortPatternsBySize,
 						tecPriorityString,
-						dualTecPriorityString);
+						dualTecPriorityString,
+						compactnessType);
 				getTECs().add(bestTEC);
 				points.remove(bestTEC.getCoveredPoints());
 			}
@@ -158,7 +160,8 @@ public class COSIATECEncoding extends Encoding {
 			int maxPatternSize,
 			boolean sortPatternsBySize,
 			String tecPriorityString,
-			String dualTecPriorityString) {
+			String dualTecPriorityString,
+			CompactnessType compactnessType) {
 		if (points.isEmpty())
 			throw new IllegalArgumentException("getBestTEC called with empty point set!");
 		System.out.println("getBestTEC:");
@@ -187,7 +190,7 @@ public class COSIATECEncoding extends Encoding {
 		if (mtpCisPairs.isEmpty()) {
 			LogPrintStream.println(logPrintStream, "No remaining patterns after trawling, so remainder of dataset returned as TEC!");
 			TEC bestTEC = new TEC(points.copy(), new VectorSet(new Vector(0,0)), dataset);
-			LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness())+ ") "+bestTEC.toString());
+			LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness(OMNISIA.COMPACTNESS_TYPE))+ ") "+bestTEC.toString());
 			return bestTEC;
 		}
 
@@ -228,11 +231,11 @@ public class COSIATECEncoding extends Encoding {
 			//Check to see if thisTEC is better than bestTEC. If it is, then set bestTEC to point at thisTEC.
 			TECQualityComparator dualTecQualityComparator = new TECQualityComparator(dualTecPriorityString);
 			if (dualTEC != null && dualTecQualityComparator.compare(dualTEC,bestTEC) < 0) {
-				if (dualTEC.getCompactness() >= minTECCompactness && dualTEC.getPatternSize() >= minPatternSize)
+				if (dualTEC.getCompactness(compactnessType) >= minTECCompactness && dualTEC.getPatternSize() >= minPatternSize)
 					bestTEC = dualTEC;
 			}
 			if (bestTEC == null || tecQualityComparator.compare(thisTEC, bestTEC) < 0) {
-				if (thisTEC.getCompactness() >= minTECCompactness && thisTEC.getPatternSize() >= minPatternSize)
+				if (thisTEC.getCompactness(compactnessType) >= minTECCompactness && thisTEC.getPatternSize() >= minPatternSize)
 					bestTEC = thisTEC;
 			}
 
@@ -246,7 +249,7 @@ public class COSIATECEncoding extends Encoding {
 		if (bestTEC == null)
 			bestTEC = new TEC(points.copy(),new VectorSet(new Vector(0,0)),dataset);
 
-		LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness())+ ") "+bestTEC.toString());
+		LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness(OMNISIA.COMPACTNESS_TYPE))+ ") "+bestTEC.toString());
 		return bestTEC;
 	}
 

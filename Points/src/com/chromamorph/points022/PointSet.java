@@ -28,6 +28,7 @@ import com.chromamorph.maths.Rational;
 import com.chromamorph.notes.Note;
 import com.chromamorph.notes.Notes;
 import com.chromamorph.notes.Notes.MissingTieStartNoteException;
+import com.chromamorph.pitch.Pitch;
 
 import processing.core.PApplet;
 
@@ -85,8 +86,170 @@ public class PointSet implements Comparable<PointSet>{
 			makePointSetObjectFromGVFile(fileName);
 		else if (fileName.toLowerCase().endsWith(".txt"))
 			makePointSetObjectFromCollinsLispFile(fileName, isDiatonic);
+		else if (fileName.toLowerCase().endsWith(".xml") || fileName.toLowerCase().endsWith(".musicxml"))
+			makePointSetObjectFromMusicXMLFile(fileName, isDiatonic);
 	}
 
+	private void makePointSetObjectFromMusicXMLFile(String fileName, boolean isDiatonic) {
+//		Read XML file into a StringBuilder
+		BufferedReader br;
+		StringBuilder sb = new StringBuilder();
+		try {
+			br = new BufferedReader(new FileReader(fileName));
+			String l ;
+			while ((l = br.readLine()) != null)
+				sb.append(l);
+			br.close();
+//			Check that the file is partwise
+			String text = sb.toString();
+			if (text.indexOf("score-partwise") >= 0) {
+//				Check that there is only one part
+				int i = 0;
+				int lastIndex = 0;
+				while ((lastIndex = text.indexOf("</score-part>", lastIndex+1)) >= 0) i++;
+				if (i == 1) {
+//					Read list of <pitch-name, duration> pairs
+					ArrayList<PitchDurationPair> pdps = new ArrayList<PitchDurationPair>();
+					int noteIndex = 0; 
+					for (int j = 0; j < text.length(); j++) {
+						if (j+7 < text.length() && text.substring(j,j+7).equals("<backup")) {
+							int backupIndex = j;
+							int backupEndIndex = text.indexOf("</backup>",backupIndex);
+							String backupString = text.substring(backupIndex,backupEndIndex);
+							
+							int backupDurationStart = backupString.indexOf("<duration>") + 10;
+							int backupDurationEnd = backupString.indexOf("</duration>",backupDurationStart);
+							String backupDurationString = backupString.substring(backupDurationStart,backupDurationEnd);
+							
+							int backupDuration = Integer.parseInt(backupDurationString);
+							pdps.add(new PitchDurationPair(backupDuration));
+							
+						} else if (j+7 < text.length() && text.substring(j,j+7).equals("<ending")) {
+							int endingIndex = j;
+							int endingEndIndex = text.indexOf("/>",endingIndex);
+							String endingString = text.substring(endingIndex, endingEndIndex);
+							
+							int endingNumberIndex = endingString.indexOf("number=") + 8;
+							int endingNumberEndIndex = endingString.indexOf("\"",endingNumberIndex);
+							int endingNumber = Integer.parseInt(endingString.substring(endingNumberIndex,endingNumberEndIndex));
+							
+							boolean isEndingStart = true;
+							if (endingString.indexOf("type=\"start\"") < 0)
+								isEndingStart = false;
+							pdps.add(new PitchDurationPair(isEndingStart,endingNumber));
+						} else if (j+7 < text.length() && text.substring(j,j+7).equals("<repeat")) {
+							int repeatIndex = j;
+							int repeatEndIndex = text.indexOf("/>",repeatIndex);
+							String repeatString = text.substring(repeatIndex,repeatEndIndex);
+							boolean isBackward = true;
+							if (repeatString.indexOf("backward") < 0)
+								isBackward = false;
+							pdps.add(new PitchDurationPair(isBackward));
+						} else if (j+5 < text.length() && text.substring(j,j+5).equals("<note")) {
+							noteIndex = j;
+							Pitch pitch = null;
+							int noteEndIndex = text.indexOf("</note>",noteIndex+1);
+							String noteSubstring = text.substring(noteIndex, noteEndIndex);
+							int pitchIndex = noteSubstring.indexOf("<pitch");
+//							Either a pitch...
+							if (pitchIndex >= 0 && noteSubstring.indexOf("<tied type=\"stop\"/>") < 0) {
+//								Find step and octave and compute Pitch object
+								int pitchEndIndex = noteSubstring.indexOf("</pitch>");
+								String pitchSubstring = noteSubstring.substring(pitchIndex, pitchEndIndex);
+
+								int stepIndex = pitchSubstring.indexOf("<step>")+6;
+								int stepEndIndex = pitchSubstring.indexOf("</step>");
+								String stepString = pitchSubstring.substring(stepIndex,stepEndIndex);
+								
+								int octaveIndex = pitchSubstring.indexOf("<octave>")+8;
+								int octaveEndIndex = pitchSubstring.indexOf("</octave>");
+								String octaveString = pitchSubstring.substring(octaveIndex,octaveEndIndex);
+								
+								int alterIndex = pitchSubstring.indexOf("<alter>");
+								int alter = 0;
+								if (alterIndex >= 0) {
+									alterIndex += 7;
+									int alterEndIndex = pitchSubstring.indexOf("</alter>");
+									String alterString = pitchSubstring.substring(alterIndex,alterEndIndex);
+									alter = Integer.parseInt(alterString);
+								}
+								
+								String accidentalString = "";
+								if (alter == 0)
+									accidentalString += "n";
+								else
+									for(int k = 0; k < Math.abs(alter); k++)
+										accidentalString += (alter < 0)?"f":"s";
+								String pitchName = stepString + accidentalString + octaveString;
+								
+								pitch = new Pitch();
+								pitch.setPitchName(pitchName);
+							}
+//							Find duration
+							int durationIndex = noteSubstring.indexOf("<duration>")+10;
+							int durationEndIndex = noteSubstring.indexOf("</duration>");
+							int duration = Integer.parseInt(noteSubstring.substring(durationIndex, durationEndIndex));
+							
+//							Compute PitchDurationPair and add to list pdps
+							pdps.add(new PitchDurationPair(pitch, duration));
+						}
+					}					
+					
+					for(PitchDurationPair pdp : pdps)
+						System.out.println(pdp);
+					
+//					Convert list of <pn,d> pairs to PointSet, using isDiatonic
+					PointSet pointSet = new PointSet();
+					long onset = 0;
+					int endingNumber = 0;
+					boolean inPreviousEnding = false;
+					int indexOfPrevForwardRepeat = 0;
+					ArrayList<Integer> doneBackRepeats = new ArrayList<Integer>();
+					ArrayList<Integer> doneForwardRepeats = new ArrayList<Integer>();
+					for(int m = 0; m < pdps.size(); m++) {
+						if (m == pdps.size()-10) {
+							int blab = 2;
+						}
+						PitchDurationPair pdp = pdps.get(m);
+						if (pdp.isBackup())
+							onset -= pdp.getBackupDuration();
+						else if (pdp.getPitch() != null && !inPreviousEnding) {
+							int p = isDiatonic?pdp.getPitch().getMorpheticPitch():pdp.getPitch().getChromaticPitch();
+							Point point = new Point(onset,p);
+							pointSet.add(point);
+						} else if (pdp.getPitch() == null && pdp.isEnding()) {
+							if (pdp.isEndingStart()) {
+								if (pdp.getEndingNumber() > endingNumber) {
+									endingNumber = pdp.getEndingNumber();
+								} else
+									inPreviousEnding = true;
+							} else { //is ending stop
+								inPreviousEnding = false;
+							}
+						} else if (pdp.getPitch() == null && pdp.isRepeat()) {
+							if (pdp.isBackward() && !doneBackRepeats.contains(m)) {
+								doneBackRepeats.add(m);
+								m = indexOfPrevForwardRepeat-1;
+								doneForwardRepeats.add(indexOfPrevForwardRepeat);
+							} else if (pdp.isForward() && !doneForwardRepeats.contains(m)) {
+								indexOfPrevForwardRepeat = m;
+								endingNumber = 0;
+							}
+						}
+						if (!inPreviousEnding)
+							onset += pdp.getDuration();			
+
+					}
+					points = pointSet.points;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void makePointSetObjectFromCollinsLispFile(String collinsLispFilePathName, boolean isDiatonic) {
 		MIREX2013Entries.readLispFileIntoPointSet(collinsLispFilePathName, isDiatonic);
 		points = MIREX2013Entries.DATASET.points;
@@ -601,11 +764,15 @@ public class PointSet implements Comparable<PointSet>{
 		return compareTo((PointSet)obj) == 0;
 	}
 
-	public double getCompactness(PointSet dataSet) {
+	public double getCompactness(PointSet dataSet, CompactnessType compactnessType) {
+		if (compactnessType.equals(CompactnessType.SEGMENT)) {
+			PointSet segment = dataSet.getSegment(getMinX(), getMaxX(), true);
+			return size()*1.0/segment.size();
+		} 
 		double N_D = dataSet.getBBSubset(getTopLeft(),getBottomRight()).size();
 		double N_P = size();
 		double C = N_P/N_D;
-		return C;
+		return C;			
 	}
 
 	public boolean translationallyEquivalentTo(PointSet otherPointSet) {
