@@ -61,7 +61,9 @@ public class DrawPoints extends PApplet {
 	private StructuralSegmentation structuralSegmentation = null;
 	private boolean saveImageFile = false;
 	private boolean writeToImageFile = false; //If true, only writes to image file without displaying analysis.
-
+	private ArrayList<String> outputFilePathStrings = null;
+	private int outputFileIndex = 0;
+	private boolean firstTime = true;
 
 	public DrawPoints() {
 		super();
@@ -327,6 +329,13 @@ public class DrawPoints extends PApplet {
 		this.structuralSegmentation = thisSegmentation;
 	}
 
+	public DrawPoints(ArrayList<String> outputFilePathStrings) {
+		super();
+		this.outputFilePathStrings = outputFilePathStrings;
+		this.drawAllOccurrenceSetsAtOnce = true;
+		this.writeToImageFile = true;
+	}
+
 	private void drawStructuralSegmentation() {
 		textAlign(LEFT,TOP);
 		for(StructuralSegment s : structuralSegmentation.getSegments()) {
@@ -338,7 +347,29 @@ public class DrawPoints extends PApplet {
 		}
 	}
 
+	public void loadEncodingFromFile(String outputFilePath) {
+		Encoding encoding = new Encoding(outputFilePath);
+		points = encoding.getDataset();
+		occurrenceSets = encoding.getOccurrenceSets();
+		diatonicPitch = encoding.isDiatonic();
+		tatumsPerBar = encoding.getTatumsPerBar();
+		barOneStartsAt = encoding.getBarOneStartsAt();
+		title = encoding.getTitle();
+	}
+	
+	
 	public void draw() {
+		if (outputFilePathStrings != null && !firstTime) {
+			outputFilePath = outputFilePathStrings.get(outputFileIndex);
+			loadEncodingFromFile(outputFilePath); //Needs to load points and occurrenceSets
+			maxDataY = OMNISIA.RHYTHM_ONLY?max(occurrenceSets.size()+1,1):max(points.getMaxY(),1);
+			maxDataX = (long) max(points.getMaxX(),1);
+			minDataY = min(points.getMinY(),0);
+			minDataX = (long) min(points.getMinX(),0);
+		}
+		outputFileIndex++;
+		if (firstTime)
+			firstTime = false;
 		if (!points.isEmpty()) {
 			background(255);
 
@@ -390,7 +421,8 @@ public class DrawPoints extends PApplet {
 			//noLoop();
 			//exit();
 		}
-		exit();
+		if (outputFilePathStrings == null || outputFileIndex == outputFilePathStrings.size())
+			exit();
 	}
 
 	public void keyPressed() {
@@ -785,7 +817,7 @@ public class DrawPoints extends PApplet {
 		}
 		if (barOneStartsAt == null)
 			System.out.println("barOneStartsAt is null");
-		for(float dataX = minDataX+barOneStartsAt; dataX <= maxDataX; dataX += dataXSep) {
+		for(float dataX = minDataX+(barOneStartsAt==null?0l:barOneStartsAt); dataX <= maxDataX; dataX += dataXSep) {
 			stroke(0);
 			float screenX = map(dataX,minDataX,maxDataX,minScreenX,maxScreenX);
 			String xTickMarkLabel = String.format("%.0f",tatumsPerBar==null?dataX:(dataX-barOneStartsAt)/tatumsPerBar);
@@ -875,7 +907,12 @@ public class DrawPoints extends PApplet {
 	}
 
 	public void setup() {
-		if (points.isEmpty()) exit();
+		if (points != null && points.isEmpty() && outputFilePathStrings == null) exit();
+		if (outputFilePathStrings != null) {
+			outputFilePath = outputFilePathStrings.get(outputFileIndex);
+			loadEncodingFromFile(outputFilePath); //Needs to load points and occurrenceSets
+			outputFileIndex++;			
+		}
 		minScreenX = margin;
 		maxScreenX = drawWindowWidth - margin;
 		minScreenY = margin;

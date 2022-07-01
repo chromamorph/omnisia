@@ -289,6 +289,29 @@ public class Encoding {
 			}
 		});
 	}
+	
+	public static void drawEncodingFiles() {
+		try {
+			final Runnable drawRunnable = new Runnable() {
+				//			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					JFrame frame = new JFrame();
+					frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
+					frame.setResizable(false);
+					PApplet embed = new DrawPoints(OMNISIA.OUTPUT_FILE_PATH_STRINGS);
+					frame.add(embed);
+					embed.init();
+					frame.pack();
+				}
+				//			});
+			};
+			javax.swing.SwingUtilities.invokeAndWait(drawRunnable);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}		
+	}
 
 	public void drawOccurrenceSetsToFile(final String outputFilePath, final boolean diatonicPitch) {
 		try {
@@ -574,7 +597,7 @@ public class Encoding {
 		//		return an array consisting of the new tec1, the new tec2 and the best merged TEC, 
 		//		(return null in place of tec1 or tec2 when one of them is empty)...
 
-		if (bestMergedTECMatchPair.getTranslatorSetSize() >= minMatchSize && bestMergedTECMatchPair.getCompactness() >= minCompactness)
+		if (bestMergedTECMatchPair.getTranslatorSetSize() >= minMatchSize && bestMergedTECMatchPair.getCompactness(OMNISIA.COMPACTNESS_TYPE) >= minCompactness)
 			outputList.add(bestMergedTECMatchPair);
 
 		//		... otherwise return an array containing just tec1 and tec2.
@@ -636,6 +659,76 @@ public class Encoding {
 		return sb.toString();
 	}
 
+	public Encoding(String encodingFilePathString) {
+		File encodingFile = new File(encodingFilePathString);
+		ArrayList<String> lines = new ArrayList<String>();
+		String line = null;
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(encodingFile));
+			while ((line = br.readLine()) != null)
+				lines.add(line);
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (!lines.isEmpty()) {
+			for(String l : lines) {
+				String s;
+				if (l.startsWith("T(P("))
+					addTEC(new TEC(l));
+				else if (l.startsWith("tatumsPerBar")) {
+					s = l.substring("tatumsPerBar".length()).trim();
+					if (!s.toLowerCase().equals("null"))
+						setTatumsPerBar(Long.parseLong(s));					
+				}
+				else if (l.startsWith("barOneStartsAt")) {
+					s = l.substring("barOneStartsAt".length()).trim();
+					if (!s.toLowerCase().equals("null"))
+						setBarOneStartsAt(Long.parseLong(s));
+				}
+				else if (l.startsWith("outputFilePath")) {
+					outputFilePathString = l.substring("outputFilePath".length()).trim();
+					outputFilePath = Paths.get(outputFilePathString);
+				} 
+				else if (l.startsWith("inputFilePath")) {
+					inputFilePathString = l.substring("inputFilePath".length()).trim();
+					inputFilePath = Paths.get(inputFilePathString);
+				} 
+				else if (l.startsWith("title"))
+					setTitle(l.substring("title".length()).trim());
+				else if (l.startsWith("logFilePath")) {
+					logFilePathString = l.substring("logFilePath".length()).trim();
+					logFilePath = Paths.get(logFilePathString);
+				}
+				else if (l.startsWith("outputFileExtension"))
+					outputFileExtension = l.substring("outputFileExtension".length()).trim();
+				else if (l.startsWith("isDiatonic"))
+					isDiatonic = l.toLowerCase().contains("true");
+				else if (l.startsWith("withoutChannel10"))
+					withoutChannel10 = l.toLowerCase().contains("true");
+				else if (l.startsWith("encoderName"))
+					encoderName = l.substring("encoderName".length()).trim();
+				else if (l.startsWith("forMirex"))
+					forMirex = l.toLowerCase().contains("true");
+				else if (l.startsWith("mode")) {
+					if (l.toLowerCase().contains("bb")) 
+						bbMode = true;
+					else if (l.toLowerCase().contains("segment"))
+						segmentMode = true;
+				}
+				else if (l.startsWith("topNPatterns"))
+					topNPatterns = Integer.parseInt(l.substring("topNPatterns".length()).trim());
+			}
+			dataset = new PointSet();
+			for(TEC tec : tecs) {
+				dataset.addAll(tec.getCoveredPoints());
+			}
+		}
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		if (!getTECs().isEmpty())
