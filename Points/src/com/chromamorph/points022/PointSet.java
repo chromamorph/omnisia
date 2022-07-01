@@ -67,6 +67,11 @@ public class PointSet implements Comparable<PointSet>{
 		this(fileName,isDiatonic,false);
 	}
 
+	public static String[] INPUT_FILE_EXTENSIONS = new String[] {
+		".pts", ".pointset", ".krn", ".opnd", ".opndv", ".midi", ".mid",
+		".notes", ".png", ".xml", ".musicxml",
+	};
+	
 	public PointSet(String fileName, boolean isDiatonic, boolean withoutChannel10) throws MissingTieStartNoteException {
 		if (fileName.toLowerCase().endsWith(".pts"))
 			makePointsObjectFromPTSFile(fileName);
@@ -150,6 +155,7 @@ public class PointSet implements Comparable<PointSet>{
 							Pitch pitch = null;
 							int noteEndIndex = text.indexOf("</note>",noteIndex+1);
 							String noteSubstring = text.substring(noteIndex, noteEndIndex);
+							if (noteSubstring.contains("<grace/>")) continue;
 							int pitchIndex = noteSubstring.indexOf("<pitch");
 //							Either a pitch...
 							if (pitchIndex >= 0 && noteSubstring.indexOf("<tied type=\"stop\"/>") < 0) {
@@ -188,6 +194,9 @@ public class PointSet implements Comparable<PointSet>{
 //							Find duration
 							int durationIndex = noteSubstring.indexOf("<duration>")+10;
 							int durationEndIndex = noteSubstring.indexOf("</duration>");
+							if (durationEndIndex == -1) {
+								int bicycle = 1;
+							}
 							int duration = Integer.parseInt(noteSubstring.substring(durationIndex, durationEndIndex));
 							
 //							Compute PitchDurationPair and add to list pdps
