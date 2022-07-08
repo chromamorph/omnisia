@@ -485,6 +485,7 @@ public class Notes {
 		Notes notes = new Notes();
 		String l = br.readLine();
 		while (l == null || l.trim().length()==0 || l.trim().startsWith("%")) l = br.readLine();
+		String[] sa2 = null;
 		String[] sa = null;
 		//		System.out.println(l);
 		if (l.indexOf("(") >= 0) {
@@ -495,7 +496,14 @@ public class Notes {
 				if (!l.trim().startsWith("%"))
 					sb.append(l);
 			String text = sb.toString();
-			sa = text.split("[()]");
+			sa2 = text.split("[()]");
+			ArrayList<String> saArrayList = new ArrayList<String>();
+			for (String s : sa2) {
+				if (s != null && s.trim().length() > 0)
+					saArrayList.add(s.trim());
+			}
+			sa = new String[saArrayList.size()];
+			saArrayList.toArray(sa);
 		} else {
 			//			System.out.println(l+" does not contain a (");
 			ArrayList<String> saArrayList = new ArrayList<String>();
@@ -524,6 +532,7 @@ public class Notes {
 			ArrayList<Long> durationNumerators = new ArrayList<Long>();
 
 			for(String s : sa) {
+				if (s.trim().equals("")) continue;
 				String[] a = s.split("[ \t]+");
 				//				if (a.length == 4)
 				//					System.out.println(s+":"+a[0]+","+a[1]+","+a[2]+","+a[3]);
@@ -537,7 +546,7 @@ public class Notes {
 					//					System.out.println(a[0]+" does not contain /");
 					num = Long.parseLong(a[i]);
 					den = 1l;
-					if (a[i+1].contains("/")) {//Then onset time in form x n/d (e.g., "1 3/4")
+					if (i+1 < a.length && a[i+1].contains("/")) {//Then onset time in form x n/d (e.g., "1 3/4")
 						i++;
 						long newNum = Long.parseLong(a[i].substring(0,a[i].indexOf("/")));
 						den = Long.parseLong(a[i].substring(a[i].indexOf("/")+1));
@@ -553,7 +562,7 @@ public class Notes {
 				} else {
 					num = Long.parseLong(a[i]);
 					den = 1l;
-					if (a[i+1].contains("/")) {//Then onset time in form x n/d (e.g., "1 3/4")
+					if (i+1 < a.length && a[i+1].contains("/")) {//Then onset time in form x n/d (e.g., "1 3/4")
 						i++;
 						long newNum = Long.parseLong(a[i].substring(0,a[i].indexOf("/")));
 						den = Long.parseLong(a[i].substring(a[i].indexOf("/")+1));
@@ -1268,15 +1277,29 @@ public class Notes {
 	}
 
 	public static void main(String[] args) {
-		
+
 		try {
-			String opndFileName = "../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";
-			Notes notes = Notes.fromOPND(opndFileName);
-			notes.toOPMFileForRetrograde("../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-729.opmr");
+			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Hans Abrahamsen/Traumlied/Traumlied.opndv");
+			notes.play(4,176);
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MidiUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+//		try {
+//			String opndFileName = "../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";
+//			Notes notes = Notes.fromOPND(opndFileName);
+//			notes.toOPMFileForRetrograde("../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-729.opmr");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 //		String notesFileName = "data/chopin-etude-op10-no3.notes";
