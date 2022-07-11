@@ -160,7 +160,7 @@ public class ForthEncoding extends Encoding {
 				for(int i = 0; i < tecs.size(); i++) {
 					wCrArray[i] = wCr(tecs.get(i));
 					if (useBoundingBoxCompactness)
-						wCompVArray[i] = tecs.get(i).getCompactness();
+						wCompVArray[i] = tecs.get(i).getCompactness(OMNISIA.COMPACTNESS_TYPE);
 					else
 						wCompVArray[i] = wCompV(tecs.get(i));
 				}

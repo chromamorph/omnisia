@@ -68,7 +68,7 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public static String[] INPUT_FILE_EXTENSIONS = new String[] {
-		".pts", ".pointset", ".krn", ".opnd", ".opndv", ".midi", ".mid",
+		".pts", ".pointset", ".krn", ".opnd", ".opndv", ".opdv", ".midi", ".mid",
 		".notes", ".png", ".xml", ".musicxml",
 	};
 	
@@ -89,7 +89,7 @@ public class PointSet implements Comparable<PointSet>{
 			makePointSetObjectFromPNGFile(fileName);
 		else if (fileName.toLowerCase().endsWith(".gv"))
 			makePointSetObjectFromGVFile(fileName);
-		else if (fileName.toLowerCase().endsWith(".txt"))
+		else if (fileName.toLowerCase().endsWith(".txt") || fileName.toLowerCase().endsWith(".opdv"))
 			makePointSetObjectFromCollinsLispFile(fileName, isDiatonic);
 		else if (fileName.toLowerCase().endsWith(".xml") || fileName.toLowerCase().endsWith(".musicxml"))
 			makePointSetObjectFromMusicXMLFile(fileName, isDiatonic);

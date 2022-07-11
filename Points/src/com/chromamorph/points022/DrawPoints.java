@@ -1,5 +1,8 @@
 package com.chromamorph.points022;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
@@ -72,7 +75,7 @@ public class DrawPoints extends PApplet {
 		points = new PointSet();
 		points.add(new Point(1,2));
 	}
-	
+
 	public DrawPoints(PointSet points) {
 		super();
 		tecs = null;
@@ -304,7 +307,7 @@ public class DrawPoints extends PApplet {
 			boolean writeToImageFile) {
 		super();
 		this.points = dataset;
-//		this.occurrenceSets = occurrenceSets;
+		//		this.occurrenceSets = occurrenceSets;
 		this.drawAllOccurrenceSetsAtOnce = true;
 		this.occurrenceSetIndex = 0;
 		this.diatonicPitch = diatonicPitch;
@@ -347,6 +350,47 @@ public class DrawPoints extends PApplet {
 		}
 	}
 
+	public String getSwitchesString(String outputFilePath) {
+		String outputString = null;
+		try {
+			int extStart = outputFilePath.indexOf(".");
+			String switchesFilePath = outputFilePath.substring(0,extStart);
+			if (switchesFilePath.endsWith("-diat"))
+				switchesFilePath = switchesFilePath.substring(0,switchesFilePath.length()-5);
+			if (switchesFilePath.endsWith("-chrom"))
+				switchesFilePath = switchesFilePath.substring(0,switchesFilePath.length()-6);
+			switchesFilePath += ".switches";
+			BufferedReader br = new BufferedReader(new FileReader(switchesFilePath));
+			String switches = br.readLine();
+			br.close();
+			String[] a = switches.split(" ");
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < a.length; i++) {
+				String s2 = a[i].trim().toLowerCase();
+				if (s2.equals("-i")) {
+					i++;
+					continue;
+				}
+				if (s2.equals("-id")) {
+					i++;
+					continue;
+				}
+				if (s2.equals("-o")) {
+					i++;
+					continue;
+				}
+				if (s2.startsWith("-") && i+1 < a.length && !a[i+1].startsWith("-"))
+					sb.append(" "+s2+" "+a[i+1]);
+				else if (s2.startsWith("-"))
+					sb.append(" "+s2);
+			}
+			outputString = sb.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return outputString;
+	}
+
 	public void loadEncodingFromFile(String outputFilePath) {
 		Encoding encoding = new Encoding(outputFilePath);
 		points = encoding.getDataset();
@@ -354,12 +398,12 @@ public class DrawPoints extends PApplet {
 		diatonicPitch = encoding.isDiatonic();
 		tatumsPerBar = encoding.getTatumsPerBar();
 		barOneStartsAt = encoding.getBarOneStartsAt();
-		title = encoding.getTitle();
+		title = encoding.getTitle() + " " + getSwitchesString(outputFilePath);
 	}
-	
-	
+
+
 	public void draw() {
-		if (outputFilePathStrings != null && !firstTime) {
+		if (outputFilePathStrings != null && !firstTime && outputFileIndex < outputFilePathStrings.size()) {
 			outputFilePath = outputFilePathStrings.get(outputFileIndex);
 			loadEncodingFromFile(outputFilePath); //Needs to load points and occurrenceSets
 			maxDataY = OMNISIA.RHYTHM_ONLY?max(occurrenceSets.size()+1,1):max(points.getMaxY(),1);
@@ -421,7 +465,7 @@ public class DrawPoints extends PApplet {
 			//noLoop();
 			//exit();
 		}
-		if (outputFilePathStrings == null || outputFileIndex == outputFilePathStrings.size())
+		if (outputFilePathStrings == null || outputFileIndex >= outputFilePathStrings.size())
 			exit();
 	}
 
@@ -523,7 +567,7 @@ public class DrawPoints extends PApplet {
 	private void drawRecursiveTecs() {
 		makeColourArray();
 	}
-	
+
 	private void drawAllOccurrenceSetsAtOnce() {
 		if (occurrenceSets == null)
 			drawRecursiveTecs();
@@ -558,8 +602,8 @@ public class DrawPoints extends PApplet {
 				continue;
 			ArrayList<PointSet> occurrenceSet = occurrenceSets.get(i);
 			int col = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
-//			Following has alpha divided by 4 so that subsequent occurrences are less clear
-//			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/4);
+			//			Following has alpha divided by 4 so that subsequent occurrences are less clear
+			//			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/4);
 			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
 			strokeWeight(2);
 			boolean firstOccurrence = true;
@@ -875,7 +919,7 @@ public class DrawPoints extends PApplet {
 		float y = p.getY();
 		ellipse(x,y,width,height);
 	}
-	
+
 	private void drawLine(Point n1, Point n2, int stroke, float strokeWeight, int strokeCap) {
 		stroke(stroke);
 		strokeWeight(strokeWeight);
