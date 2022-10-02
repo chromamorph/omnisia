@@ -1,12 +1,14 @@
 (
 % Unclear how long acciaccature are supposed to be - making them all 1 tatum
+% A quaver is 12 tatums
 % bar 1
 (0 Cs4 60)
 (0 Ef4 24)
 (24 En4 36)
 (0 Cn2 12)
 (0 Dn3 12)
-(12 Gn3 13)
+%Following note notated as a quaver but tied to an acciaccatura one crotchet later
+(12 Gn3 25)
 (24 Bf3 13)
 %
 % bar 2
@@ -33,13 +35,16 @@
 %
 % bar 5
 (144 Fs4 36)
-(160 Dn2 4)
-(164 Gs2 8)
+(160 Dn2 8)
+(164 Gs2 4)
 (168 Cs3 12)
+%Following is tied to *two* tied appoggiature in bar 6!
 (172 Gn3 9)
+% The following note is tied to *two* appoggiature in bar 6!
 (176 Ef4 5)
 (164 Ef4 8)
 (164 Gn4 8)
+% Following two notes are tied to non-existent notes in the next bar
 (172 An4 8)
 (172 Cn5 8)
 %
@@ -90,6 +95,8 @@
 (291 Bf1 6)
 (279 Dn4 12)
 (279 Fn4 12)
+% Following start with an appoggiatura - should this be an acciaccatura?
+% They are tied to a following pair of tied acciaccature - what does this mean?
 (290 Dn4 8)
 (290 Fn4 8)
 (273 Ef5 6)
@@ -135,6 +142,7 @@
 (430 Dn2 8)
 (434 Gs2 4)
 (438 Cs3 12)
+%Following note tied to nothing
 (446 Ef4 4)
 %
 % bar 15
@@ -172,6 +180,7 @@
 (519 Cs4 6)
 (519 Gn4 12)
 (519 Bf4 12)
+% Following is presumably a Dn4, even though it is notated as a Df4
 (525 Dn4 6)
 %
 % bar 18
@@ -185,9 +194,19 @@
 %
 % bar 19
 (549 Fn3 6)
+%Following notes on top staff are presumably supposed to be on a treble clef
 (557 Ef5 8)
 (557 Gn5 8)
 (565 An5 20)
 (565 Cn6 20)
 %
 )
+
+% Questions for Hans Abrahamsen
+% 1 How long is an acciaccature that is tied to a preceding note?
+% 2 There is an A4 that is the third quaver in bar 8 which is marked with a 
+%   sharp and a natural symbol. What does this mean?
+% 3 The (A4,C5) dyad that forms the final triplet quaver on the top staff of
+%   bar 5 is followed by tie marks, but there are no destination notes for these
+%   ties at the beginning of bar 6 on the next system.
+% 4 There is an appoggiatura  
