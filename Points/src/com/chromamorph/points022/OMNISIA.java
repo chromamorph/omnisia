@@ -1177,7 +1177,8 @@ private static RecurSIAEncoding runRecurSIA() throws FileNotFoundException, Miss
 							true, //fromOMNISIA
 							SORT_BY_PATTERN_SIZE,
 							TEC_PRIORITY_STRING,
-							DUAL_TEC_PRIORITY_STRING
+							DUAL_TEC_PRIORITY_STRING,
+							COMPACTNESS_TYPE
 			);
 }
 
