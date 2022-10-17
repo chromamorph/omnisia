@@ -41,7 +41,10 @@ public class TransformationPointSetPair implements Comparable<TransformationPoin
 		if (d != 0) return d;
 		d = o.getPointSet().size()-pointSet.size();
 		if (d != 0) return d;
-		return transformation.compareTo(o.getTransformation());
+	    d = transformation.compareTo(o.getTransformation());
+	    if (d != 0) return d;
+	    PointSet ps = o.getPointSet();
+	    return getPointSet().compareTo(ps);
 	}
 	
 	@Override

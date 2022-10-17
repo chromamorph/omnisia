@@ -877,6 +877,15 @@ public class PointSet implements Comparable<PointSet>{
 			}
 		}
 		Collections.sort(sortedOccurrenceSets, comparator);
+		
+		System.out.println("Number of sorted occurrence sets: " + sortedOccurrenceSets.size());
+		for(int i = 0; i < 20; i++)
+			try {
+				System.out.println(i+". "+sortedOccurrenceSets.get(i) + " (" + sortedOccurrenceSets.get(i).getCompressionFactor() + ")");
+			} catch (SuperMTPsNotNullException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	public void removeRedundantTransformations() {
@@ -894,6 +903,14 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public void removeDuplicateOccurrenceSets() {
+		
+	    int num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at beginning of removeDuplicateOccurrenceSets is " + num_os);
+		
 		for(int size : mtpSizes) {
 			TreeSet<OccurrenceSet> sortedDeDupedList = new TreeSet<OccurrenceSet>();
 			for(OccurrenceSet os : mtpOccurrenceSets[size]) {
@@ -921,9 +938,27 @@ public class PointSet implements Comparable<PointSet>{
 		//				}
 		//			}
 		//		}
+
+	    num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at end of removeDuplicateOccurrenceSets is " + num_os);
+
+	
 	}
 
 	public void removeOccurrenceSetsWithNoTransformations() {
+		
+	    int num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at beginning of remove_occurrence_sets_without_transformations is " + num_os);
+
+		
 		for(int size : mtpSizes)
 			for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
 				if (mtpOccurrenceSets[size].get(i).getTransformations().isEmpty()) {
