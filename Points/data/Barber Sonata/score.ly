@@ -299,6 +299,7 @@ barTwentyUpper = \relative c' {
 }
 
 barTwentyLower = \relative c,, {
+	\stemDown
 	\clef bass
 	\grace {\omit TupletNumber \tuplet 3/4 {e16 e' e'~}} <e c'!>8
 	\change Staff = "upper"
@@ -484,15 +485,19 @@ barTwentyFourLower = \relative c {
 
 barTwentyFiveUpper = \relative c {
 	\time 3/8
-	<b! g'!>32[ <ees' bes'>
-	<dis' b'> <a eis'>]
-	<e,! a>[
-	<d'! bes'!> <g,! e'!>
-	<ees bes'!>]
-	<dis'! b'!>[ <a eis'>
+	<b! g'!>32
+	<ees' bes'>
 	\clef bass
-	<e,! a>
-	<d'! bes'>]	
+	<fis, d'>
+	<c gis'>
+	<e! a>
+	<f,! des'!>
+	<b,! g'!>
+	<ees' bes'!>
+	<fis,! d'!>
+	<c gis'>
+	<e! a>
+	<f,! des'>
 }
 
 barTwentyFiveLower = \relative c {
