@@ -1027,8 +1027,8 @@ public class PointSet implements Comparable<PointSet>{
 		if (useScalexia)
 			ps.computeMTPsWithScalexia(minSize);
 		else
-			ps.computeMaximalTransformablePatternsWithHashTable(minSize);
-//			ps.computeMaximalTransformablePatternsForkJoin(minSize);
+//			ps.computeMaximalTransformablePatternsWithHashTable(minSize);
+			ps.computeMaximalTransformablePatternsForkJoin(minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
 //		int numMTPsBeforeRemoval = ps.getMTPs().size();
@@ -1040,8 +1040,8 @@ public class PointSet implements Comparable<PointSet>{
 		ps.mergeMTPs();
 		log.add(new LogInfo("mergeMTPs ends", true));
 
-		ps.computeSuperMTPs();
-//		ps.computeSuperMTPsForkJoin();
+//		ps.computeSuperMTPs();
+		ps.computeSuperMTPsForkJoin();
 		log.add(new LogInfo("computeSuperMTPs ends", true));
 
 		TIME_AT_START_OF_COMPUTING_HETERO_OS = Calendar.getInstance().getTimeInMillis();
