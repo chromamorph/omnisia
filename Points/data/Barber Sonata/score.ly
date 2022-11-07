@@ -7,6 +7,8 @@
 %Barber, S. (1950). Sonata for Piano, Op.26. G. Schirmer, Inc., New York.
 %Ed. 1971
 
+%Corrected bar 25. 4 November 2022
+
 \header {
 	tagline = ""
 }
@@ -482,15 +484,15 @@ barTwentyFourLower = \relative c {
 
 barTwentyFiveUpper = \relative c {
 	\time 3/8
-	\clef bass
 	<b! g'!>32[ <ees' bes'>
-	<fis, d'> <c gis'>]
-	<e! a>[
-	<f,! des'> <b,! g'!>
-	<ees' bes'>]
-	<fis,! d'!>[ <c gis'>
-	<e! a>
-	<f,! des'>]	
+	<dis' b'> <a eis'>]
+	<e,! a>[
+	<d'! bes'!> <g,! e'!>
+	<ees bes'!>]
+	<dis'! b'!>[ <a eis'>
+	\clef bass
+	<e,! a>
+	<d'! bes'>]	
 }
 
 barTwentyFiveLower = \relative c {
@@ -502,7 +504,7 @@ barTwentySixUpper = \relative c' {
 	\clef treble
 	<<
 		{r4 r32 e'32 f fis <aes bes> g ges f!
-		r4 r32 e32 f fis <aes bes> g ges f!}
+		r4 r32 e32 f fis <aes! bes> g ges f!}
 		\\
 		{\stemUp r8 <a,! a,>16 <aes~ aes,~> <aes aes,>4 r8 <a a,>32 <a a,> <a a,> <aes~ aes,~> <aes aes,>4}
 		\\
