@@ -449,8 +449,8 @@ public class PointSet implements Comparable<PointSet>{
 
 		for (TransformationClass tc : transformationClasses) {
 			int numObjectBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
-			System.out.println("basisSize = " + tc.getBasisSize());
-			System.out.println("numObjectBases = " + numObjectBases);
+//			System.out.println("basisSize = " + tc.getBasisSize());
+//			System.out.println("numObjectBases = " + numObjectBases);
 			int[][] perms = tc.getPerms();
 			int numComputations = numObjectBases * numObjectBases *perms.length;
 			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases);
@@ -477,10 +477,10 @@ public class PointSet implements Comparable<PointSet>{
 		for(int i : hashValues)
 			loadHistogram[mtpArray[i].size()]++;
 
-		for(int i = 0; i < loadHistogram.length; i++)
-			if (loadHistogram[i] > 0) {
-				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
-			}
+//		for(int i = 0; i < loadHistogram.length; i++)
+//			if (loadHistogram[i] > 0) {
+//				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
+//			}
 
 	}
 
@@ -548,8 +548,15 @@ public class PointSet implements Comparable<PointSet>{
 		TreeSet<Integer> hashValues = new TreeSet<Integer>();
 		for(TransformationClass tc : transformationClasses) {
 			int basisSize = tc.getBasisSize();
+//			System.out.println("basisSize = " + basisSize);
 			int numObjectBases = Utility.computeNumCombinations(size(),basisSize);
+//			System.out.println("numObjectBases = " + numObjectBases);
 			int[][] perms = Utility.computePermutationIndexSequences(basisSize);
+//			for(int[] perm : perms) {
+//				for(int index : perm)
+//					System.out.print(index + " ");
+//				System.out.println();
+//			}
 			for(int objIndex = 0; objIndex < numObjectBases; objIndex++) {
 				PointSequence objectBasis = computeBasis(basisSize, objIndex);
 				for(int imgIndex = objIndex; imgIndex < numObjectBases; imgIndex++) {
@@ -565,12 +572,14 @@ public class PointSet implements Comparable<PointSet>{
 							if (mtpArray[i] == null)
 								mtpArray[i] = new ListOfTransformationPointSetPairs();
 							mtpArray[i].add(transformation,objectBasis);
+//							System.out.println(String.format("%5d: %8d %5d", hashValues.size(),i,mtpArray[i].size()));
 
 							i = transformation.getInverse().hash(HASH_TABLE_SIZE);
 							hashValues.add(i);
 							if (mtpArray[i] == null)
 								mtpArray[i] = new ListOfTransformationPointSetPairs();
 							mtpArray[i].add(transformation.getInverse(),imageBasis);
+//							System.out.println(String.format("%5d: %8d %5d", hashValues.size(),i,mtpArray[i].size()));
 							tc.addTransformationInstance(transformation);
 							tc.addTransformationInstance(transformation.getInverse());
 						}
@@ -579,6 +588,20 @@ public class PointSet implements Comparable<PointSet>{
 			}
 		}
 
+//		System.out.println("mtpArray.length = " + mtpArray.length);
+//		System.out.println("HASH_TABLE_SIZE = " + HASH_TABLE_SIZE);
+
+//	    int x = 0;
+//	    for(int h : hashValues) {
+//	    	if (mtpArray[h].size()==3)
+//	    		System.out.print(String.format("%5d : %8d %3d\n", ++x, h, mtpArray[h].size()));
+//	    }
+
+//		int[] hashCodes = new int[] {3919845, 4372172, 9593469};
+//		for(int i : hashCodes) {
+//			System.out.println(""+i+": "+mtpArray[i]);
+//		}
+		
 		mtps = new TreeSet<TransformationPointSetPair>();
 		int maxLoad = 0;
 		for(int i : hashValues) {
@@ -593,10 +616,25 @@ public class PointSet implements Comparable<PointSet>{
 		for(int i : hashValues)
 			loadHistogram[mtpArray[i].size()]++;
 
-		for(int i = 0; i < loadHistogram.length; i++)
-			if (loadHistogram[i] > 0) {
-				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
-			}
+//		System.out.println(" Load:    Freq");
+//		for(int i = 0; i < loadHistogram.length; i++)
+//			if (loadHistogram[i] > 0) {
+//				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
+//			}
+		
+//		System.out.println(mtps.size() + " MTPs computed");
+		
+//		Output histogram of MTP sizes
+		int[] mtpSizeArray = new int[this.size()+1];
+		TreeSet<Integer> mtpSizeSet = new TreeSet<Integer>();
+		for(TransformationPointSetPair mtp : mtps) {
+			if (mtpSizeArray[mtp.getPointSet().size()] == 0)
+				mtpSizeSet.add(mtp.getPointSet().size());
+			mtpSizeArray[mtp.getPointSet().size()]++;			
+		}
+//		System.out.println("\n Size:    Freq");
+//		for(int size : mtpSizeSet)
+//			System.out.println(String.format("%5d:%8d", size, mtpSizeArray[size]));
 
 	}
 
@@ -660,6 +698,7 @@ public class PointSet implements Comparable<PointSet>{
 			sizeMTPSetArray[n].add(mtp);
 		}
 		Collections.sort(mtpSizes);
+//		System.out.println("mtp_sizes: "+mtpSizes);
 
 		//		Sort each list of equally-sized MTPs in sizeMTPSetArray giving priority to the pattern,
 		//		so that MTPs with the same pattern are adjacent in each resulting list
@@ -680,10 +719,10 @@ public class PointSet implements Comparable<PointSet>{
 
 			});
 		}
-		System.out.println("mtpSizes:\n");
-		for(int size : mtpSizes) {
-			System.out.println(size + " : " + sizeMTPSetArray[size].size());
-		}
+//		System.out.println("mtpSizes:\n");
+//		for(int size : mtpSizes) {
+//			System.out.println(size + " : " + sizeMTPSetArray[size].size());
+//		}
 	}
 
 	/**
@@ -712,11 +751,37 @@ public class PointSet implements Comparable<PointSet>{
 			}
 			mtpOccurrenceSets[size].add(currentMergedMTP);
 		}
+		
+//	    System.out.print("\nAfter running merge_mtps:\nmtp_sizes: ");
+//	    for(int size : mtpSizes)
+//	        System.out.print(size + " ");
+//	    System.out.println();
+//	    
+//	    System.out.println("\nNum occurrence sets of each size");
+//	    for(int size = 0; size < mtpOccurrenceSets.length; size++) {
+//	        if (mtpOccurrenceSets[size] != null) {
+//	        	System.out.println(size + " : " + mtpOccurrenceSets[size].size());
+//	        }
+//	    }
+
 	}
 
 	public void computeSuperMTPsForkJoin() {
 		ComputeSuperMTPsAction action = new ComputeSuperMTPsAction(this);
 		ForkJoinPool.commonPool().invoke(action);
+		
+//		System.out.println("\nNumber of superMTPs for each MTP");
+//		for(int i = 0; i < mtpSizes.size(); i++) {
+//			int size = mtpSizes.get(i);
+//			System.out.print(size + " : ");
+//			ArrayList<OccurrenceSet> mtpsOfThisSize = mtpOccurrenceSets[size];
+//			for(OccurrenceSet mtp : mtpsOfThisSize) {
+//				if (mtp.getSuperMTPs() != null)
+//					System.out.print(mtp.getSuperMTPs().size() + " ");
+//			}
+//			System.out.println();
+//		}
+
 	}
 
 	public void computeSuperMTPs() {
@@ -726,6 +791,18 @@ public class PointSet implements Comparable<PointSet>{
 			for(OccurrenceSet mtp : mtpsOfThisSize) {
 				for (int j = i+1;j < mtpSizes.size();j++) {
 					ArrayList<OccurrenceSet> largerMTPs = mtpOccurrenceSets[mtpSizes.get(j)];
+					
+	                ///////////////
+	                //DEBUGGING
+//	                System.out.println("\n\nDebugging from Encoding::compute_super_mtps");
+//	                System.out.println(String.format("mtps of size %d\n", mtpSizes.get(j)));
+//	                for(OccurrenceSet largerMTP : largerMTPs) {
+//	                    System.out.println(largerMTP);
+//	                }
+	                //END DEBUGGING
+
+					
+					
 					for(OccurrenceSet largerMTP : largerMTPs) {
 						PointSet largerPattern = largerMTP.getPattern();
 						if (largerPattern.contains(mtp.getPattern()))
@@ -734,6 +811,18 @@ public class PointSet implements Comparable<PointSet>{
 				}
 			}
 		}
+		
+//		System.out.println("\nNumber of superMTPs for each MTP");
+//		for(int i = 0; i < mtpSizes.size(); i++) {
+//			int size = mtpSizes.get(i);
+//			System.out.print(size + " : ");
+//			ArrayList<OccurrenceSet> mtpsOfThisSize = mtpOccurrenceSets[size];
+//			for(OccurrenceSet mtp : mtpsOfThisSize) {
+//				if (mtp.getSuperMTPs() != null)
+//					System.out.print(mtp.getSuperMTPs().size() + " ");
+//			}
+//			System.out.println();
+//		}
 	}
 
 
@@ -750,6 +839,15 @@ public class PointSet implements Comparable<PointSet>{
 			}
 		}
 
+//	    System.out.println("computeHeterogeneousOccurrenceSets finished:\n");
+//	    for (int size : mtpSizes) {
+//	        System.out.println("\nsize = " + size);
+//	        for (OccurrenceSet mtp : mtpOccurrenceSets[size]) {
+//	            System.out.println(mtp);
+//	        }
+//	    }
+
+		
 		//		int processors = Runtime.getRuntime().availableProcessors();
 		//        System.out.println(Integer.toString(processors) + " processor"
 		//                + (processors != 1 ? "s are " : " is ")
@@ -779,6 +877,15 @@ public class PointSet implements Comparable<PointSet>{
 			}
 		}
 		Collections.sort(sortedOccurrenceSets, comparator);
+		
+		System.out.println("Number of sorted occurrence sets: " + sortedOccurrenceSets.size());
+		for(int i = 0; i < 20; i++)
+			try {
+				System.out.println(i+". "+sortedOccurrenceSets.get(i) + " (" + sortedOccurrenceSets.get(i).getCompressionFactor() + ")");
+			} catch (SuperMTPsNotNullException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	public void removeRedundantTransformations() {
@@ -796,6 +903,14 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public void removeDuplicateOccurrenceSets() {
+		
+	    int num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at beginning of removeDuplicateOccurrenceSets is " + num_os);
+		
 		for(int size : mtpSizes) {
 			TreeSet<OccurrenceSet> sortedDeDupedList = new TreeSet<OccurrenceSet>();
 			for(OccurrenceSet os : mtpOccurrenceSets[size]) {
@@ -823,9 +938,27 @@ public class PointSet implements Comparable<PointSet>{
 		//				}
 		//			}
 		//		}
+
+	    num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at end of removeDuplicateOccurrenceSets is " + num_os);
+
+	
 	}
 
 	public void removeOccurrenceSetsWithNoTransformations() {
+		
+	    int num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at beginning of remove_occurrence_sets_without_transformations is " + num_os);
+
+		
 		for(int size : mtpSizes)
 			for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
 				if (mtpOccurrenceSets[size].get(i).getTransformations().isEmpty()) {
@@ -898,14 +1031,14 @@ public class PointSet implements Comparable<PointSet>{
 			ps.computeMaximalTransformablePatternsForkJoin(minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
-		int numMTPsBeforeRemoval = ps.getMTPs().size();
-		System.out.println("Number of MTPs before removal: "+numMTPsBeforeRemoval);
+//		int numMTPsBeforeRemoval = ps.getMTPs().size();
+//		System.out.println("Number of MTPs before removal: "+numMTPsBeforeRemoval);
 		
 		ps.computeSizeMTPSetArray();
 		log.add(new LogInfo("computeSizeMTPSetArray ends", true));
 
 		ps.mergeMTPs();
-		log.add(new LogInfo("computePatternTransformationSetPairs ends", true));
+		log.add(new LogInfo("mergeMTPs ends", true));
 
 //		ps.computeSuperMTPs();
 		ps.computeSuperMTPsForkJoin();
@@ -958,6 +1091,8 @@ public class PointSet implements Comparable<PointSet>{
 		log.add(new LogInfo("Program ends\n\n", true));
 
 		PrintWriter output = new PrintWriter(outputFilePath);
+		System.out.println("Output file: "+ outputFilePath);
+		System.out.println("Encoding:\n" + ps.getEncoding());
 		Utility.println(output, ps.getEncoding());
 		
 		if (draw) {
@@ -972,7 +1107,7 @@ public class PointSet implements Comparable<PointSet>{
 		}
 
 		Utility.println(output, "Number of points: " + ps.size());
-		Utility.println(output, "Number of MTPs before removal: " + numMTPsBeforeRemoval);
+//		Utility.println(output, "Number of MTPs before removal: " + numMTPsBeforeRemoval);
 		Utility.println(output, "Number of OSs after removal: " + ps.sortedOccurrenceSets.size());
 
 		output.close();
@@ -1336,6 +1471,7 @@ public class PointSet implements Comparable<PointSet>{
 		} else {
 			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
 			String fileName = args[1];
+			System.out.println("Input file: "+args[1]+"\n");
 			encodePointSetFromFile(fileName, transformationClasses,false,true,"1100",args[0],false,3, false);
 		}
 	}

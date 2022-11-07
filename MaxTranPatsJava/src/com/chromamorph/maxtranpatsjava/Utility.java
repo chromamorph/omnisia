@@ -25,8 +25,10 @@ public class Utility {
 				a1.set(i, 0.0);
 			if (a2.get(i) == -0.0)
 				a2.set(i, 0.0);
-			d = a1.get(i).compareTo(a2.get(i));
-			if (d != 0) return d;
+			double x = a1.get(i) - (a2.get(i));
+			if (Math.abs(x) <= TOLERANCE)
+				x = 0.0;
+			if (x != 0) return x>0?1:-1;
 		}
 		return 0;
 	}
@@ -393,12 +395,12 @@ public class Utility {
 
 	
 	public static void println(PrintWriter output, Object s) {
-		System.out.println(s.toString());
+//		System.out.println(s.toString());
 		output.println(s.toString());
 	}
 
 	public static void print(PrintWriter output, Object s) {
-		System.out.print(s.toString());
+//		System.out.print(s.toString());
 		output.print(s.toString());
 	}
 

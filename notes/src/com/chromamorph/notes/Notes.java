@@ -287,6 +287,16 @@ public class Notes {
 							if (offsetTime > finalOffsetTime) finalOffsetTime = offsetTime;
 						}
 					}
+					
+					for(int i = 0; i < sequence.getTracks()[0].size(); i++) {
+						MidiEvent event = sequence.getTracks()[0].get(i);
+						System.out.print(event.getMessage().);
+						for(int b : event.getMessage().getMessage()) {
+							System.out.print(b+" ");
+						}
+						System.out.println();
+					}
+										
 					sequencer.open();
 					sequencer.setTempoInBPM(beatsPerMinute);
 					synth.open();
@@ -1280,6 +1290,7 @@ public class Notes {
 
 		try {
 			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Hans Abrahamsen/Traumlied/Traumlied.opndv");
+
 			notes.play(4,176);
 		} catch (IOException e) {
 			e.printStackTrace();

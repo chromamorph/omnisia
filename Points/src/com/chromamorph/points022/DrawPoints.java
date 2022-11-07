@@ -602,8 +602,8 @@ public class DrawPoints extends PApplet {
 				continue;
 			ArrayList<PointSet> occurrenceSet = occurrenceSets.get(i);
 			int col = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
-			//			Following has alpha divided by 4 so that subsequent occurrences are less clear
-			//			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/4);
+			//			Following has alpha divided by 2 so that subsequent occurrences are less clear
+//						int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]/2);
 			int col2 = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);
 			strokeWeight(2);
 			boolean firstOccurrence = true;
@@ -613,7 +613,7 @@ public class DrawPoints extends PApplet {
 				for(Point p : occurrence.getPoints()) {
 					int s = firstOccurrence?col:col2;
 					int f = firstOccurrence?col:col2;
-					float sw = firstOccurrence?2:1;
+					float sw = firstOccurrence?2:2;
 					float w = firstOccurrence?pointWidth+2:pointWidth;
 					float h = firstOccurrence?pointHeight+2:pointHeight;
 					if (OMNISIA.RHYTHM_ONLY) { // Draws points and lines with y value equal to TEC number, i

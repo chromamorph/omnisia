@@ -7,6 +7,8 @@
 %Barber, S. (1950). Sonata for Piano, Op.26. G. Schirmer, Inc., New York.
 %Ed. 1971
 
+%Corrected bar 25. 4 November 2022
+
 \header {
 	tagline = ""
 }
@@ -297,6 +299,7 @@ barTwentyUpper = \relative c' {
 }
 
 barTwentyLower = \relative c,, {
+	\stemDown
 	\clef bass
 	\grace {\omit TupletNumber \tuplet 3/4 {e16 e' e'~}} <e c'!>8
 	\change Staff = "upper"
@@ -482,15 +485,19 @@ barTwentyFourLower = \relative c {
 
 barTwentyFiveUpper = \relative c {
 	\time 3/8
+	<b! g'!>32
+	<ees' bes'>
 	\clef bass
-	<b! g'!>32[ <ees' bes'>
-	<fis, d'> <c gis'>]
-	<e! a>[
-	<f,! des'> <b,! g'!>
-	<ees' bes'>]
-	<fis,! d'!>[ <c gis'>
+	<fis, d'>
+	<c gis'>
 	<e! a>
-	<f,! des'>]	
+	<f,! des'!>
+	<b,! g'!>
+	<ees' bes'!>
+	<fis,! d'!>
+	<c gis'>
+	<e! a>
+	<f,! des'>
 }
 
 barTwentyFiveLower = \relative c {
@@ -502,7 +509,7 @@ barTwentySixUpper = \relative c' {
 	\clef treble
 	<<
 		{r4 r32 e'32 f fis <aes bes> g ges f!
-		r4 r32 e32 f fis <aes bes> g ges f!}
+		r4 r32 e32 f fis <aes! bes> g ges f!}
 		\\
 		{\stemUp r8 <a,! a,>16 <aes~ aes,~> <aes aes,>4 r8 <a a,>32 <a a,> <a a,> <aes~ aes,~> <aes aes,>4}
 		\\
