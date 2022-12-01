@@ -966,6 +966,14 @@ public class PointSet implements Comparable<PointSet>{
 					i--;
 				}
 			}
+
+	    num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at end of remove_occurrence_sets_without_transformations is " + num_os);
+
 	}
 
 	public PointSet setMinus(PointSet pointSet) {

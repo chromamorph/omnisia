@@ -251,7 +251,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 				}
 			}
 		}
-
+		Collections.sort(newTrans);
 		setTransformations(newTrans);
 
 		//		FOLLOWING BASED ON TEC.removeRedundantTranslators()
