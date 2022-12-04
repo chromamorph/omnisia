@@ -290,7 +290,7 @@ public class Notes {
 					
 					for(int i = 0; i < sequence.getTracks()[0].size(); i++) {
 						MidiEvent event = sequence.getTracks()[0].get(i);
-						System.out.print(event.getMessage().);
+//						System.out.print(event.getMessage().);
 						for(int b : event.getMessage().getMessage()) {
 							System.out.print(b+" ");
 						}
@@ -1289,16 +1289,9 @@ public class Notes {
 	public static void main(String[] args) {
 
 		try {
-			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Hans Abrahamsen/Traumlied/Traumlied.opndv");
-
-			notes.play(4,176);
+			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opnd");
+			notes.toOPDVFile("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opd");
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidMidiDataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MidiUnavailableException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

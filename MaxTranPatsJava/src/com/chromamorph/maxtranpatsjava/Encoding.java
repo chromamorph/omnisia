@@ -17,11 +17,14 @@ import processing.core.PApplet;
 
 public class Encoding {
 	private ArrayList<OccurrenceSet> occurrenceSets;
+	private PointSet dataset;
+	private long runningTime;
 	
-	public Encoding() {}
+//	public Encoding() {}
 	
-	public Encoding(ArrayList<OccurrenceSet> occurrenceSets) {
+	public Encoding(ArrayList<OccurrenceSet> occurrenceSets, PointSet dataset) {
 		setOccurrenceSets(occurrenceSets);
+		setDataset(dataset);
 	}
 	
 	public Encoding(File encodingFile, PointSet dataset) throws IOException, InvalidArgumentException {
@@ -47,12 +50,28 @@ public class Encoding {
 		}
 	}
 	
+	public void setDataset(PointSet dataset) {
+		this.dataset = dataset;
+	}
+	
+	public PointSet getDataset() {
+		return dataset;
+	}
+	
+	public int getDatasetSize() {
+		return dataset.size();
+	}
+	
 	public void setOccurrenceSets(ArrayList<OccurrenceSet> occurrenceSets) {
 		this.occurrenceSets = occurrenceSets;
 	}
 	
 	public ArrayList<OccurrenceSet> getOccurrenceSets() {
 		return occurrenceSets;
+	}
+	
+	public int getNumberOfOccurrenceSets() {
+		return getOccurrenceSets().size();
 	}
 	
 	public void add(OccurrenceSet occurrenceSet) {
@@ -84,18 +103,65 @@ public class Encoding {
 		
 		sb.append("\n\n");
 		try {
-			sb.append("Coverage: "+getCoverage()+"\n");
-			sb.append("Uncompressed length: "+getUncompressedLength()+"\n");
-			sb.append("Encoding length: "+getEncodingLength()+"\n");
-			sb.append("Compression factor: "+getCompressionFactor()+"\n");
-		} catch (Exception e) {
+			sb.append("Coverage: "+getCoverage());
+			sb.append("\nDataset size: "+getDatasetSize());
+			sb.append("\nUncompressed length: "+getUncompressedLength());
+			sb.append("\nEncoding length: "+getEncodingLength());
+			sb.append("\nCompression factor: "+getCompressionFactor());
+			sb.append("\nRunning time in milliseconds: "+getRunningTimeInMillis());
+			sb.append("\nEncoding length without residual point set: "+getEncodingLengthWithoutResidualPoints());
+			sb.append("\nNumber of residual points: "+getNumberOfResidualPoints());
+			sb.append("\nPercentage of residual points: "+String.format("%.2f",getPercentageOfResidualPoints()) + "%");
+			sb.append("\nCompression factor without residual point set: "+ getCompressionFactorWithoutResidualPoints());
+			sb.append("\nNumber of occurrence sets: "+getNumberOfOccurrenceSets()+"\n");
+	} catch (Exception e) {
 			e.printStackTrace();
 		}
-		sb.append("Number of occurrence sets: "+getOccurrenceSets().size()+"\n");
 		
 		return sb.toString();
 	}
 	
+	public void setRunningTimeInMillis(long runningTime) {
+		this.runningTime = runningTime;
+	}
+	
+	public long getRunningTimeInMillis() {
+		return runningTime;
+	}
+	
+	public int getNumberOfResidualPoints() {
+		if (getOccurrenceSets().size() == 0) return 0;
+		OccurrenceSet lastOS = getOccurrenceSets().get(getNumberOfOccurrenceSets()-1);
+		if (lastOS.getTransformations() == null || lastOS.getTransformations().size() == 0)
+			return lastOS.getPattern().size();
+		return 0;
+	}
+	
+	public double getPercentageOfResidualPoints() {
+		return getNumberOfResidualPoints() * 100.0 / getDatasetSize();
+	}
+	
+	public OccurrenceSet getResidualPointSetAsOccurrenceSet() {
+		OccurrenceSet lastOS = getOccurrenceSets().get(getNumberOfOccurrenceSets()-1);
+		if (lastOS.getTransformations() == null || lastOS.getTransformations().size() == 0)
+			return lastOS;
+		return null;
+	}
+	
+	public PointSet getResidualPointSet() {
+		OccurrenceSet os = getResidualPointSetAsOccurrenceSet();
+		if (os != null)
+			return os.getPattern();
+		return new PointSet();
+	}
+	
+	public int getEncodingLengthWithoutResidualPoints() throws Exception {
+		return getEncodingLength() - getResidualPointSet().size() * getDimensionality();
+	}
+	
+	public double getCompressionFactorWithoutResidualPoints() throws Exception {
+		return 1.0*(getCoverage()-getNumberOfResidualPoints())*getDimensionality()/getEncodingLengthWithoutResidualPoints();
+	}
 	public PointSet getCoveredSet() throws Exception {
 		PointSet coveredSet = new PointSet();
 		for(OccurrenceSet os : getOccurrenceSets())
@@ -146,7 +212,7 @@ public class Encoding {
 		return occSets;
 	}
 	
-	public void drawOccurrenceSets(String outputFilePath) {
+	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch) {
 		final PointSet dataset = getOccurrenceSets().get(0).getDataset();
 		final TreeSet<Point> points = dataset.getPoints();
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 

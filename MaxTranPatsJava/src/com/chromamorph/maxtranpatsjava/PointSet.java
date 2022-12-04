@@ -54,7 +54,7 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public void setEncoding(ArrayList<OccurrenceSet> occurrenceSets) {
-		this.encoding = new Encoding(occurrenceSets);
+		this.encoding = new Encoding(occurrenceSets, this);
 	}
 
 	public Encoding getEncoding() {
@@ -123,6 +123,9 @@ public class PointSet implements Comparable<PointSet>{
 		if (file.getName().toLowerCase().endsWith(".mid")) {
 			makePointSetFromMIDIFile(file, pitchSpell, midTimePoint, dimensionMask);
 			return;
+		}
+		if (file.getName().toLowerCase().endsWith(".opnd")) {
+			makePointSetFromOPNDFile(file, pitchSpell, midTimePoint, dimensionMask);
 		}
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -194,6 +197,22 @@ public class PointSet implements Comparable<PointSet>{
 		} catch (InvalidMidiDataException | IOException | NoMorpheticPitchException e) {
 			e.printStackTrace();
 		}
+		resetPointsArray();
+		pointComplexity = -1;
+	}
+
+	private void makePointSetFromOPNDFile(File file, boolean pitchSpell, boolean midTimePoint, String dimensionMask) {
+		Notes notes;
+			try {
+				notes = Notes.fromOPND(file.getAbsolutePath());
+				getPointSetFromNotes(notes, pitchSpell, midTimePoint, dimensionMask);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoMorpheticPitchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		resetPointsArray();
 		pointComplexity = -1;
 	}
@@ -878,14 +897,14 @@ public class PointSet implements Comparable<PointSet>{
 		}
 		Collections.sort(sortedOccurrenceSets, comparator);
 		
-		System.out.println("Number of sorted occurrence sets: " + sortedOccurrenceSets.size());
-		for(int i = 0; i < 20; i++)
-			try {
-				System.out.println(i+". "+sortedOccurrenceSets.get(i) + " (" + sortedOccurrenceSets.get(i).getCompressionFactor() + ")");
-			} catch (SuperMTPsNotNullException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//		System.out.println("Number of sorted occurrence sets: " + sortedOccurrenceSets.size());
+//		for(int i = 0; i < 20; i++)
+//			try {
+//				System.out.println(i+". "+sortedOccurrenceSets.get(i) + " (" + sortedOccurrenceSets.get(i).getCompressionFactor() + ")");
+//			} catch (SuperMTPsNotNullException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 	}
 
 	public void removeRedundantTransformations() {
@@ -1015,8 +1034,8 @@ public class PointSet implements Comparable<PointSet>{
 		setEncoding(encoding);
 	}
 
-	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw) throws Exception {
-		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw);
+	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch) throws Exception {
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch);
 	}
 	public static void encodePointSet (
 			PointSet ps, 
@@ -1025,7 +1044,8 @@ public class PointSet implements Comparable<PointSet>{
 			boolean useScalexia,
 			int minSize,
 			int hashTableSize,
-			boolean draw) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			boolean draw,
+			boolean diatonicPitch) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
 
@@ -1097,6 +1117,7 @@ public class PointSet implements Comparable<PointSet>{
 		//			}
 
 		log.add(new LogInfo("Program ends\n\n", true));
+		ps.getEncoding().setRunningTimeInMillis(log.get(log.size()-1).getAccumulatedTime());
 
 		PrintWriter output = new PrintWriter(outputFilePath);
 		System.out.println("Output file: "+ outputFilePath);
@@ -1106,7 +1127,7 @@ public class PointSet implements Comparable<PointSet>{
 		if (draw) {
 			int posOfDot = outputFilePath.lastIndexOf(".");
 			String imageFilePath = outputFilePath.substring(0,posOfDot) + ".png";
-			ps.getEncoding().drawOccurrenceSets(imageFilePath);
+			ps.getEncoding().drawOccurrenceSets(imageFilePath,diatonicPitch);
 		}
 
 		Utility.println(output, "\n\nLog:");
@@ -1161,7 +1182,7 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1191,7 +1212,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, draw);
+			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1218,7 +1239,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell);
 			return ps;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1477,10 +1498,20 @@ public class PointSet implements Comparable<PointSet>{
 		if (args.length < 2) {
 			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file>");
 		} else {
-			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
+			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
 			String fileName = args[1];
 			System.out.println("Input file: "+args[1]+"\n");
-			encodePointSetFromFile(fileName, transformationClasses,false,true,"1100",args[0],false,3, false);
+			encodePointSetFromFile(
+					fileName, 
+					transformationClasses,
+					true, //pitchSpell
+					true, //midTimePoint
+					"1100", //dimensionMask
+					args[0], //outputDir
+					false, //useScalexia
+					3, //minSize
+					true //draw
+					);
 		}
 	}
 
