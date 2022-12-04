@@ -23,6 +23,10 @@ public class LogInfo implements Comparable<LogInfo> {
 		}
 	}
 	
+	public long getAccumulatedTime() {
+		return thisAccumulatedTime;
+	}
+	
 	public LogInfo(String description, PrintWriter outputFile) {
 		this(description, false);
 		outputFile.println(this);
