@@ -93,8 +93,30 @@ public class PointSet implements Comparable<PointSet>{
 			makePointSetObjectFromCollinsLispFile(fileName, isDiatonic);
 		else if (fileName.toLowerCase().endsWith(".xml") || fileName.toLowerCase().endsWith(".musicxml"))
 			makePointSetObjectFromMusicXMLFile(fileName, isDiatonic);
+		else if (fileName.toLowerCase().endsWith(".masom"))
+			makePointSetObjectFromMasomFile(fileName);
 	}
 
+	private void makePointSetObjectFromMasomFile(String fileName) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
+			int time = 0;
+			String l = br.readLine();
+			while (l != null && !l.isEmpty()) {
+				int midiNoteNumber = Integer.parseInt(l.substring(3, 6));
+				Point p = new Point(time, midiNoteNumber);
+				points.add(p);
+				time++;
+				l = br.readLine();
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void makePointSetObjectFromMusicXMLFile(String fileName, boolean isDiatonic) {
 //		Read XML file into a StringBuilder
 		BufferedReader br;
@@ -194,9 +216,9 @@ public class PointSet implements Comparable<PointSet>{
 //							Find duration
 							int durationIndex = noteSubstring.indexOf("<duration>")+10;
 							int durationEndIndex = noteSubstring.indexOf("</duration>");
-							if (durationEndIndex == -1) {
-								int bicycle = 1;
-							}
+//							if (durationEndIndex == -1) {
+//								int bicycle = 1;
+//							}
 							int duration = Integer.parseInt(noteSubstring.substring(durationIndex, durationEndIndex));
 							
 //							Compute PitchDurationPair and add to list pdps
@@ -216,9 +238,9 @@ public class PointSet implements Comparable<PointSet>{
 					ArrayList<Integer> doneBackRepeats = new ArrayList<Integer>();
 					ArrayList<Integer> doneForwardRepeats = new ArrayList<Integer>();
 					for(int m = 0; m < pdps.size(); m++) {
-						if (m == pdps.size()-10) {
-							int blab = 2;
-						}
+//						if (m == pdps.size()-10) {
+//							int blab = 2;
+//						}
 						PitchDurationPair pdp = pdps.get(m);
 						if (pdp.isBackup())
 							onset -= pdp.getBackupDuration();
