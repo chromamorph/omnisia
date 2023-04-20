@@ -36,6 +36,21 @@ public class ReadAndPlayMIDIFile {
 		}
 	}
 	
+	private static void readMIDIFileIntoSequencer(String fileName) {
+		try {
+			sequencer = MidiSystem.getSequencer();
+			midiFile = new FileInputStream(fileName);
+			sequence = MidiSystem.getSequence(midiFile);
+			sequencer.setSequence(sequence);
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static void playSequenceInSequencer() {
 		try {
 			sequencer.open();
@@ -51,7 +66,24 @@ public class ReadAndPlayMIDIFile {
 		}
 	}
 	
-	public static void main(String[] args) {
+	private static void renderSequenceToAudioFile() {
+		try {
+			sequencer.open();
+			sequencer.start();
+			System.out.println("Press ENTER when finished playing.");
+			System.in.read();
+			sequencer.stop();
+			sequencer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	
+	public static void main1(String[] args) {
 		sc = new Scanner(System.in);
 		readMIDIFileIntoSequencer();
 		playSequenceInSequencer();
@@ -61,5 +93,15 @@ public class ReadAndPlayMIDIFile {
 			e.printStackTrace();
 		}
 		sc.close();
+	}
+	
+	public static void main(String[] args) {
+		readMIDIFileIntoSequencer(args[0]);
+		playSequenceInSequencer();
+		try {
+			midiFile.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

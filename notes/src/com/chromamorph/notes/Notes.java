@@ -64,6 +64,7 @@ public class Notes {
 			tatumsPerCrotchet = notesObject.tatumsPerCrotchet;
 			timeSignatures = notesObject.timeSignatures;
 			ticksPerSecond = notesObject.ticksPerSecond;
+			convertOnsetsAndDurationsToTatums();
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -132,6 +133,7 @@ public class Notes {
 			}
 		}
 		br.close();
+		this.convertOnsetsAndDurationsToTatums();
 	}
 
 	/**
@@ -191,7 +193,36 @@ public class Notes {
 				}
 			}
 		}
+		convertOnsetsAndDurationsToTatums();
 		if (pitchSpell) pitchSpell(10,42);
+	}
+	
+	public ArrayList<Long> getNoteDurations() {
+		TreeSet<Long> durationSet = new TreeSet<Long>();
+		for(Note note : getNotes()) {
+			if (note.getDuration() != null) durationSet.add(note.getDuration());
+		}
+		ArrayList<Long> outputList = new ArrayList<Long>();
+		outputList.addAll(durationSet);
+		return outputList;
+	}
+	
+	public void convertOnsetsAndDurationsToTatums() {
+//		Find greatest common divisor or all durations and onsets
+		ArrayList<Long> onsets = getNoteOnsets();
+		ArrayList<Long> durations = getNoteDurations();
+		TreeSet<Long> allOnsetsAndDurations = new TreeSet<Long>();
+		allOnsetsAndDurations.addAll(onsets);
+		allOnsetsAndDurations.addAll(durations);
+		Long[] timeArray = new Long[allOnsetsAndDurations.size()];
+		allOnsetsAndDurations.toArray(timeArray);
+		Long gcd = Maths.gcd(timeArray);
+		for(Note note : getNotes()) {
+			if (note.getOnset() != null)
+				note.setOnset(note.getOnset()/gcd);
+			if (note.getDuration() != null)
+				note.setDuration(note.getDuration()/gcd);
+		}
 	}
 
 	public int getNumberOfNotes() {
@@ -1169,22 +1200,61 @@ public class Notes {
 	}
 
 	public void toOPDVFile(String opdvFileName) {
+		toOPDVFile(opdvFileName, true, false, false);
+	}
+	
+	public void toOPDVFile(String opdvFileName, 
+			boolean includeVoice, 
+			boolean lispFormat,
+			boolean commaSeparated) {
 		try {
+			String separator = commaSeparated?",":" ";
 			Path outputFilePath = Paths.get(opdvFileName);
 			outputFilePath.getParent().toFile().mkdirs();
 			PrintWriter pr = new PrintWriter(outputFilePath.toFile());
+			if (lispFormat) pr.print("(");
 			for(Note note : notes) {
 				Integer mp = note.getPitch().getMorpheticPitch();
 				if (mp == null)
 					mp = note.getComputedPitch().getMorpheticPitch();
 				Integer v = note.getVoice();
 				pr.println(
-						note.getOnset()+" "+
-								note.getPitch().getChromaticPitch()+" "+
-								mp+" "+
-								note.getDuration()+
-								((v != null)?(" "+v):""));
+						(lispFormat?"(":"") +
+						note.getOnset()+ separator +
+						note.getPitch().getChromaticPitch() + separator +
+						mp + separator +
+						note.getDuration() +
+						((v != null && includeVoice)?(separator+v):"") +
+						(lispFormat?")":""));
 			}
+			if (lispFormat) pr.print(")");
+			pr.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void toOPCDFile(String opdvFileName, 
+			boolean includeVoice, 
+			boolean lispFormat,
+			boolean commaSeparated) {
+		try {
+			String separator = commaSeparated?",":" ";
+			Path outputFilePath = Paths.get(opdvFileName);
+			outputFilePath.getParent().toFile().mkdirs();
+			PrintWriter pr = new PrintWriter(outputFilePath.toFile());
+			if (lispFormat) pr.print("(");
+			for(Note note : notes) {
+				Integer v = note.getVoice();
+				pr.println(
+						(lispFormat?"(":"") +
+						note.getOnset()+ separator +
+						note.getPitch().getChromaticPitch() + separator +
+						note.getDuration() +
+						((v != null && includeVoice)?(separator+v):"") +
+						(lispFormat?")":""));
+			}
+			if (lispFormat) pr.print(")");
 			pr.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -1209,28 +1279,64 @@ public class Notes {
 		}
 	}
 	
+//	public void toOPNDFile(String opndFileName) {
+//		try {
+//			Path outputFilePath = Paths.get(opndFileName);
+//			outputFilePath.getParent().toFile().mkdirs();
+//			PrintWriter pr = new PrintWriter(outputFilePath.toFile());
+//			for(Note note : notes) {
+//				String pn = note.getPitchName();
+//				if (pn ==null)
+//					pn = note.getComputedPitch().getPitchName();
+//				Integer v = note.getVoice();
+//				pr.println(
+//						note.getOnset()+" "+
+//								pn+" "+
+//								note.getDuration()+
+//								((v != null)?(" "+v):""));
+//			}
+//			pr.close();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//	}
+
 	public void toOPNDFile(String opndFileName) {
+		toOPNDFile(opndFileName, true, false, false);
+	}
+	
+	public void toOPNDFile(String opndFileName, 
+			boolean includeVoice, 
+			boolean lispFormat,
+			boolean commaSeparated) {
 		try {
+			String separator = commaSeparated?",":" ";
 			Path outputFilePath = Paths.get(opndFileName);
 			outputFilePath.getParent().toFile().mkdirs();
 			PrintWriter pr = new PrintWriter(outputFilePath.toFile());
+			if (lispFormat) pr.print("(");
 			for(Note note : notes) {
 				String pn = note.getPitchName();
-				if (pn ==null)
+				if (pn == null)
 					pn = note.getComputedPitch().getPitchName();
 				Integer v = note.getVoice();
 				pr.println(
-						note.getOnset()+" "+
-								pn+" "+
-								note.getDuration()+
-								((v != null)?(" "+v):""));
+						(lispFormat?"(":"") +
+						note.getOnset()+ separator +
+						pn + separator +
+						note.getDuration() +
+						((v != null && includeVoice)?(separator+v):"") +
+						(lispFormat?")":""));
 			}
+			if (lispFormat) pr.print(")");
 			pr.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
+	
+	
 	public void toGVFile(String gvFilePathString) {
 		try {
 			Path outputFilePath = Paths.get(gvFilePathString);
