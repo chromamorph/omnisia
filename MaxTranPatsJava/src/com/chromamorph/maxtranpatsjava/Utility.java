@@ -306,7 +306,19 @@ public class Utility {
 		return Math.log10(l)/Math.log10(2.0);
 	}
 
-
+	public static String getOutputFilePath(
+			String outputDir,
+			String patternFilePath,
+			String datasetFilePath,
+			TransformationClass[] transformationClasses) {
+		return getOutputFilePath(
+				outputDir, 
+				patternFilePath,
+				transformationClasses,
+				"mtm",
+				datasetFilePath);
+	}
+	
 	public static String getOutputFilePath(
 			String outputDir,
 			String inputFilePath, 
@@ -314,19 +326,25 @@ public class Utility {
 		return getOutputFilePath(outputDir, inputFilePath, transformationClasses, "enc");
 	}
 
-	/**
-	 * Set outputDir to null if you want the output files to be stored in a subdirectory of 
-	 * the input directory.
-	 * @param outputDir
-	 * @param inputFilePath
-	 * @param transformationClasses
-	 * @return
-	 */
 	public static String getOutputFilePath(
 			String outputDir,
 			String inputFilePath, 
 			TransformationClass[] transformationClasses,
 			String outputFileSuffix) {
+		return getOutputFilePath(
+				outputDir,
+				inputFilePath, 
+				transformationClasses,
+				outputFileSuffix,
+				null);
+	}
+	
+	public static String getOutputFilePath(
+			String outputDir,
+			String inputFilePath, 
+			TransformationClass[] transformationClasses,
+			String outputFileSuffix,
+			String inputFilePath2) {
 		int startOfSuffix = inputFilePath.lastIndexOf('.'); // includes dot
 		int startOfName = inputFilePath.lastIndexOf('/')+1;
 		String inputDir = inputFilePath.substring(0,startOfName); // includes trailing /
@@ -337,9 +355,21 @@ public class Utility {
 		
 		String inputFileName = inputFilePath.substring(startOfName,startOfSuffix);
 		
+		String inputFileName2 = null;
+		String inputFileSuffix2 = null;
+		if (inputFilePath2 != null) {
+			int startOfSuffix2 = inputFilePath2.lastIndexOf('.');
+			int startOfName2 = inputFilePath.lastIndexOf('/')+1;
+			inputFileName2 = inputFilePath2.substring(startOfName2,startOfSuffix2);
+			inputFileSuffix2 = inputFilePath2.substring(startOfSuffix2+1);
+		}
+		
 //		Append name of subdirectory to contain output files
 		String subdirName = inputFileName;
 		subdirName += "-" + inputFilePath.substring(startOfSuffix+1);
+		if (inputFileName2 != null) {
+			subdirName += "-" + inputFileName2 + "-" + inputFileSuffix2;
+		}
 		
 		for(TransformationClass tc : transformationClasses)
 			subdirName += "-" + tc.getName();
@@ -348,7 +378,10 @@ public class Utility {
 		subdirName += "-"+timeString+"/";
 		outputFilePath += subdirName;
 		new File(outputFilePath).mkdirs();
-		outputFilePath += inputFileName + "." + outputFileSuffix;
+		if (inputFilePath2 == null)
+			outputFilePath += inputFileName + "." + outputFileSuffix;
+		else
+			outputFilePath += inputFileName + "-" + inputFileName2 + "." + outputFileSuffix;
 		return outputFilePath;
 	}
 	

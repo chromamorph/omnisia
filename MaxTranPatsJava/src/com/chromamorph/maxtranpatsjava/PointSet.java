@@ -44,6 +44,13 @@ public class PointSet implements Comparable<PointSet>{
 	@SuppressWarnings("unused")
 	private long pointComplexity = -1;
 	private Encoding encoding = null;
+	private boolean MTM = false;
+	
+	public boolean isMTM() {
+		return MTM;
+	}
+	
+	public void setMTM(boolean isMTM) {MTM = isMTM;}
 
 	public ArrayList<OccurrenceSet>[] getMTPOccurrenceSets() {
 		return mtpOccurrenceSets;
@@ -458,6 +465,41 @@ public class PointSet implements Comparable<PointSet>{
 		return basis;
 	}
 
+	public void computeMaximalTransformedMatchesForkJoin(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
+		if (transformationClasses == null)
+			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+		ListOfTransformationPointSetPairs[] mtmArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
+		for (int i = 0; i < mtmArray.length; i++)
+			mtmArray[i] = new ListOfTransformationPointSetPairs();
+		for (TransformationClass tc : transformationClasses) {
+			int numObjectBases = Utility.computeNumCombinations(pattern.size(), tc.getBasisSize());
+			int numImageBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
+			int[][] perms = tc.getPerms();
+			int numComputations = numObjectBases * numImageBases * perms.length;
+			ComputeMaximalTransformedMatches action = new ComputeMaximalTransformedMatches(pattern, this, tc, mtmArray, minSize, 0, numComputations, numObjectBases, numImageBases);
+			ForkJoinPool.commonPool().invoke(action);
+		}
+		TreeSet<Integer> hashValues = new TreeSet<Integer>();
+		for(int i = 0; i < mtmArray.length; i++) {
+			if (!(mtmArray[i].isEmpty()))
+				hashValues.add(i);
+		}
+		mtps = new TreeSet<TransformationPointSetPair>();
+		int maxLoad = 0;
+		for(int i : hashValues) {
+			if (mtmArray[i].size() > maxLoad)
+				maxLoad = mtmArray[i].size();
+			for (TransformationPointSetPair mtp : mtmArray[i].getPairs()) {
+				mtps.add(mtp);
+			}
+		}
+
+		int[] loadHistogram = new int[maxLoad+1];
+		for(int i : hashValues)
+			loadHistogram[mtmArray[i].size()]++;
+
+	}
+	
 	public void computeMaximalTransformablePatternsForkJoin(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -706,15 +748,17 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	@SuppressWarnings("unchecked")
-	public void computeSizeMTPSetArray() {
+	public void computeSizeMTPSetArray(int minSize) {
 		sizeMTPSetArray = (ArrayList<TransformationPointSetPair>[])new ArrayList[size()+1];
 		for(TransformationPointSetPair mtp : getMTPs()) {
 			int n = mtp.getPointSet().size();
-			if (sizeMTPSetArray[n] == null) {
-				mtpSizes.add(n);
-				sizeMTPSetArray[n] = new ArrayList<TransformationPointSetPair>();
+			if (n >= minSize) {
+				if (sizeMTPSetArray[n] == null) {
+					mtpSizes.add(n);
+					sizeMTPSetArray[n] = new ArrayList<TransformationPointSetPair>();
+				}
+				sizeMTPSetArray[n].add(mtp);
 			}
-			sizeMTPSetArray[n].add(mtp);
 		}
 		Collections.sort(mtpSizes);
 //		System.out.println("mtp_sizes: "+mtpSizes);
@@ -1021,15 +1065,17 @@ public class PointSet implements Comparable<PointSet>{
 			OccurrenceSet os = sortedOccurrenceSets.get(i);
 			PointSet diffSet = os.getCoveredSet().setMinus(coveredSet);
 			int osEncodingLength = os.getPatternLength() + os.getTransformationSetLength();
-			if (osEncodingLength < diffSet.getDimensionality()*diffSet.size()) {
+			if (isMTM() || (osEncodingLength < diffSet.getDimensionality()*diffSet.size())) {
 				encoding.add(os);
 				coveredSet.addAll(os.getCoveredSet());
 			}
 		}
-		PointSet residualSet = this.setMinus(coveredSet);
-		if (!residualSet.isEmpty()) {
-			OccurrenceSet residualOccurrenceSet = new OccurrenceSet(residualSet, this);
-			encoding.add(residualOccurrenceSet);
+		if (!isMTM()) {
+			PointSet residualSet = this.setMinus(coveredSet);
+			if (!residualSet.isEmpty()) {
+				OccurrenceSet residualOccurrenceSet = new OccurrenceSet(residualSet, this);
+				encoding.add(residualOccurrenceSet);
+			}
 		}
 		setEncoding(encoding);
 	}
@@ -1037,6 +1083,29 @@ public class PointSet implements Comparable<PointSet>{
 	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch) throws Exception {
 		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch);
 	}
+	
+	public static void maximalTransformedMatches(
+			PointSet pattern, 
+			PointSet dataset, 
+			String outputFilePath, 
+			TransformationClass[] transformationClasses, 
+			int minSize, 
+			int hashTableSize, 
+			boolean draw, 
+			boolean pitchSpell) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+		encodePointSet(
+				dataset, 
+				outputFilePath, 
+				transformationClasses,
+				false,
+				minSize,
+				hashTableSize,
+				draw,
+				pitchSpell,
+				pattern
+				);
+	}
+	
 	public static void encodePointSet (
 			PointSet ps, 
 			String outputFilePath, 
@@ -1045,24 +1114,50 @@ public class PointSet implements Comparable<PointSet>{
 			int minSize,
 			int hashTableSize,
 			boolean draw,
-			boolean diatonicPitch) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			boolean diatonicPitch) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+		encodePointSet (
+				ps, 
+				outputFilePath, 
+				transformationClasses,
+				useScalexia,
+				minSize,
+				hashTableSize,
+				draw,
+				diatonicPitch,
+				null);
+	}
+	
+	public static void encodePointSet (
+			PointSet ps, 
+			String outputFilePath, 
+			TransformationClass[] transformationClasses,
+			boolean useScalexia,
+			int minSize,
+			int hashTableSize,
+			boolean draw,
+			boolean diatonicPitch,
+			PointSet ps2) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
-
+		if (ps2 != null)
+			ps.setMTM(true);
+		
 		ps.addTransformationClasses(transformationClasses);		
 
 		log.add(new LogInfo("computeMaximalTransformablePatterns starts", true));
 		if (useScalexia)
 			ps.computeMTPsWithScalexia(minSize);
-		else
+		else if (ps2 == null) {
 //			ps.computeMaximalTransformablePatternsWithHashTable(minSize);
 			ps.computeMaximalTransformablePatternsForkJoin(minSize);
+		} else //ps2 is non-null
+			ps.computeMaximalTransformedMatchesForkJoin(ps2,minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", true));
 
 //		int numMTPsBeforeRemoval = ps.getMTPs().size();
 //		System.out.println("Number of MTPs before removal: "+numMTPsBeforeRemoval);
 		
-		ps.computeSizeMTPSetArray();
+		ps.computeSizeMTPSetArray(minSize);
 		log.add(new LogInfo("computeSizeMTPSetArray ends", true));
 
 		ps.mergeMTPs();
@@ -1079,14 +1174,14 @@ public class PointSet implements Comparable<PointSet>{
 
 		ps.removeDuplicateOccurrenceSets();
 		log.add(new LogInfo("removeDuplicateOccurrenceSets ends", true));
-
-		ps.removeRedundantTransformations();
+		if (!ps.isMTM())
+			ps.removeRedundantTransformations();
 		log.add(new LogInfo("removeRedundantTransformations ends", true));
 
 		ps.removeOccurrenceSetsWithNoTransformations();
 		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
 
-		ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
+		ps.computeSortedOccurrenceSets(ps.isMTM()?OccurrenceSet.DECREASING_PATTERN_SIZE:OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
 		log.add(new LogInfo("computeSortedOccurrenceSets ends", true));
 
 		ps.computeEncoding();
@@ -1222,6 +1317,38 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
+	public static void maximalTransformedMatchesFromFiles(
+			String patternFileName,
+			String datasetFileName,
+			TransformationClass[] transformationClasses,
+			boolean pitchSpell,
+			boolean midTimePoint,
+			String dimensionMask,
+			String outputDir,
+			int minSize,
+			boolean draw) {
+		try {
+			String outputFileName = Utility.getOutputFilePath(outputDir, patternFileName, datasetFileName, transformationClasses);
+			PointSet pattern = new PointSet(
+					new File(patternFileName), 
+					pitchSpell, 
+					midTimePoint,
+					dimensionMask);
+			PointSet dataset = new PointSet(
+					new File(datasetFileName),
+					pitchSpell,
+					midTimePoint,
+					dimensionMask);
+			maximalTransformedMatches(pattern, dataset, outputFileName, transformationClasses, minSize, HASH_TABLE_SIZE, draw, pitchSpell);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (DimensionalityException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static PointSet encodePointSetFromFile(
 			String fileName, 
 			TransformationClass[] transformationClasses, 
@@ -1496,8 +1623,8 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file>");
-		} else {
+			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file> [<input-file-2>]");
+		} else if (args.length == 2) {
 			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
 			String fileName = args[1];
 			System.out.println("Input file: "+args[1]+"\n");
@@ -1510,6 +1637,25 @@ public class PointSet implements Comparable<PointSet>{
 					args[0], //outputDir
 					false, //useScalexia
 					3, //minSize
+					true //draw
+					);
+		} else if (args.length == 3) {
+			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
+			String patternFileName = args[1];
+			String datasetFileName = args[2];
+			String outputDir = args[0];
+			System.out.println("Pattern file name: "+patternFileName);
+			System.out.println("Dataset file name: "+datasetFileName);
+			System.out.println("Output directory: "+outputDir);
+			maximalTransformedMatchesFromFiles(
+					patternFileName,
+					datasetFileName,
+					transformationClasses,
+					true, //pitchSpell
+					true, //midTimePoint
+					"1100", //dimensionMask
+					args[0], //outputDir
+					9, //minSize
 					true //draw
 					);
 		}

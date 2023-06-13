@@ -424,6 +424,20 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 
 	}
 
+	public static Comparator<OccurrenceSet> DECREASING_PATTERN_SIZE = new Comparator<OccurrenceSet>() {
+
+		@Override
+		public int compare(OccurrenceSet o1, OccurrenceSet o2) {
+			if (o1 == null && o2 == null) return 0;
+			if (o1 == null) return 1;
+			if (o2 == null) return -1;
+			int d;
+			d = o2.getPattern().size()-o1.getPattern().size();
+			if (d != 0) return d;
+			return o1.getPattern().compareTo(o2.getPattern());
+		}
+	};
+	
 	public static Comparator<OccurrenceSet> DECREASING_CF_THEN_COVERAGE_COMPARATOR = new Comparator<OccurrenceSet>() {
 
 		@Override
