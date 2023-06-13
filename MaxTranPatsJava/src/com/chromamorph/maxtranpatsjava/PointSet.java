@@ -1651,7 +1651,7 @@ public class PointSet implements Comparable<PointSet>{
 					patternFileName,
 					datasetFileName,
 					transformationClasses,
-					true, //pitchSpell
+					false, //pitchSpell
 					true, //midTimePoint
 					"1100", //dimensionMask
 					args[0], //outputDir
