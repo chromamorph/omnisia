@@ -476,7 +476,16 @@ public class PointSet implements Comparable<PointSet>{
 			int numImageBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
 			int[][] perms = tc.getPerms();
 			int numComputations = numObjectBases * numImageBases * perms.length;
-			ComputeMaximalTransformedMatches action = new ComputeMaximalTransformedMatches(pattern, this, tc, mtmArray, minSize, 0, numComputations, numObjectBases, numImageBases);
+			ComputeMaximalTransformedMatches action = new ComputeMaximalTransformedMatches(
+					pattern, 
+					this, 
+					tc, 
+					mtmArray, 
+					minSize, 
+					0, 
+					numComputations, 
+					numObjectBases, 
+					numImageBases);
 			ForkJoinPool.commonPool().invoke(action);
 		}
 		TreeSet<Integer> hashValues = new TreeSet<Integer>();
@@ -1625,7 +1634,13 @@ public class PointSet implements Comparable<PointSet>{
 		if (args.length < 2) {
 			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file> [<input-file-2>]");
 		} else if (args.length == 2) {
-			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
+//			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
+			TransformationClass[] transformationClasses = new TransformationClass[] {
+//					new F_2STR_FIXED()
+					new F_2STR(),
+					new F_2T(),
+					new F_2TR()
+					};
 			String fileName = args[1];
 			System.out.println("Input file: "+args[1]+"\n");
 			encodePointSetFromFile(
@@ -1640,8 +1655,13 @@ public class PointSet implements Comparable<PointSet>{
 					true //draw
 					);
 		} else if (args.length == 3) {
-			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
-			String patternFileName = args[1];
+//			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
+			TransformationClass[] transformationClasses = new TransformationClass[] {
+//					new F_2STR_FIXED()
+					new F_2STR(),
+					new F_2T(),
+					new F_2TR()
+					};			String patternFileName = args[1];
 			String datasetFileName = args[2];
 			String outputDir = args[0];
 			System.out.println("Pattern file name: "+patternFileName);
@@ -1651,11 +1671,11 @@ public class PointSet implements Comparable<PointSet>{
 					patternFileName,
 					datasetFileName,
 					transformationClasses,
-					false, //pitchSpell
+					true, //pitchSpell
 					true, //midTimePoint
 					"1100", //dimensionMask
 					args[0], //outputDir
-					9, //minSize
+					5, //minSize
 					true //draw
 					);
 		}
