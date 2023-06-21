@@ -490,7 +490,7 @@ public class Utility {
 	 * ordered superset contained within the combination corresponding to the combinatorial number
 	 * N of degree k.
 	 */
-	public static ArrayList<Integer> computeCombinationIndexSequence(int N, int k, int size) {
+	public static ArrayList<Integer> computeCombinationIndexSequence(long N, int k, int size) {
 		
 		/*
 		 * We allocate an array of ints of size k to hold the sequence of indices
@@ -502,7 +502,7 @@ public class Utility {
 		 * newN is used to hold the sum of the binomial coefficients for the remaining
 		 * indices that have not yet been computed.
 		 */
-		int newN = N;
+		long newN = N;
 		
 		/*
 		 * The combinatorial number, N, is equal to the sum

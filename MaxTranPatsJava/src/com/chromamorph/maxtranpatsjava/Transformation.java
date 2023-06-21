@@ -51,7 +51,12 @@ public class Transformation implements Comparable<Transformation>{
 		if (o == null) return 1;
 		int d = getTransformationClass().compareTo(o.getTransformationClass());
 		if (d != 0) return d;
-		return Utility.compareToArrayListOfDoubles(getSigma(), o.getSigma());
+		for(int i = 0; i < getSigmaLength(); i++) {
+			d = (int)(Math.signum(getSigma().get(i)- o.getSigma().get(i)));
+			if (d != 0) return d;
+		}
+		return 0;
+//		return Utility.compareToArrayListOfDoubles(getSigma(), o.getSigma());
 	}
 	
 	@Override

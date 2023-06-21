@@ -20,12 +20,16 @@ public class F_2T extends TransformationClass {
 
 	@Override
 	ArrayList<ArrayList<Double>> getSigmas(PointSequence objectBasis, PointSequence imageBasis) {
+		ArrayList<ArrayList<Double>> sigmas = new ArrayList<ArrayList<Double>>();
+		if (objectBasis.equals(imageBasis)) {
+			sigmas.add(identitySigma);
+			return sigmas;
+		}
 		Double x = imageBasis.get(0).get(0) - objectBasis.get(0).get(0);
 		Double y = imageBasis.get(0).get(1) - objectBasis.get(0).get(1);
 		ArrayList<Double> sigma = new ArrayList<Double>();
 		sigma.add(x);
 		sigma.add(y);
-		ArrayList<ArrayList<Double>> sigmas = new ArrayList<ArrayList<Double>>();
 		if (!sigma.equals(getIdentitySigma()))
 			sigmas.add(sigma);
 		return sigmas;

@@ -1394,13 +1394,24 @@ public class Notes {
 
 	public static void main(String[] args) {
 
+//		try {
+//			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opnd");
+//			notes.toOPDVFile("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opd");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		
+
 		try {
-			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opnd");
-			notes.toOPDVFile("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opd");
+			Notes notes = Notes.fromOPND("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/01 Debussy-Hommage-a-Haydn/DEBUSSY-HOMMAGE-A-HAYDN.OPND");
+			notes.play(4, 50);
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
 		}
-		
 		
 //		try {
 //			String opndFileName = "../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";

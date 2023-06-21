@@ -143,6 +143,40 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		PointSet cs = getCoveredSet();
 		return cs.size();
 	}
+	
+	public void removeNonCompactOccurrences(double minOccurrenceCompactness, PointSet dataset) throws SuperMTPsNotNullException {
+		if (getSuperMTPs() != null)
+			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute coverage. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+		ArrayList<Transformation> transformationsArray = new ArrayList<Transformation>();
+		for(Transformation transformation : getTransformations())
+			try {
+				transformationsArray.add(new Transformation(transformation.toString()));
+			} catch (InvalidArgumentException e) {
+				e.printStackTrace();
+			}
+		for(Transformation transformation : transformationsArray ) {
+			if (transformation.phi(getPattern()).getCompactness(dataset) < minOccurrenceCompactness) {
+				System.out.println("about to remove a transformation");
+				removeTransformation(transformation);
+			}
+		}
+	}
+	
+	public double getMaxCompactness(boolean isMTM, PointSet dataset) throws SuperMTPsNotNullException {
+		if (getSuperMTPs() != null)
+			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute coverage. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
+		Double maxCompactness = null;
+		if (!isMTM)
+			maxCompactness = getPattern().getCompactness(dataset);
+		for(Transformation transformation : getTransformations()) {
+			double thisMaxComp = transformation.phi(getPattern()).getCompactness(dataset);
+			if (maxCompactness == null || thisMaxComp > maxCompactness)
+				maxCompactness = thisMaxComp;
+			if (maxCompactness == 1.0)
+				break;
+		}
+		return maxCompactness;
+	}
 
 	public int getPatternEncodingLength() {
 		return getPattern().size()*getPattern().getDimensionality();
@@ -203,11 +237,16 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 	}
 
 	public void removeTransformation(Transformation tran) {
-		transformations.remove(tran);
+		TreeSet<Transformation> newTransformations = new TreeSet<Transformation>();
+		for (Transformation thisTran : transformations) {
+			if (!tran.equals(thisTran))
+				newTransformations.add(thisTran);
+		}
+		transformations = newTransformations;
 		resetProperties();
 	}
 
-	public void removeRedundantTransformations() {
+	public void removeRedundantTransformations(boolean isMTM) {
 		//		Remove more complex transformations that map the pattern
 		//		onto the same image pattern as less complex transformations
 		ArrayList<TransformationPointSetPair> tranImagePatPairs = new ArrayList<TransformationPointSetPair>();
@@ -245,7 +284,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 			if (!tranPatPair.getPointSet().equals(currentPattern)) {
 				currentPattern = tranPatPair.getPointSet();
 				//				Do not add transformation if it results in the object pattern for this occurrence set.
-				if (!tranPatPair.getPointSet().equals(getPattern())) {
+				if ( isMTM ||!tranPatPair.getPointSet().equals(getPattern())) {
 					newTrans.add(tranPatPair.getTransformation());
 					//					System.out.println(tranPatPair);
 				}

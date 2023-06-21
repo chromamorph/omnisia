@@ -21,11 +21,15 @@ public class F_2TR extends TransformationClass {
 
 	@Override
 	ArrayList<ArrayList<Double>> getSigmas(PointSequence objectBasis, PointSequence imageBasis) {
+		ArrayList<ArrayList<Double>> sigmas = new ArrayList<ArrayList<Double>>();
+		if (objectBasis.equals(imageBasis)) {
+			sigmas.add(identitySigma);
+			return sigmas;
+		}
 		Point p = objectBasis.get(0);
 		Point q = imageBasis.get(0);
 		double 	p0 = p.get(0), p1 = p.get(1), 
 				q0 = q.get(0), q1 = q.get(1);
-		ArrayList<ArrayList<Double>> sigmas = new ArrayList<ArrayList<Double>>();
 		ArrayList<Double> sigmaA = new ArrayList<Double>();
 		sigmaA.add(q0-p0);
 		sigmaA.add(q1-p1);

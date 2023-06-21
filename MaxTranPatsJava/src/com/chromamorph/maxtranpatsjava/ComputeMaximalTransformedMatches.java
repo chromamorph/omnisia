@@ -9,7 +9,8 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	int minSize, startIndex, endIndex, numObjectBases, numImageBases;
+	int minSize, numObjectBases, numImageBases;
+	long startIndex, endIndex;
 	ListOfTransformationPointSetPairs[] mtmArray;
 	PointSet pattern;
 	PointSet dataset;
@@ -21,8 +22,8 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 			TransformationClass tc,
 			ListOfTransformationPointSetPairs[] mtmArray,
 			int minSize,
-			int startIndex,
-			int endIndex,
+			long startIndex,
+			long endIndex,
 			int numObjectBases,
 			int numImageBases) {
 		this.pattern = pattern;
@@ -41,7 +42,7 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 		if (endIndex - startIndex == 1)
 			computeDirectly();
 		else {
-			int split = (endIndex + startIndex)/2;
+			long split = (endIndex + startIndex)/2;
 			invokeAll(
 					new ComputeMaximalTransformedMatches(pattern, dataset, tc, mtmArray, minSize, startIndex, split, numObjectBases, numImageBases),
 					new ComputeMaximalTransformedMatches(pattern, dataset, tc, mtmArray, minSize, split, endIndex, numObjectBases, numImageBases));
@@ -49,10 +50,11 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 	}
 	
 	protected void computeDirectly() {
-		int C = startIndex, N = numObjectBases, p = tc.getPerms().length;
-		int imgIndex = C/(N*p);
-		int objIndex = (C % (N * p)) / p;
-		if (imgIndex < objIndex)
+		long C = startIndex;
+		int N = numObjectBases, p = tc.getPerms().length;
+		long imgIndex = C/(N*p);
+		long objIndex = (C % (N * p)) / p;
+		if (!dataset.isMTM() && imgIndex < objIndex)
 			return;
 		int[] perm = tc.getPerm(C % p);
 		PointSequence objectBasis = pattern.computeBasis(tc.getBasisSize(), objIndex);

@@ -16,6 +16,14 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 	private long sigmaComplexity = -1;
 	int[][] perms;
 	
+	@Override
+	public int compareTo(TransformationClass o) {
+		if (o == null) return 1;
+		int d = getSigmaLength() - o.getSigmaLength();
+		if (d != 0) return d;
+		return name.compareTo(o.name);
+	}
+	
 	protected TreeSet<Transformation> transformationInstances = new TreeSet<Transformation>();
 	
 	public void setPerms() {
@@ -26,8 +34,8 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 		return perms;
 	}
 	
-	public int[] getPerm(int i) {
-		return perms[i];
+	public int[] getPerm(long i) {
+		return perms[(int)i];
 	}
 	
 	public TreeSet<Transformation> getTransformationInstances() {
@@ -104,14 +112,6 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 	
 	public int getNumClasses() {return numClasses;}
 	public int getId() {return id;}
-	
-	@Override
-	public int compareTo(TransformationClass o) {
-		if (o == null) return 1;
-		int d = getSigmaLength() - o.getSigmaLength();
-		if (d != 0) return d;
-		return getId() - o.getId();
-	}
 	
 	@Override
 	public boolean equals(Object obj) {

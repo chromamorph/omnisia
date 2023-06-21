@@ -457,7 +457,7 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	public PointSequence computeBasis(int basisSize, int basisIndex) {
+	public PointSequence computeBasis(int basisSize, long basisIndex) {
 		ArrayList<Integer> basisIndexSequence = Utility.computeCombinationIndexSequence(basisIndex,basisSize,size());
 		PointSequence basis = new PointSequence();
 		for(int i : basisIndexSequence)
@@ -475,7 +475,12 @@ public class PointSet implements Comparable<PointSet>{
 			int numObjectBases = Utility.computeNumCombinations(pattern.size(), tc.getBasisSize());
 			int numImageBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
 			int[][] perms = tc.getPerms();
-			int numComputations = numObjectBases * numImageBases * perms.length;
+			long numComputations = numObjectBases * numImageBases * perms.length;
+			System.out.println("basisSize = " + tc.getBasisSize() + "\n" + 
+								"numObjectBases = " + numObjectBases + "\n" +
+								"numImageBases = " + numImageBases + "\n" + 
+								"numPerms = " + perms.length + "\n" +
+								"numComputations = " + numComputations);
 			ComputeMaximalTransformedMatches action = new ComputeMaximalTransformedMatches(
 					pattern, 
 					this, 
@@ -519,10 +524,11 @@ public class PointSet implements Comparable<PointSet>{
 
 		for (TransformationClass tc : transformationClasses) {
 			int numObjectBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
-//			System.out.println("basisSize = " + tc.getBasisSize());
-//			System.out.println("numObjectBases = " + numObjectBases);
+			System.out.println("basisSize = " + tc.getBasisSize());
+			System.out.println("numObjectBases = " + numObjectBases);
 			int[][] perms = tc.getPerms();
 			int numComputations = numObjectBases * numObjectBases *perms.length;
+			System.out.println("numComptutations = "+numComputations);
 			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases);
 			ForkJoinPool.commonPool().invoke(action);
 		}
@@ -824,17 +830,17 @@ public class PointSet implements Comparable<PointSet>{
 			mtpOccurrenceSets[size].add(currentMergedMTP);
 		}
 		
-//	    System.out.print("\nAfter running merge_mtps:\nmtp_sizes: ");
-//	    for(int size : mtpSizes)
-//	        System.out.print(size + " ");
-//	    System.out.println();
-//	    
-//	    System.out.println("\nNum occurrence sets of each size");
-//	    for(int size = 0; size < mtpOccurrenceSets.length; size++) {
-//	        if (mtpOccurrenceSets[size] != null) {
-//	        	System.out.println(size + " : " + mtpOccurrenceSets[size].size());
-//	        }
-//	    }
+	    System.out.print("\nAfter running merge_mtps:\nmtp_sizes: ");
+	    for(int size : mtpSizes)
+	        System.out.print(size + " ");
+	    System.out.println();
+	    
+	    System.out.println("\nNum occurrence sets of each size");
+	    for(int size = 0; size < mtpOccurrenceSets.length; size++) {
+	        if (mtpOccurrenceSets[size] != null) {
+	        	System.out.println(size + " : " + mtpOccurrenceSets[size].size());
+	        }
+	    }
 
 	}
 
@@ -965,7 +971,7 @@ public class PointSet implements Comparable<PointSet>{
 		//		onto the same image pattern as less complex transformations
 		for(int size : mtpSizes) {
 			for (OccurrenceSet mtp : mtpOccurrenceSets[size]) {
-				mtp.removeRedundantTransformations();
+				mtp.removeRedundantTransformations(isMTM());
 			}
 		}
 	}
@@ -1048,6 +1054,80 @@ public class PointSet implements Comparable<PointSet>{
 
 	}
 
+	public double getCompactness(PointSet dataset) {
+		TreeSet<Point> thisPoints = getPoints();
+		Double minX, minY, maxX, maxY;
+		minX = minY = maxX = maxY = null;
+		for (Point p : thisPoints) {
+			if (minX == null || minX > p.get(0))
+				minX = p.get(0);
+			if (minY == null || minY > p.get(1))
+				minY = p.get(1);
+			if (maxX == null || maxX < p.get(0))
+				maxX = p.get(0);
+			if (maxY == null || maxY < p.get(1))
+				maxY = p.get(1);
+		}
+		PointSet datasetBBSubset = new PointSet();
+		for(Point p : dataset.getPoints()) {
+			if (minX <= p.get(0) && p.get(0) <= maxX && minY <= p.get(1) && p.get(1) <= maxY)
+				datasetBBSubset.add(p);
+		}
+		return (1.0 * this.size())/datasetBBSubset.size();
+	}
+	
+	public void removeNonCompactOccurrenceSets(double minCompactness) throws SuperMTPsNotNullException {
+		
+	    int num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at beginning of removeNonCompactOccurrenceSets is " + num_os);
+
+		
+		for(int size : mtpSizes)
+			for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+				if (mtpOccurrenceSets[size].get(i).getMaxCompactness(isMTM(), this) < minCompactness) {
+					mtpOccurrenceSets[size].remove(i);
+					i--;
+				}
+			}
+
+	    num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at end of removeNonCompactOccurrenceSets is " + num_os);
+
+	}
+
+	public void removeNonCompactOccurrences(double minOccurrenceCompactness) throws SuperMTPsNotNullException {
+		
+	    int num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at beginning of removeNonCompactOccurrences is " + num_os);
+
+		
+		for(int size : mtpSizes)
+			for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+				mtpOccurrenceSets[size].get(i).removeNonCompactOccurrences(minOccurrenceCompactness,this);
+			}
+
+	    num_os = 0;
+	    for(int size : mtpSizes)
+	        for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+	            num_os++;
+	        }
+	    System.out.println("Number of occurrence sets at end of removeNonCompactOccurrences is " + num_os);
+
+	}
+
+	
 	public PointSet setMinus(PointSet pointSet) {
 		PointSet result = new PointSet();
 		for(Point p : getPoints()) {
@@ -1066,6 +1146,10 @@ public class PointSet implements Comparable<PointSet>{
 	public void computeEncoding() throws SuperMTPsNotNullException {
 		ArrayList<OccurrenceSet> encoding = new ArrayList<OccurrenceSet>();
 
+		if (sortedOccurrenceSets.isEmpty()) {
+			System.out.println("sortedOccurrenceSets is empty in computeEncoding");
+			return;
+		}
 		// Assumes first occurrence set in list is the "best"
 		encoding.add(sortedOccurrenceSets.get(0));
 		PointSet coveredSet = new PointSet();
@@ -1089,8 +1173,8 @@ public class PointSet implements Comparable<PointSet>{
 		setEncoding(encoding);
 	}
 
-	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch) throws Exception {
-		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch);
+	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch, double minCompactness, double minOccurrenceCompactness) throws Exception {
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch, minCompactness, minOccurrenceCompactness);
 	}
 	
 	public static void maximalTransformedMatches(
@@ -1101,7 +1185,9 @@ public class PointSet implements Comparable<PointSet>{
 			int minSize, 
 			int hashTableSize, 
 			boolean draw, 
-			boolean pitchSpell) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			boolean pitchSpell,
+			double minCompactness,
+			double minOccurrenceCompactness) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		encodePointSet(
 				dataset, 
 				outputFilePath, 
@@ -1111,7 +1197,9 @@ public class PointSet implements Comparable<PointSet>{
 				hashTableSize,
 				draw,
 				pitchSpell,
-				pattern
+				pattern,
+				minCompactness,
+				minOccurrenceCompactness
 				);
 	}
 	
@@ -1123,7 +1211,9 @@ public class PointSet implements Comparable<PointSet>{
 			int minSize,
 			int hashTableSize,
 			boolean draw,
-			boolean diatonicPitch) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			boolean diatonicPitch,
+			double minCompactness,
+			double minOccurrenceCompactness) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		encodePointSet (
 				ps, 
 				outputFilePath, 
@@ -1133,7 +1223,10 @@ public class PointSet implements Comparable<PointSet>{
 				hashTableSize,
 				draw,
 				diatonicPitch,
-				null);
+				null,
+				minCompactness,
+				minOccurrenceCompactness
+				);
 	}
 	
 	public static void encodePointSet (
@@ -1145,7 +1238,9 @@ public class PointSet implements Comparable<PointSet>{
 			int hashTableSize,
 			boolean draw,
 			boolean diatonicPitch,
-			PointSet ps2) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			PointSet ps2,
+			double minCompactness,
+			double minOccurrenceCompactness) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
 		if (ps2 != null)
@@ -1189,6 +1284,9 @@ public class PointSet implements Comparable<PointSet>{
 
 		ps.removeOccurrenceSetsWithNoTransformations();
 		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
+		
+		ps.removeNonCompactOccurrenceSets(minCompactness);
+		ps.removeNonCompactOccurrences(minOccurrenceCompactness);
 
 		ps.computeSortedOccurrenceSets(ps.isMTM()?OccurrenceSet.DECREASING_PATTERN_SIZE:OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
 		log.add(new LogInfo("computeSortedOccurrenceSets ends", true));
@@ -1231,7 +1329,7 @@ public class PointSet implements Comparable<PointSet>{
 		if (draw) {
 			int posOfDot = outputFilePath.lastIndexOf(".");
 			String imageFilePath = outputFilePath.substring(0,posOfDot) + ".png";
-			ps.getEncoding().drawOccurrenceSets(imageFilePath,diatonicPitch);
+			ps.getEncoding().drawOccurrenceSets(imageFilePath,diatonicPitch,!ps.isMTM());
 		}
 
 		Utility.println(output, "\n\nLog:");
@@ -1266,7 +1364,9 @@ public class PointSet implements Comparable<PointSet>{
 			boolean useScalexia,
 			int minSize,
 			int count,
-			boolean draw) {
+			boolean draw,
+			double minCompactness,
+			double minOccurrenceCompactness) {
 		String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 		try {
 			PointSet ps1 = new PointSet(
@@ -1286,7 +1386,7 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1308,7 +1408,9 @@ public class PointSet implements Comparable<PointSet>{
 			boolean midTimePoint,
 			String dimensionMask,
 			String outputDir,
-			boolean draw) {
+			boolean draw,
+			double minCompactness,
+			double minOccurrenceCompactness) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -1316,7 +1418,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell);
+			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1335,7 +1437,9 @@ public class PointSet implements Comparable<PointSet>{
 			String dimensionMask,
 			String outputDir,
 			int minSize,
-			boolean draw) {
+			boolean draw,
+			double minCompactness,
+			double minOccurrenceCompactness) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, patternFileName, datasetFileName, transformationClasses);
 			PointSet pattern = new PointSet(
@@ -1348,7 +1452,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell,
 					midTimePoint,
 					dimensionMask);
-			maximalTransformedMatches(pattern, dataset, outputFileName, transformationClasses, minSize, HASH_TABLE_SIZE, draw, pitchSpell);
+			maximalTransformedMatches(pattern, dataset, outputFileName, transformationClasses, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1367,7 +1471,9 @@ public class PointSet implements Comparable<PointSet>{
 			String outputDir,
 			boolean useScalexia,
 			int minSize,
-			boolean draw) {
+			boolean draw,
+			double minCompactness,
+			double minOccurrenceCompactness) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -1375,7 +1481,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
 			return ps;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1414,7 +1520,9 @@ public class PointSet implements Comparable<PointSet>{
 						outputDir,
 						true,
 						3,
-						false);
+						false,
+						0.0,
+						0.0);
 		}
 	}
 
@@ -1442,7 +1550,9 @@ public class PointSet implements Comparable<PointSet>{
 								true,
 								3,
 								count,
-								false);		
+								false,
+								0.0,
+								0.0);		
 					}
 					count++;
 				}
@@ -1524,7 +1634,9 @@ public class PointSet implements Comparable<PointSet>{
 								true,
 								3,
 								count,
-								false);		
+								false,
+								0.0,
+								0.0);		
 					}
 					count++;
 				}
@@ -1541,7 +1653,9 @@ public class PointSet implements Comparable<PointSet>{
 				"output/nlb-20210504/single-files-with-scalexia",
 				true, // useScalexia
 				3, //minSize
-				false // draw
+				false, // draw
+				0.0, // minCompactness
+				0.0 // minOccurrenceCompactness
 				);
 	}
 
@@ -1622,7 +1736,9 @@ public class PointSet implements Comparable<PointSet>{
 							outputFolder,
 							false, //useScalexia
 							3, // minSize
-							false
+							false,
+							0.0,
+							0.0
 							);
 				}
 			}
@@ -1632,7 +1748,7 @@ public class PointSet implements Comparable<PointSet>{
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file> [<input-file-2>]");
+			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file> [<input-file-2> minCompactness minOccurrenceCompactness minSize]");
 		} else if (args.length == 2) {
 //			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
 			TransformationClass[] transformationClasses = new TransformationClass[] {
@@ -1652,18 +1768,24 @@ public class PointSet implements Comparable<PointSet>{
 					args[0], //outputDir
 					false, //useScalexia
 					3, //minSize
-					true //draw
+					true, //draw
+					0.0,
+					0.0
 					);
-		} else if (args.length == 3) {
-//			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
-			TransformationClass[] transformationClasses = new TransformationClass[] {
-//					new F_2STR_FIXED()
-					new F_2STR(),
-					new F_2T(),
-					new F_2TR()
-					};			String patternFileName = args[1];
+		} else if (args.length == 6) {
+			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
+//			TransformationClass[] transformationClasses = new TransformationClass[] {
+////					new F_2STR_FIXED()
+//					new F_2STR(),
+//					new F_2T(),
+//					new F_2TR()
+//					};			
+			String patternFileName = args[1];
 			String datasetFileName = args[2];
 			String outputDir = args[0];
+			double minCompactness = Double.parseDouble(args[3]);
+			double minOccurrenceCompactness = Double.parseDouble(args[4]);
+			int minSize = Integer.parseInt(args[5]);
 			System.out.println("Pattern file name: "+patternFileName);
 			System.out.println("Dataset file name: "+datasetFileName);
 			System.out.println("Output directory: "+outputDir);
@@ -1675,8 +1797,10 @@ public class PointSet implements Comparable<PointSet>{
 					true, //midTimePoint
 					"1100", //dimensionMask
 					args[0], //outputDir
-					5, //minSize
-					true //draw
+					minSize, //minSize
+					true, //draw
+					minCompactness,
+					minOccurrenceCompactness
 					);
 		}
 	}
