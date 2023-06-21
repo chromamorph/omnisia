@@ -184,7 +184,7 @@ public class Encoding {
 		return (1.0*getUncompressedLength())/getEncodingLength();
 	}
 
-	public ArrayList<ArrayList<com.chromamorph.points022.PointSet>> getOccurrenceSetsAsArrayListsOfPointSets() {
+	public ArrayList<ArrayList<com.chromamorph.points022.PointSet>> getOccurrenceSetsAsArrayListsOfPointSets(boolean includePattern) {
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> occSets = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
 	
 		for (OccurrenceSet os : getOccurrenceSets()) {
@@ -194,10 +194,12 @@ public class Encoding {
 //			Add pattern for this occurrence set
 			com.chromamorph.points022.PointSet thisOcc = new com.chromamorph.points022.PointSet();
 			TreeSet<Point> points = os.getPattern().getPoints();
-			for(Point p : points) {
-				thisOcc.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+			if (includePattern) {
+				for(Point p : points) {
+					thisOcc.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+				}
+				thisOccSet.add(thisOcc);	
 			}
-			thisOccSet.add(thisOcc);
 			
 			for (Transformation tran : os.getTransformations()) {
 				thisOcc = new com.chromamorph.points022.PointSet();
@@ -212,7 +214,7 @@ public class Encoding {
 		return occSets;
 	}
 	
-	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch) {
+	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern) {
 		final PointSet dataset = getOccurrenceSets().get(0).getDataset();
 		final TreeSet<Point> points = dataset.getPoints();
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
@@ -226,9 +228,10 @@ public class Encoding {
 				frame.setResizable(false);
 				PApplet embed = new DrawPoints(
 						ps,
-						getOccurrenceSetsAsArrayListsOfPointSets(),
+						getOccurrenceSetsAsArrayListsOfPointSets(includePattern),
 						outputFilePath,
-						true);
+						true,
+						diatonicPitch);
 				frame.add(embed);
 				embed.init();
 				frame.pack();

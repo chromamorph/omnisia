@@ -180,7 +180,8 @@ public class DrawPoints extends PApplet {
 			PointSet dataset, 
 			ArrayList<ArrayList<PointSet>> occurrenceSets, 
 			String imageFilePath,
-			boolean drawAllOccurrenceSetsAtOnce
+			boolean drawAllOccurrenceSetsAtOnce,
+			boolean diatonicPitch
 			) {
 		super();
 		this.points = dataset;
@@ -189,6 +190,7 @@ public class DrawPoints extends PApplet {
 		this.occurrenceSetIndex = 0;
 		this.outputFilePath = imageFilePath;
 		this.saveImageFile = true;
+		this.diatonicPitch = diatonicPitch;
 		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
 	}
 
