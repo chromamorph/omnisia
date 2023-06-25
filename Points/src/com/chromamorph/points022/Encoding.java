@@ -18,6 +18,8 @@ import java.util.TreeSet;
 import javax.swing.JFrame;
 
 import com.chromamorph.notes.Notes.MissingTieStartNoteException;
+import com.chromamorph.pitch.CanonicalPitchName;
+import com.chromamorph.pitch.Pitch;
 import com.chromamorph.points022.MIREX2013Entries.TomDavePoint;
 
 import processing.core.PApplet;
@@ -930,6 +932,73 @@ public class Encoding {
 	public void removeRedundantTranslators() {
 		for(TEC tec : getTECs()) 
 			tec.removeRedundantTranslators();
+	}
+
+	public void readOccurrenceSets(File occurrenceSetFile) {
+		try {
+			BufferedReader br;
+			br = new BufferedReader(new FileReader(occurrenceSetFile));
+			StringBuffer sb = new StringBuffer();
+			String line;
+			while ((line = br.readLine()) != null)
+				if (!line.startsWith("%"))
+					sb.append(line);
+			br.close();
+			System.out.println("Occurrence sets string: "+sb.toString());
+			System.out.println();
+			String s = sb.toString();
+			if (!s.startsWith("(((") || !s.endsWith(")))")) {
+				throw new InvalidArgumentException("Occurrence set file has incorrect format.");			
+			}
+			String[] occurrenceSetStrings = s.substring(3,s.length()-3).split("\\)\\)\\)\\(\\(\\(");
+			for(String occurrenceSetString : occurrenceSetStrings) {
+				System.out.println(occurrenceSetString);
+			}
+			System.out.println();
+			occurrenceSets = new ArrayList<ArrayList<PointSet>>();
+			for (String occurrenceSetString : occurrenceSetStrings) {
+				System.out.println(occurrenceSetString);
+				ArrayList<PointSet> occurrenceSet = new ArrayList<PointSet>();
+				String[] occurrenceStringArray = occurrenceSetString.substring(0,occurrenceSetString.length()).split("\\)\\)\\(\\(");
+				for(String occStr : occurrenceStringArray) {
+					System.out.println(occStr); System.out.println();
+					PointSet occurrence = new PointSet();
+					String[] noteStrings = occStr.split("\\) \\(");
+					for(String noteStr : noteStrings) {
+						String[] opndArray = noteStr.split("\s");
+						long x = Long.parseLong(opndArray[0]);
+						Pitch pitch = new Pitch();
+						pitch.setPitchName(opndArray[1]);
+						int y = isDiatonic()?pitch.getMorpheticPitch():pitch.getChromaticPitch();
+						Point p = new Point(x,y);
+						occurrence.add(p);
+					}
+					occurrenceSet.add(occurrence);
+				}
+				occurrenceSets.add(occurrenceSet);
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("ERROR: File not found ("+occurrenceSetFile.getAbsolutePath()+")");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main (String[] args) {
+		try {
+			File occurrenceSetFile = new File("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/OccurrenceSets/RAVEL-HAYDN-OCCURRENCES.OPNDS");
+			String outputFilePath = "/Users/susanne/Repos/omnisia/Points/output/Hommage-a-Joseph-Haydn-1909/Ravel-Menuet-sur-le-nom-d-Haydn/occsets-chrom.png";
+			Encoding enc = new Encoding();
+			boolean diatonicPitch = false;
+			enc.isDiatonic = diatonicPitch;
+			enc.dataset = new PointSet("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND", diatonicPitch);
+			enc.readOccurrenceSets(occurrenceSetFile);
+			enc.drawOccurrenceSetsToFile(outputFilePath, diatonicPitch);
+		} catch (MissingTieStartNoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

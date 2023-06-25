@@ -630,9 +630,9 @@ public class DrawPoints extends PApplet {
 					//					drawLine(lastPoint,p,0,lineWidth,ROUND);
 					lastPoint = p;
 				}
-				//				Point topLeft = occurrence.getTopLeft();
-				//				Point bottomRight = occurrence.getBottomRight();
-				//				drawFilledRectangle(col,topLeft,bottomRight);
+				Point topLeft = occurrence.getTopLeft();
+				Point bottomRight = occurrence.getBottomRight();
+				drawRectangle(col,topLeft,bottomRight);
 				firstOccurrence = false;
 			}
 			if ((numberOfTecs-i)%500==0)
