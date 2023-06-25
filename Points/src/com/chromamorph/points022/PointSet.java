@@ -452,7 +452,7 @@ public class PointSet implements Comparable<PointSet>{
 				points.add(new Point(note.getOnset(),morpheticPitch,voice,duration));
 			}
 			else
-				points.add(new Point(note.getOnset(),note.getMidiNoteNumber(),voice,duration));
+				points.add(new Point(note.getOnset(),note.getPitch().getChromaticPitch(),voice,duration));
 		}
 	}
 

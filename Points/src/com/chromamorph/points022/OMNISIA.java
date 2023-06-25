@@ -107,6 +107,7 @@ public class OMNISIA {
 	public static String DUAL_TEC_PRIORITY_STRING	= TECQualityComparator.DEFAULT_PRIORITY_STRING;
 	public static boolean NUM_MTPS_ONLY				= false;
 	public static CompactnessType COMPACTNESS_TYPE	= CompactnessType.BOUNDING_BOX;
+	private static File OCCURRENCE_SETS_FILE		= null;
 
 	////////////////////
 	//	Switches
@@ -153,6 +154,7 @@ public class OMNISIA {
 	private static String DUAL_TEC_PRIORITY_SWITCH	= "dualtecqual";
 	private static String NUM_MTPS_ONLY_SWITCH		= "nummtpsonly";
 	private static String COMPACTNESS_TYPE_SWITCH	= "comptype";
+	private static String OCCURRENCE_SETS_FILE_SWITCH= "occsets";
 
 
 	////////////////////
@@ -187,6 +189,13 @@ public class OMNISIA {
 	}
 
 
+	private static void getOccurrenceSetFile(String[] args) {
+		String filePathStr = getValue(OCCURRENCE_SETS_FILE_SWITCH, args);
+		if (filePathStr != null && new File(filePathStr).exists()) {
+			OCCURRENCE_SETS_FILE = new File(new File(filePathStr).getAbsolutePath());
+		}
+	}
+	
 	private static void getInputFile(String[] args) {
 		String filePathStr = getValue(INPUT_FILE_SWITCH, args);
 		if (filePathStr != null && new File(filePathStr).exists()) {
@@ -674,6 +683,7 @@ public static String getParameterValuesString() {
 			"Return number of MTPs only (-"+NUM_MTPS_ONLY_SWITCH+"): " + NUM_MTPS_ONLY,
 			"Compactness type (-"+COMPACTNESS_TYPE_SWITCH+"): " + COMPACTNESS_TYPE,
 			"Input file directory (-"+INPUT_DIR_SWITCH+"): " + INPUT_DIR,
+			"Occurrence set file (-"+OCCURRENCE_SETS_FILE_SWITCH+"): " + ((OCCURRENCE_SETS_FILE==null)?null:OCCURRENCE_SETS_FILE.getAbsolutePath()),
 			""
 	};
 	StringBuilder sb = new StringBuilder();
@@ -828,6 +838,12 @@ private static void showHelp() {
 			"",
 			"-"+COMPACTNESS_TYPE_SWITCH+"\t Determines type of compactness used to compare quality of TECs in",
 			"\tCOSIATEC algorithm. Legal values are SEGMENT and BB. Default is BB.",
+			"",
+			"-"+OCCURRENCE_SETS_FILE_SWITCH+"\t Allows the user to specify a file containing a set of pattern",
+			"\toccurrences in LISP OPND format. The file should consist of a sequence of Lisp lists, delimited",
+			"\tby parentheses. Each of these lists should contain a list of notes, where each note is a Lisp",
+			"\tlist with the format (onset pitch-name duration [voice]). In addition to the occurrence set",
+			"\tfile, the user must supply an input dataset file using the -"+INPUT_FILE_SWITCH+" switch.",
 			""
 			);
 }
@@ -870,7 +886,7 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 	if (OUTPUT_FILE == null)
 		writeSwitchesToFile(args);
 	Encoding encoding = null;
-	if (!DRAW_POINT_SET) {
+	if (!DRAW_POINT_SET && OCCURRENCE_SETS_FILE == null) {
 		switch (BASIC_ALGORITHM) {
 		case COSIATEC: encoding = runCOSIATEC(); break;
 		case SIATECCompress: encoding = runSIATECCompress(); break;
@@ -882,7 +898,7 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 		case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
 		}
 		encoding.setTitle(COMMAND_LINE);
-	} else //DRAW_POINT_SET is true
+	} else //DRAW_POINT_SET is true or OCCURRENCE_SET_FILE is non-null
 		encoding = new Encoding(
 				//					PointSet dataset,
 				new PointSet(
@@ -943,7 +959,10 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 	} catch (IOException e) {
 		e.printStackTrace();
 	}
-	if ((DRAW || DRAW_POINT_SET) && encoding != null && INPUT_DIR == null) {
+	if ((DRAW || DRAW_POINT_SET || OCCURRENCE_SETS_FILE != null) && encoding != null && INPUT_DIR == null) {
+		if (OCCURRENCE_SETS_FILE != null) {
+			encoding.readOccurrenceSets(OCCURRENCE_SETS_FILE);
+		}
 		//if (DRAW && encoding != null) {
 		String outputImageFilePath;
 		if (OUTPUT_FILE == null) {
@@ -1194,6 +1213,7 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 		return;
 	}
 	getInputFile(args);
+	getOccurrenceSetFile(args);
 //	if (INPUT_FILE == null) {
 //		showHelp();
 //		printParsedParameterValues();
