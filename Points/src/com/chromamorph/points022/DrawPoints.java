@@ -616,8 +616,8 @@ public class DrawPoints extends PApplet {
 					int s = firstOccurrence?col:col2;
 					int f = firstOccurrence?col:col2;
 					float sw = firstOccurrence?2:2;
-					float w = firstOccurrence?pointWidth+2:pointWidth;
-					float h = firstOccurrence?pointHeight+2:pointHeight;
+					float w = pointWidth; //firstOccurrence?pointWidth+2:pointWidth;
+					float h = pointHeight; //firstOccurrence?pointHeight+2:pointHeight;
 					if (OMNISIA.RHYTHM_ONLY) { // Draws points and lines with y value equal to TEC number, i
 						drawPoint(p,s,f,sw,ROUND,w,h, i);
 						drawLine(lastPoint, p, s, sw, ROUND, i);
