@@ -229,9 +229,15 @@ public class Encoding {
 				PApplet embed = new DrawPoints(
 						ps,
 						getOccurrenceSetsAsArrayListsOfPointSets(includePattern),
+						true,//drawAllOccurrenceSetsAtOnce
+						diatonicPitch,
+						dataset.getTatumsPerBar(),
+						dataset.getBarOneStartsAt(),
+						dataset.getTitle(),
 						outputFilePath,
-						true,
-						diatonicPitch);
+						false, //segmentation
+						true //writeToImageFile
+						);
 				frame.add(embed);
 				embed.init();
 				frame.pack();

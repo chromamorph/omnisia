@@ -323,7 +323,18 @@ public class Encoding {
 					JFrame frame = new JFrame();
 					frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
 					frame.setResizable(false);
-					PApplet embed = new DrawPoints(dataset,getOccurrenceSets(),true,diatonicPitch,getTatumsPerBar(),getBarOneStartsAt(),getTitle(),outputFilePath, false, true);
+					PApplet embed = new DrawPoints(
+							dataset,
+							getOccurrenceSets(),
+							true,//drawAllOccurrenceSetsAtOnce
+							diatonicPitch,
+							getTatumsPerBar(),
+							getBarOneStartsAt(),
+							getTitle(),
+							outputFilePath, 
+							false, //segmentation
+							true //writeToImageFile
+							);
 					frame.add(embed);
 					embed.init();
 					frame.pack();

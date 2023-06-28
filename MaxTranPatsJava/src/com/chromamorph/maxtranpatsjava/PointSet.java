@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -45,6 +46,18 @@ public class PointSet implements Comparable<PointSet>{
 	private long pointComplexity = -1;
 	private Encoding encoding = null;
 	private boolean MTM = false;
+	
+	private Long tatumsPerBar = null; 
+	private Long barOneStartsAt = null;
+	private String title = "";
+	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getTitle() {
+		return title;
+	}
 	
 	public boolean isMTM() {
 		return MTM;
@@ -134,6 +147,7 @@ public class PointSet implements Comparable<PointSet>{
 		if (file.getName().toLowerCase().endsWith(".opnd")) {
 			makePointSetFromOPNDFile(file, pitchSpell, midTimePoint, dimensionMask);
 		}
+		setTitle(Paths.get(file.getAbsolutePath()).getFileName().toString());
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String l;
@@ -191,9 +205,14 @@ public class PointSet implements Comparable<PointSet>{
 				zeroPoint5Present = true;
 				break;
 			}
-		if (zeroPoint5Present)
+		if (zeroPoint5Present) {
+			if (getTatumsPerBar() != null)
+				setTatumsPerBar(getTatumsPerBar()*2);
+			if (getBarOneStartsAt() != null)
+				setBarOneStartsAt(getBarOneStartsAt()*2);
 			for (Point p : points)
 				p.set(0, 2 * p.get(0));
+		}
 	}
 
 	private void makePointSetFromMIDIFile(File file, boolean pitchSpell, boolean midTimePoint, String dimensionMask) {
@@ -208,8 +227,40 @@ public class PointSet implements Comparable<PointSet>{
 		pointComplexity = -1;
 	}
 
+	public Long getTatumsPerBar() {
+		return tatumsPerBar;
+	}
+	public void setTatumsPerBar(Long tatumsPerBar) {
+		this.tatumsPerBar = tatumsPerBar;
+	}
+	public Long getBarOneStartsAt() {
+		return barOneStartsAt;
+	}
+	public void setBarOneStartsAt(Long barOneStartsAt) {
+		this.barOneStartsAt = barOneStartsAt;
+	}
+	
+	private void setTatumsPerBarAndBarOneStartsAt(File opndFile) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(opndFile));
+			String l;
+			while((l = br.readLine()) != null) {
+				if (l.trim().startsWith("%tatumsPerBar"))
+					setTatumsPerBar(Long.parseLong(l.trim().split(" ")[1]));
+				else if (l.trim().startsWith("%barOneStartsAt"))
+					setBarOneStartsAt(Long.parseLong(l.trim().split(" ")[1]));
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void makePointSetFromOPNDFile(File file, boolean pitchSpell, boolean midTimePoint, String dimensionMask) {
 		Notes notes;
+		setTatumsPerBarAndBarOneStartsAt(file);
 			try {
 				notes = Notes.fromOPND(file.getAbsolutePath());
 				getPointSetFromNotes(notes, pitchSpell, midTimePoint, dimensionMask);
