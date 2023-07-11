@@ -537,7 +537,6 @@ public class PointSet implements Comparable<PointSet>{
 					this, 
 					tc, 
 					mtmArray, 
-					minSize, 
 					0, 
 					numComputations, 
 					numObjectBases, 
@@ -555,7 +554,8 @@ public class PointSet implements Comparable<PointSet>{
 			if (mtmArray[i].size() > maxLoad)
 				maxLoad = mtmArray[i].size();
 			for (TransformationPointSetPair mtp : mtmArray[i].getPairs()) {
-				mtps.add(mtp);
+				if (mtp.getPointSet().size() >= minSize)
+					mtps.add(mtp);
 			}
 		}
 

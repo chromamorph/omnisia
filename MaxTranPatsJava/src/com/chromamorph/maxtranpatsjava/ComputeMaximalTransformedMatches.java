@@ -9,7 +9,7 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	int minSize, numObjectBases, numImageBases;
+	int numObjectBases, numImageBases;
 	long startIndex, endIndex;
 	ListOfTransformationPointSetPairs[] mtmArray;
 	PointSet pattern;
@@ -21,13 +21,11 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 			PointSet dataset, 
 			TransformationClass tc,
 			ListOfTransformationPointSetPairs[] mtmArray,
-			int minSize,
 			long startIndex,
 			long endIndex,
 			int numObjectBases,
 			int numImageBases) {
 		this.pattern = pattern;
-		this.minSize = minSize;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
 		this.mtmArray = mtmArray;
@@ -44,8 +42,8 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 		else {
 			long split = (endIndex + startIndex)/2;
 			invokeAll(
-					new ComputeMaximalTransformedMatches(pattern, dataset, tc, mtmArray, minSize, startIndex, split, numObjectBases, numImageBases),
-					new ComputeMaximalTransformedMatches(pattern, dataset, tc, mtmArray, minSize, split, endIndex, numObjectBases, numImageBases));
+					new ComputeMaximalTransformedMatches(pattern, dataset, tc, mtmArray, startIndex, split, numObjectBases, numImageBases),
+					new ComputeMaximalTransformedMatches(pattern, dataset, tc, mtmArray, split, endIndex, numObjectBases, numImageBases));
 		}
 	}
 	
