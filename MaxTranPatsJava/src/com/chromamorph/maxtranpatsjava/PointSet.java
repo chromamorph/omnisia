@@ -1801,13 +1801,13 @@ public class PointSet implements Comparable<PointSet>{
 		if (args.length < 2) {
 			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file> [<input-file-2> minCompactness minOccurrenceCompactness minSize]");
 		} else if (args.length == 2) {
-//			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
-			TransformationClass[] transformationClasses = new TransformationClass[] {
+			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
+//			TransformationClass[] transformationClasses = new TransformationClass[] {
 //					new F_2STR_FIXED()
-					new F_2STR(),
-					new F_2T(),
-					new F_2TR()
-					};
+//					new F_2STR(),
+//					new F_2T(),
+//					new F_2TR()
+//					};
 			String fileName = args[1];
 			System.out.println("Input file: "+args[1]+"\n");
 			encodePointSetFromFile(
@@ -1818,19 +1818,19 @@ public class PointSet implements Comparable<PointSet>{
 					"1100", //dimensionMask
 					args[0], //outputDir
 					false, //useScalexia
-					3, //minSize
+					0, //minSize
 					true, //draw
 					0.0,
 					0.0
 					);
 		} else if (args.length == 6) {
-			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
-//			TransformationClass[] transformationClasses = new TransformationClass[] {
-////					new F_2STR_FIXED()
-//					new F_2STR(),
-//					new F_2T(),
-//					new F_2TR()
-//					};			
+//			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
+			TransformationClass[] transformationClasses = new TransformationClass[] {
+//					new F_2STR_FIXED()
+					new F_2STR(),
+					new F_2T(),
+					new F_2TR()
+					};			
 			String patternFileName = args[1];
 			String datasetFileName = args[2];
 			String outputDir = args[0];

@@ -1,0 +1,35 @@
+OS(P(p(1.0,4.0),p(3.0,3.0),p(4.0,3.0),p(6.0,2.0)),[T(F_2T,[0.0, -1.0])],null)
+OS(P(p(1.0,1.0),p(2.0,2.0),p(2.0,3.0),p(3.0,1.0)),[],null)
+
+
+Coverage: 12
+Dataset size: 12
+Uncompressed length: 24
+Encoding length: 18
+Compression factor: 1.3333333333333333
+Running time in milliseconds: 662
+Encoding length without residual point set: 10
+Number of residual points: 4
+Percentage of residual points: 33.33%
+Compression factor without residual point set: 1.6
+Number of occurrence sets: 2
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            433 ms            433 ms  computeMaximalTransformablePatterns ends
+            437 ms              4 ms  computeSizeMTPSetArray ends
+            441 ms              4 ms  mergeMTPs ends
+            456 ms             15 ms  computeSuperMTPs ends
+            458 ms              2 ms  computeHeterogeneousOccurrenceSets ends
+            622 ms            164 ms  removeDuplicateOccurrenceSets ends
+            643 ms             21 ms  removeRedundantTransformations ends
+            644 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            661 ms             17 ms  computeSortedOccurrenceSets ends
+            662 ms              1 ms  computeEncoding ends
+            662 ms              0 ms  Program ends
+
+
+Number of points: 12
+Number of OSs after removal: 82
