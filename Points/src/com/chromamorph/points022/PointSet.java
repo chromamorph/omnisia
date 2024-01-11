@@ -1203,17 +1203,22 @@ public class PointSet implements Comparable<PointSet>{
 //		pairps.draw();
 		PointSet ps;
 		try {
-			ps = new PointSet(
+//			ps = new PointSet(
 //					"/Volumes/LOTOFSPACE/Work/Research/2016-08-04-workspace/chromamorph/Points/data/PATTERNS-BOOK/MISC/noMtpPattern.pts",
 //					"/Volumes/LOTOFSPACE/Work/Research/Collaborations/Kat Agres/StimuliForDave_Exp1/1NormChNorm.mid",
 //					"/Volumes/LOTOFSPACE/Work/Research/Collaborations/Kat Agres/StimuliForDave_Exp1/12NormSm.mid",
 //					"D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Arcade - Duncan Laurence\\42366-mid-2019-12-06-17-03-59-809\\42366.pts",
 //					"D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Spirit in the Sky - Keiino\\42371.0.gm.mid",
-					"D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Soldi - Mahmood\\42250.0.gm.mid",
-					false,true);
-			ps.draw("No MTP point set",false,true);
-			System.out.println(ps);
-		} catch (MissingTieStartNoteException e) {
+//					"D:\\Dropbox\\Work\\Research\\AI Song Contest\\Geerdes\\20191206geerdes\\Soldi - Mahmood\\42250.0.gm.mid",
+//					"/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND",
+//					false,true);
+//			ps.draw("No MTP point set",false,true);
+//			ps.play(1000);
+//			Notes notes = Notes.fromOPND("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND");
+			Notes notes = Notes.fromOPND("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/01-Debussy-Hommage-a-Haydn/DEBUSSY-HOMMAGE-A-HAYDN.OPND");
+			notes.play(4,80);
+//			System.out.println(ps);
+		} catch (IOException | InvalidMidiDataException | MidiUnavailableException e) {
 			e.printStackTrace();
 		}
 	}
