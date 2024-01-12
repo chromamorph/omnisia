@@ -981,7 +981,11 @@ public class Encoding {
 						Pitch pitch = new Pitch();
 						pitch.setPitchName(opndArray[1]);
 						int y = isDiatonic()?pitch.getMorpheticPitch():pitch.getChromaticPitch();
-						Point p = new Point(x,y);
+						long duration = Long.parseLong(opndArray[2]);
+						int voice = 0;
+						if (opndArray.length > 3)
+							voice = Integer.parseInt(opndArray[3]);
+						Point p = new Point(x,y,voice,duration);
 						occurrence.add(p);
 					}
 					occurrenceSet.add(occurrence);

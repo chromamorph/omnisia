@@ -169,31 +169,34 @@ public class PointSet implements Comparable<PointSet>{
 		//		System.out.println("in PointSet, ticksPerSecond == "+ticksPerSecond);
 		for(Note note : notes.getNotes()) {
 			double onset = (double)note.getOnset();
-			if (midTimePoint)
+			if (midTimePoint) {
 				onset += note.getDuration() * 0.5;
+			}
 			Integer voice = note.getVoice();
 			Long duration = note.getDuration();
 			if (voice == null)
 				voice = note.getChannel();
+			Point p;
 			if (diatonicPitch) {
 				Integer morpheticPitch = note.getPitch().getMorpheticPitch();
 				if (morpheticPitch == null)
 					morpheticPitch = note.getComputedPitch().getMorpheticPitch();
 				if (morpheticPitch == null)
 					throw new NoMorpheticPitchException("The following note has no morphetic pitch: "+note);
-
-				points.add(new Point(
+				p = new Point(
 						dimensionMask.charAt(0) == '1'?onset:null,
 								dimensionMask.charAt(1) == '1'?(double)morpheticPitch:null,
 										dimensionMask.charAt(2) == '1'?(double)voice:null,
-												dimensionMask.charAt(3) == '1'?(double)duration:null));
+												dimensionMask.charAt(3) == '1'?(double)duration:null);
 			}
-			else
-				points.add(new Point(
+			else {
+				p = new Point(
 						dimensionMask.charAt(0) == '1'?onset:null,
 								dimensionMask.charAt(1) == '1'?(double)note.getMidiNoteNumber():null,
 										dimensionMask.charAt(2) == '1'?(double)voice:null,
-												dimensionMask.charAt(3) == '1'?(double)duration:null));
+												dimensionMask.charAt(3) == '1'?(double)duration:null);
+			}
+			points.add(p);
 		}
 		//		We want to avoid having points with non-integer x values, specifically
 		//		we want to avoid having the ".5" that results when a duration is an
@@ -1179,6 +1182,35 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	
+	public void removeContainedOccurrences() {
+		for(int size : mtpSizes)
+			for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+				OccurrenceSet thisOS = mtpOccurrenceSets[size].get(i);
+				PointSet thisOSPattern = thisOS.getPattern();
+				TreeSet<Transformation> transformations = thisOS.getTransformations();
+				for(Transformation tran : transformations) {
+					PointSet superPattern = tran.phi(thisOSPattern);
+					ArrayList<Integer> subPatternSizes = new ArrayList<Integer>();
+					for(Integer s : mtpSizes)
+						if (s < size)
+							subPatternSizes.add(s);
+					for(int subPatternSize : subPatternSizes) {
+						for(int j = 0; j < mtpOccurrenceSets[subPatternSize].size(); j++) {
+							OccurrenceSet subOS = mtpOccurrenceSets[subPatternSize].get(j);
+							PointSet subOSPattern = subOS.getPattern();
+							TreeSet<Transformation> subTrans = subOS.getTransformations();
+							TreeSet<Transformation> newSubTrans = new TreeSet<Transformation>();
+							for(Transformation subTran : subTrans) {
+								if (!superPattern.contains(subTran.phi(subOSPattern)))
+									newSubTrans.add(subTran);
+							}
+							subOS.setTransformations(newSubTrans);
+						}
+					}
+				}
+			}		
+	}
+	
 	public PointSet setMinus(PointSet pointSet) {
 		PointSet result = new PointSet();
 		for(Point p : getPoints()) {
@@ -1228,7 +1260,7 @@ public class PointSet implements Comparable<PointSet>{
 		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch, minCompactness, minOccurrenceCompactness);
 	}
 	
-	public static void maximalTransformedMatches(
+	public static PointSet maximalTransformedMatches(
 			PointSet pattern, 
 			PointSet dataset, 
 			String outputFilePath, 
@@ -1239,7 +1271,7 @@ public class PointSet implements Comparable<PointSet>{
 			boolean pitchSpell,
 			double minCompactness,
 			double minOccurrenceCompactness) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
-		encodePointSet(
+		return encodePointSet(
 				dataset, 
 				outputFilePath, 
 				transformationClasses,
@@ -1280,7 +1312,7 @@ public class PointSet implements Comparable<PointSet>{
 				);
 	}
 	
-	public static void encodePointSet (
+	public static PointSet encodePointSet (
 			PointSet ps, 
 			String outputFilePath, 
 			TransformationClass[] transformationClasses,
@@ -1333,15 +1365,21 @@ public class PointSet implements Comparable<PointSet>{
 			ps.removeRedundantTransformations();
 		log.add(new LogInfo("removeRedundantTransformations ends", true));
 
+		if (minCompactness > 0)
+			ps.removeNonCompactOccurrenceSets(minCompactness);
+		if (minOccurrenceCompactness > 0)
+			ps.removeNonCompactOccurrences(minOccurrenceCompactness);
+
 		ps.removeOccurrenceSetsWithNoTransformations();
 		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
 		
-		ps.removeNonCompactOccurrenceSets(minCompactness);
-		ps.removeNonCompactOccurrences(minOccurrenceCompactness);
-
 		ps.computeSortedOccurrenceSets(ps.isMTM()?OccurrenceSet.DECREASING_PATTERN_SIZE:OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
 		log.add(new LogInfo("computeSortedOccurrenceSets ends", true));
 
+		if (ps.isMTM()) {
+			ps.removeContainedOccurrences();			
+		}
+		
 		ps.computeEncoding();
 		log.add(new LogInfo("computeEncoding ends", true));
 
@@ -1394,6 +1432,7 @@ public class PointSet implements Comparable<PointSet>{
 
 		output.close();
 
+		return ps;
 	}
 
 	public double getMax(int dimension) {
@@ -1479,7 +1518,7 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	public static void maximalTransformedMatchesFromFiles(
+	public static PointSet maximalTransformedMatchesFromFiles(
 			String patternFileName,
 			String datasetFileName,
 			TransformationClass[] transformationClasses,
@@ -1503,7 +1542,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell,
 					midTimePoint,
 					dimensionMask);
-			maximalTransformedMatches(pattern, dataset, outputFileName, transformationClasses, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
+			return maximalTransformedMatches(pattern, dataset, outputFileName, transformationClasses, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1511,6 +1550,7 @@ public class PointSet implements Comparable<PointSet>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	public static PointSet encodePointSetFromFile(

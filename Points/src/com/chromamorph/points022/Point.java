@@ -61,11 +61,11 @@ public class Point implements Comparable<Point>{
 		this.voice = voice;
 	}
 	
-	private void setX(int x) {
+	public void setX(int x) {
 		this.x = x;
 	}
 	
-	private void setX(long x) {
+	public void setX(long x) {
 		this.x = x;
 	}
 
@@ -110,19 +110,20 @@ public class Point implements Comparable<Point>{
 	}
 
 	public Point translate(Vector vector) {
-		return new Point(getX()+vector.getX(),getY()+vector.getY());
+		return new Point(getX()+vector.getX(),getY()+vector.getY(),getVoice(),getDuration());
+		
 	}
 
 	public Point copy() {
-		return new Point(getX(),getY());
+		return new Point(getX(),getY(),getVoice(),getDuration());
 	}
 
 	public Point getInversion() {
-		return new Point(getX(),-getY());
+		return new Point(getX(),-getY(),getVoice(),getDuration());
 	}
 
 	public Point getRetrograde() {
-		return new Point(-getX(),getY());
+		return new Point(-getX(),getY(),getVoice(),getDuration());
 	}
 	
 	public String getLatexString() {
