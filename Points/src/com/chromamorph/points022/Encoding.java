@@ -1016,4 +1016,18 @@ public class Encoding {
 		}
 	}
 
+	public void readOccurrenceSetsFromDirectory(File groundTruthDirectory) throws MissingTieStartNoteException {
+//		Assumes directory holds a set of ".opnd" files, each containing a single ground-truth occurrence
+		File[] files = groundTruthDirectory.listFiles();
+		ArrayList<PointSet> occurrenceSet = new ArrayList<PointSet>();
+		for (File file : files) {
+			if (file.getName().toLowerCase().endsWith(".opnd") || file.getName().toLowerCase().endsWith(".opndv")) {
+				PointSet ps = new PointSet(file.getAbsolutePath(),isDiatonic(),true);
+				occurrenceSet.add(ps);
+			}
+		}
+		occurrenceSets = new ArrayList<ArrayList<PointSet>>();
+		occurrenceSets.add(occurrenceSet);
+	}
+
 }

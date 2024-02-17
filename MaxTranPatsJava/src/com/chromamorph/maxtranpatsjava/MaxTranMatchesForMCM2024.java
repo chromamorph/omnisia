@@ -2,6 +2,7 @@ package com.chromamorph.maxtranpatsjava;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeSet;
@@ -13,22 +14,61 @@ import com.chromamorph.points022.OMNISIA;
 import com.chromamorph.points022.PointSet;
 
 public class MaxTranMatchesForMCM2024 {
-	public static void main(String[] args) throws MissingTieStartNoteException, FileNotFoundException, SuperMTPsNotNullException {
-		String datasetFileName = "data/MCM2024/Ravel/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND";
+	public static void main(String[] args) {
+		try {
+//			processTask(
+//					"data/MCM2024/Ravel/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND",
+//					"data/MCM2024/Ravel/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN-QUERY-1.OPND",
+//					"data/MCM2024/Ravel/RAVEL-HAYDN-OCCURRENCES.OPNDS",
+//					"output/MCM2024/Ravel",
+//					0.8,
+//					0.5);
+//			processTask(
+//					"data/MCM2024/Bach/ContrapunctusVI.opnd",
+//					"data/MCM2024/Bach/ContrapunctusVISubject.opnd",
+//					"data/MCM2024/Bach/ContrapunctusVISubjectEntries.opnds",
+//					"output/MCM2024/Bach",
+//					10,
+//					0.5);
+			int bwv = 851;
+			processTask(
+						"data/MCM2024/WTCI/opnd/bwv"+bwv+"/bwv"+bwv+"b.opnd",
+						"data/MCM2024/WTCI/opnd/bwv"+bwv+"/S/0001.opnd",
+						"data/MCM2024/WTCI/opnd/bwv"+bwv+"/S/",
+						"output/MCM2024/WTCI/bwv"+bwv,
+						0.8,
+						0.5);
+//			processTask(
+//					"data/MCM2024/WTCI/opnd/bwv847/bwv847b.opnd",
+//					"data/MCM2024/WTCI/opnd/bwv847/S/0001.opnd",
+//					"data/MCM2024/WTCI/opnd/bwv847/S/",
+//					"output/MCM2024/WTCI/bwv847",
+//					0.8,
+//					0.5);
+		} catch (FileNotFoundException | MissingTieStartNoteException | SuperMTPsNotNullException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void processTask(
+			String datasetFileName,
+			String patternFileName,
+			String groundTruthFileName,
+			String outputDir,
+			double minSizeRatio,
+			double minOccurrenceCompactness) throws MissingTieStartNoteException, FileNotFoundException, SuperMTPsNotNullException {
 		File datasetFile = new File(datasetFileName);
-		String patternFileName = "data/MCM2024/Ravel/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN-QUERY-1.OPND";
-		String groundTruthFileName = "data/MCM2024/Ravel/RAVEL-HAYDN-OCCURRENCES.OPNDS";
 		File groundTruthFile = new File(groundTruthFileName);
 
 		TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR()};
 		boolean pitchSpell = true;
 		boolean midTimePoint = true;
 		String dimensionMask = "1100";
-		String outputDir = "output/MCM2024/Ravel";
-		int minSize = 4;
 		boolean draw = true;
 		double minCompactness = 0;
-		double minOccurrenceCompactness = 0.5;
+		
+		int patternSize = new PointSet(patternFileName).size();
+		int minSize = (int)Math.floor(minSizeRatio*patternSize);
 		
 		com.chromamorph.maxtranpatsjava.PointSet outputPointSet = com.chromamorph.maxtranpatsjava.PointSet.maximalTransformedMatchesFromFiles(
 				patternFileName, 
@@ -71,7 +111,10 @@ public class MaxTranMatchesForMCM2024 {
 						false,
 						//					String omnisiaOutputFilePathString					
 						null);
-		groundTruthEncoding.readOccurrenceSets(groundTruthFile);
+		if (!groundTruthFile.isDirectory())
+			groundTruthEncoding.readOccurrenceSets(groundTruthFile);
+		else 
+			groundTruthEncoding.readOccurrenceSetsFromDirectory(groundTruthFile);
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthOccurrenceSets = groundTruthEncoding.getOccurrenceSets();
 		System.out.println("Duration of first point is " + groundTruthOccurrenceSets.get(0).get(0).getPoints().first().getDuration());
 		System.out.println("Voice of first point is " + groundTruthOccurrenceSets.get(0).get(0).getPoints().first().getVoice());
@@ -129,27 +172,31 @@ public class MaxTranMatchesForMCM2024 {
 		double R3 = EvaluateMIREX2013.getR3(groundTruthOccurrenceSets,computedOccurrenceSets);
 		double TLF1 = (2*P3*R3)/(P3+R3);
 		
-		System.out.println("Ground truth occurrences");
+		String resultsFileName = outputDir+"/"+datasetFile.getName().replace('.', '-') + "results.txt";
+		File resultsFile = new File(resultsFileName);
+		PrintWriter resultsPW = new PrintWriter(resultsFile);
+		
+		resultsPW.println("Ground truth occurrences");
 		int i = 0;
 		for(PointSet occ: newGroundTruthOccurrenceSet)
-			System.out.println(String.format("%3d. ", ++i)+occ);
-		System.out.println();
-		System.out.println("Computed occurrences");
+			resultsPW.println(String.format("%3d. ", ++i)+occ);
+		resultsPW.println();
+		resultsPW.println("Computed occurrences");
 		i = 0;
 		for(PointSet occ: computedOccurrenceSet)
-			System.out.println(String.format("%3d. ", ++i)+occ);
-		System.out.println();
-		System.out.println("TLP = "+P3);
-		System.out.println("TLR = "+R3);
-		System.out.println("TLF1 = "+TLF1);
-		
+			resultsPW.println(String.format("%3d. ", ++i)+occ);
+		resultsPW.println();
+		resultsPW.println("TLP = "+P3);
+		resultsPW.println("TLR = "+R3);
+		resultsPW.println("TLF1 = "+TLF1);
+		resultsPW.close();
 		
 		
 		//		Draw ground truth for Ravel
 		String[] omnisiaArgs = new String[] {
 				"-i", datasetFileName,
 				"-occsets", groundTruthFileName,
-				"-o", "data/MCM2024/Ravel",
+				"-o", outputDir,
 				"-d"
 		};
 		OMNISIA.main(omnisiaArgs);

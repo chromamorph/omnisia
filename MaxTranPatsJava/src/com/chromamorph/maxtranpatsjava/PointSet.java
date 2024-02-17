@@ -144,6 +144,7 @@ public class PointSet implements Comparable<PointSet>{
 			makePointSetFromMIDIFile(file, pitchSpell, midTimePoint, dimensionMask);
 			return;
 		}
+		System.out.println(file.getName().toLowerCase());
 		if (file.getName().toLowerCase().endsWith(".opnd")) {
 			makePointSetFromOPNDFile(file, pitchSpell, midTimePoint, dimensionMask);
 		}
@@ -154,9 +155,9 @@ public class PointSet implements Comparable<PointSet>{
 		while ((l = br.readLine()) != null)
 			sb.append(l);
 		br.close();
-		String fileText = sb.toString().trim();
-		if (fileText.startsWith("(") && fileText.endsWith(")"))
-			makePointSetFromLispString(fileText);
+//		String fileText = sb.toString().trim();
+//		if (fileText.startsWith("(") && fileText.endsWith(")"))
+//			makePointSetFromLispString(fileText);
 		pointComplexity = -1;
 	}
 

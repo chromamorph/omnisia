@@ -961,7 +961,10 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 	}
 	if ((DRAW || DRAW_POINT_SET || OCCURRENCE_SETS_FILE != null) && encoding != null && INPUT_DIR == null) {
 		if (OCCURRENCE_SETS_FILE != null) {
-			encoding.readOccurrenceSets(OCCURRENCE_SETS_FILE);
+			if (OCCURRENCE_SETS_FILE.isDirectory())
+				encoding.readOccurrenceSetsFromDirectory(OCCURRENCE_SETS_FILE);
+			else
+				encoding.readOccurrenceSets(OCCURRENCE_SETS_FILE);
 		}
 		//if (DRAW && encoding != null) {
 		String outputImageFilePath;

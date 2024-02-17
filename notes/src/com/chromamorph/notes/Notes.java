@@ -1402,16 +1402,16 @@ public class Notes {
 //		}
 		
 
-		try {
-			Notes notes = Notes.fromOPND("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/01 Debussy-Hommage-a-Haydn/DEBUSSY-HOMMAGE-A-HAYDN.OPND");
-			notes.play(4, 50);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Notes notes = Notes.fromOPND("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/01 Debussy-Hommage-a-Haydn/DEBUSSY-HOMMAGE-A-HAYDN.OPND");
+//			notes.play(4, 50);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (InvalidMidiDataException e) {
+//			e.printStackTrace();
+//		} catch (MidiUnavailableException e) {
+//			e.printStackTrace();
+//		}
 		
 //		try {
 //			String opndFileName = "../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";
@@ -1435,6 +1435,9 @@ public class Notes {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+		
+		Notes notes = new Notes("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI.opnd");
+		notes.toOPNDFile("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI-from-notes.opnd");
 	}
 
 }
