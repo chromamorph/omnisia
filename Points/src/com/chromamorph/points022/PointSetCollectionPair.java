@@ -20,11 +20,11 @@ public class PointSetCollectionPair {
 			pointSetCollection2.add(occurrence);
 	}
 	
-	public PointSetCollectionPair(TEC tec, PatternOccurrenceListPair patternOccurrenceListPair) {
+	public PointSetCollectionPair(TEC tec, PatternOccurrenceListPair patternOccurrenceListPair, int morphOrChroma) {
 		pointSetCollection1 = new ArrayList<PointSet>();
 		TreeSet<Vector> translators = tec.getTranslators().getVectors();
 		for(Vector v : translators)
-			pointSetCollection1.add(tec.getPattern().translate(v));
+			pointSetCollection1.add(tec.getPattern().translate(v, morphOrChroma));
 		
 		pointSetCollection2 = new ArrayList<PointSet>();
 //		pointSetCollection2.add(patternOccurrenceListPair.pattern);

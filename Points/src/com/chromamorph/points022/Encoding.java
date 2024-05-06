@@ -81,11 +81,14 @@ public class Encoding {
 	protected boolean segmentMode = false;
 	protected boolean bbMode = false;
 	protected int topNPatterns = 0;
+	final protected int morphOrChroma;
 
 	//	protected PointSet residualPointSet = null;
 	protected Long runningTime = null;
 
-	public Encoding() {}
+	public Encoding() {
+		morphOrChroma = 0;
+	}
 
 	public Encoding(
 			PointSet dataset,
@@ -98,7 +101,8 @@ public class Encoding {
 			boolean forMirex,
 			boolean segmentMode,
 			boolean bbMode,
-			String omnisiaOutputFilePathString) throws MissingTieStartNoteException, FileNotFoundException {
+			String omnisiaOutputFilePathString,
+			int morphOrChroma) throws NoMorpheticPitchException, MissingTieStartNoteException, FileNotFoundException, NoMorpheticPitchException {
 
 
 		//		protected String omnisiaOutputFilePathString = null;
@@ -109,6 +113,7 @@ public class Encoding {
 		this.topNPatterns = topNPatterns;
 		this.isDiatonic = isDiatonic;
 		this.withoutChannel10 = withoutChannel10;
+		this.morphOrChroma = morphOrChroma;
 
 		//		protected String outputFileExtension = null;
 		this.outputFileExtension = outputFileExtension;
@@ -167,7 +172,7 @@ public class Encoding {
 		}
 
 		if (dataset == null && this.inputFilePathString != null)
-			dataset = new PointSet(this.inputFilePathString, isDiatonic, withoutChannel10);
+			dataset = new PointSet(this.inputFilePathString, isDiatonic, withoutChannel10, morphOrChroma);
 
 		if (OMNISIA.RHYTHM_ONLY) {
 			PointSet newDataset = new PointSet();
@@ -486,8 +491,8 @@ public class Encoding {
 		public TreeSet<VectorVectorPair> getMatch() {return match; }
 		public void setMatch(TreeSet<VectorVectorPair> match) {this.match = match;}
 
-		public TECMatchPair(PointSet mergedPattern, VectorSet mergedTranslators, PointSet dataset, TreeSet<VectorVectorPair> maxMatch) {
-			super(mergedPattern,mergedTranslators,dataset);
+		public TECMatchPair(PointSet mergedPattern, VectorSet mergedTranslators, PointSet dataset, TreeSet<VectorVectorPair> maxMatch, int morphOrChroma) {
+			super(mergedPattern,mergedTranslators,dataset, morphOrChroma);
 			setMatch(maxMatch);
 		}
 
@@ -565,12 +570,12 @@ public class Encoding {
 			for(VectorVectorPair vvp : maxMatch) {
 				mergedTranslators.add(vvp.getOriginVector().minus(firstOriginVector));
 			}
-			PointSet pattern1 = tec1.getPattern().translate(firstOriginVector);
-			PointSet pattern2 = tec2.getPattern().translate(firstOriginVector.add(diffVector));
+			PointSet pattern1 = tec1.getPattern().translate(firstOriginVector, morphOrChroma);
+			PointSet pattern2 = tec2.getPattern().translate(firstOriginVector.add(diffVector),morphOrChroma);
 			PointSet mergedPattern = new PointSet();
 			mergedPattern.addAll(pattern1);
 			mergedPattern.addAll(pattern2);
-			TECMatchPair mergedTEC = new TECMatchPair(mergedPattern,mergedTranslators,dataset,maxMatch);
+			TECMatchPair mergedTEC = new TECMatchPair(mergedPattern,mergedTranslators,dataset,maxMatch, morphOrChroma);
 			mergedTECMatchPairs.add(mergedTEC);
 		}
 
@@ -586,9 +591,9 @@ public class Encoding {
 		VectorSet originVectors = bestMergedTECMatchPair.getOriginVectors();
 		TEC newTEC1;
 		if (originVectors.isEmpty())
-			newTEC1 = new TEC(tec1.getPattern().copy(),tec1.getTranslators().copy(),dataset);
+			newTEC1 = new TEC(tec1.getPattern().copy(),tec1.getTranslators().copy(),dataset, morphOrChroma);
 		else
-			newTEC1 = new TEC(tec1.getPattern().copy(),tec1.getTranslators().copy().remove(originVectors),dataset);
+			newTEC1 = new TEC(tec1.getPattern().copy(),tec1.getTranslators().copy().remove(originVectors),dataset, morphOrChroma);
 		if (newTEC1.getTranslatorSetSize()==0)
 			newTEC1 = null;
 
@@ -596,9 +601,9 @@ public class Encoding {
 		Vector differenceVector = bestMergedTECMatchPair.getDifferenceVector();
 		TEC newTEC2;
 		if (originVectors.isEmpty())
-			newTEC2 = new TEC(tec2.getPattern().copy(),tec2.getTranslators().copy(),dataset);
+			newTEC2 = new TEC(tec2.getPattern().copy(),tec2.getTranslators().copy(),dataset, morphOrChroma);
 		else
-			newTEC2 = new TEC(tec2.getPattern().copy(),tec2.getTranslators().copy().remove(originVectors.translate(differenceVector)),dataset);
+			newTEC2 = new TEC(tec2.getPattern().copy(),tec2.getTranslators().copy().remove(originVectors.translate(differenceVector)),dataset, morphOrChroma);
 		if (newTEC2.getTranslatorSetSize()==0)
 			newTEC2 = null;
 
@@ -624,14 +629,14 @@ public class Encoding {
 
 	static int mirexPatternNumber = 0;
 
-	public static String getMIREXStringForTEC(TEC tec, boolean boundingBox, boolean segment, PointSet dataset) {
+	public static String getMIREXStringForTEC(TEC tec, boolean boundingBox, boolean segment, PointSet dataset, int morphOrChroma) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("pattern"+(++mirexPatternNumber)+"\n");
 		TreeSet<Vector> translators = tec.getTranslators().getVectors();
 
 		ArrayList<PointSet> occurrences = new ArrayList<PointSet>();
 		for(Vector v : translators) {
-			PointSet occurrence = tec.getPattern().translate(v);
+			PointSet occurrence = tec.getPattern().translate(v, morphOrChroma);
 			if (boundingBox) {
 				occurrence = dataset.getBBSubset(occurrence.getTopLeft(), occurrence.getBottomRight());
 			} else if (segment) {
@@ -655,7 +660,7 @@ public class Encoding {
 		}
 		if (tec.getPatternTECs() != null) {
 			for(TEC patternTec : tec.getPatternTECs()) {
-				sb.append(getMIREXStringForTEC(patternTec, boundingBox, segment, dataset));
+				sb.append(getMIREXStringForTEC(patternTec, boundingBox, segment, dataset, morphOrChroma));
 			}
 		}
 		return sb.toString();
@@ -667,12 +672,13 @@ public class Encoding {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < getTECs().size() && (topNPatterns == 0 || i < topNPatterns); i++) {
 			TEC tec = getTECs().get(i);
-			sb.append(getMIREXStringForTEC(tec, bbMode, segmentMode, dataset));
+			sb.append(getMIREXStringForTEC(tec, bbMode, segmentMode, dataset, morphOrChroma));
 		}
 		return sb.toString();
 	}
 
-	public Encoding(String encodingFilePathString) {
+	public Encoding(String encodingFilePathString, int morphOrChroma) {
+		this.morphOrChroma = morphOrChroma;
 		File encodingFile = new File(encodingFilePathString);
 		ArrayList<String> lines = new ArrayList<String>();
 		String line = null;
@@ -691,7 +697,7 @@ public class Encoding {
 			for(String l : lines) {
 				String s;
 				if (l.startsWith("T(P("))
-					addTEC(new TEC(l));
+					addTEC(new TEC(l, morphOrChroma));
 				else if (l.startsWith("tatumsPerBar")) {
 					s = l.substring("tatumsPerBar".length()).trim();
 					if (!s.toLowerCase().equals("null"))
@@ -1011,7 +1017,7 @@ public class Encoding {
 			enc.dataset = new PointSet("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND", diatonicPitch);
 			enc.readOccurrenceSets(occurrenceSetFile);
 			enc.drawOccurrenceSetsToFile(outputFilePath, diatonicPitch);
-		} catch (MissingTieStartNoteException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

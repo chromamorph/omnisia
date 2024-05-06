@@ -22,7 +22,7 @@ public class SIAInversions implements Encoder {
 		TreeSet<Point> prime = points.getPoints();
 		for(Point primePoint : prime)
 			for(Point inversionPoint : inversion)
-				vectorPointPairs.add(new VectorPointPair(new Vector(primePoint,inversionPoint),primePoint));
+				vectorPointPairs.add(new VectorPointPair(new Vector(primePoint,inversionPoint, 0),primePoint, 0));
 
 		TreeSet<PatternPair> maxInvPatternPairs = new TreeSet<PatternPair>();
 		PointSet pattern = new PointSet();
@@ -33,7 +33,7 @@ public class SIAInversions implements Encoder {
 			if (pattern.isEmpty() || vppArrayList.get(i).getVector().equals(previousVector))
 				pattern.add(vppArrayList.get(i).getPoint());
 			else {
-				pattern2 = pattern.translate(previousVector).getInversion();
+				pattern2 = pattern.translate(previousVector,0).getInversion();
 				if (pattern.getCompactness(points) >= MIN_COMPACTNESS && 
 						pattern2.getCompactness(points) >= MIN_COMPACTNESS &&
 						pattern.getBBArea() != 0 &&

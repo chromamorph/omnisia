@@ -54,7 +54,7 @@ public class SIATECCompressEncoding extends Encoding {
 		//store these TECs in a new list.
 
 		for(int i = 0; i < tecStrings.size(); i++)
-			getTECs().add(new TEC(tecStrings.get(i)));
+			getTECs().add(new TEC(tecStrings.get(i), morphOrChroma));
 
 		//Now we need to find the complete set of points covered 
 		//by the set of TECs that we've just read in.
@@ -76,21 +76,23 @@ public class SIATECCompressEncoding extends Encoding {
 	}
 
 	public SIATECCompressEncoding(String inputFilePathName, String outputDirectoryPathName, int minPatternSize, PitchRepresentation pitchRepresentation, boolean drawOutput) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
-		this(inputFilePathName,outputDirectoryPathName,minPatternSize,pitchRepresentation,drawOutput,false,0.0,0);
+		this(inputFilePathName,outputDirectoryPathName,minPatternSize,pitchRepresentation,drawOutput,false,0.0,0,0);
 	}
 
 	public SIATECCompressEncoding(
 			String inputFilePath,
 			String outputDirectoryPath,
 			boolean forRSuperdiagonals, int r,
-			boolean withCompactnessTrawler, double a, int b) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withCompactnessTrawler, double a, int b,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(inputFilePath,
 				outputDirectoryPath,
 				0,
 				PitchRepresentation.MORPHETIC_PITCH,
 				false, //drawOutput
 				withCompactnessTrawler, a, b,
-				forRSuperdiagonals, r);
+				forRSuperdiagonals, r,
+				morphOrChroma);
 	}
 
 	public SIATECCompressEncoding(String inputFilePathName, 
@@ -100,7 +102,8 @@ public class SIATECCompressEncoding extends Encoding {
 			boolean drawOutput, 
 			boolean withCompactnessTrawler, 
 			double a, 
-			int b) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			int b,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(inputFilePathName, 
 				outputDirectoryPathName, 
 				minPatternSize, 
@@ -110,7 +113,8 @@ public class SIATECCompressEncoding extends Encoding {
 				a, 
 				b,
 				false,
-				0);
+				0,
+				morphOrChroma);
 	}
 
 
@@ -123,7 +127,8 @@ public class SIATECCompressEncoding extends Encoding {
 			double a, 
 			int b,
 			boolean forRSuperdiagonals,
-			int r) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			int r,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(inputFilePathName, 
 				outputDirectoryPathName, 
 				minPatternSize, 
@@ -134,7 +139,8 @@ public class SIATECCompressEncoding extends Encoding {
 				a, 
 				b,
 				forRSuperdiagonals,
-				r);
+				r,
+				morphOrChroma);
 	}
 
 	public SIATECCompressEncoding(String inputFilePathName, 
@@ -147,7 +153,8 @@ public class SIATECCompressEncoding extends Encoding {
 			double a, 
 			int b,
 			boolean forRSuperdiagonals,
-			int r) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			int r,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(inputFilePathName, 
 				outputDirectoryPathName, 
 				minPatternSize, 
@@ -165,7 +172,8 @@ public class SIATECCompressEncoding extends Encoding {
 				false, //bbMode
 				null, //omnisiaOutputFilePath
 				0, // topNPatterns
-				false //withoutChannel10
+				false, //withoutChannel10
+				morphOrChroma
 				);
 	}
 
@@ -187,7 +195,8 @@ public class SIATECCompressEncoding extends Encoding {
 			boolean bbMode,
 			String omnisiaOutputFilePath,
 			int topNPatterns,
-			boolean withoutChannel10
+			boolean withoutChannel10,
+			int morphOrChroma
 			) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		super(null,
 				inputFilePathName,
@@ -199,7 +208,8 @@ public class SIATECCompressEncoding extends Encoding {
 				mirex,
 				segmentMode,
 				bbMode,
-				omnisiaOutputFilePath
+				omnisiaOutputFilePath,
+				morphOrChroma
 				);
 		SIATECCompress siatecCompress = new SIATECCompress();
 		SIATECCompressEncoding encoding = (SIATECCompressEncoding)(siatecCompress.encode(dataset,
@@ -309,7 +319,7 @@ public class SIATECCompressEncoding extends Encoding {
 
 	public SIATECCompressEncoding(PointSet points, PointSet dataset) {
 		this.dataset = dataset;
-		addTEC(new TEC(points, dataset));
+		addTEC(new TEC(points, dataset, morphOrChroma));
 		this.points = points;
 		this.points.bbArea = this.points.maxX = this.points.minX = null; 
 		this.points.maxY = this.points.minY = null;
@@ -320,7 +330,7 @@ public class SIATECCompressEncoding extends Encoding {
 		this.dataset = dataset;
 		setTECs(tecs);
 		if (!residualPointSet.isEmpty())
-			addTEC(new TEC(residualPointSet,dataset));
+			addTEC(new TEC(residualPointSet,dataset,morphOrChroma));
 		for(TEC tec : getTECs())
 			this.points.getPoints().addAll(tec.getCoveredPoints().getPoints());
 		this.points.bbArea = this.points.maxX = this.points.minX = null; 
@@ -403,7 +413,8 @@ public class SIATECCompressEncoding extends Encoding {
 					a, 
 					b,
 					forRSuperdiagonals,
-					r
+					r,
+					0
 					);
 			//			encoding.drawOccurrenceSets(true);
 			encoding.drawOccurrenceSets(outputFileDirectoryPath+"/"+"bwv847b-done.opnd",true);

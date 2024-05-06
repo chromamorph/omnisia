@@ -108,6 +108,7 @@ public class OMNISIA {
 	public static boolean NUM_MTPS_ONLY				= false;
 	public static CompactnessType COMPACTNESS_TYPE	= CompactnessType.BOUNDING_BOX;
 	private static File OCCURRENCE_SETS_FILE		= null;
+	private static int MORPH_OR_CHROMA				= 0;
 
 	////////////////////
 	//	Switches
@@ -155,11 +156,16 @@ public class OMNISIA {
 	private static String NUM_MTPS_ONLY_SWITCH		= "nummtpsonly";
 	private static String COMPACTNESS_TYPE_SWITCH	= "comptype";
 	private static String OCCURRENCE_SETS_FILE_SWITCH= "occsets";
+	private static String MORPH_OR_CHROMA_SWITCH	= "pitchmod";
 
 
 	////////////////////
 	//	Static methods for parsing program arguments and setting parameter values
 
+	private static void getMorphOrChroma(String[] args) {
+		MORPH_OR_CHROMA = Integer.parseInt(getValue(MORPH_OR_CHROMA_SWITCH, args));
+	}
+	
 	private static void getBasicAlgorithm(String[] args) {
 		if (inputFileIsEncodingFile())
 			BASIC_ALGORITHM = BasicAlgorithm.NONE;
@@ -684,6 +690,7 @@ public static String getParameterValuesString() {
 			"Compactness type (-"+COMPACTNESS_TYPE_SWITCH+"): " + COMPACTNESS_TYPE,
 			"Input file directory (-"+INPUT_DIR_SWITCH+"): " + INPUT_DIR,
 			"Occurrence set file (-"+OCCURRENCE_SETS_FILE_SWITCH+"): " + ((OCCURRENCE_SETS_FILE==null)?null:OCCURRENCE_SETS_FILE.getAbsolutePath()),
+			"Morph or chroma (-"+MORPH_OR_CHROMA_SWITCH+"): " + MORPH_OR_CHROMA,
 			""
 	};
 	StringBuilder sb = new StringBuilder();
@@ -844,6 +851,8 @@ private static void showHelp() {
 			"\tby parentheses. Each of these lists should contain a list of notes, where each note is a Lisp",
 			"\tlist with the format (onset pitch-name duration [voice]). In addition to the occurrence set",
 			"\tfile, the user must supply an input dataset file using the -"+INPUT_FILE_SWITCH+" switch.",
+			"",
+			"-"+MORPH_OR_CHROMA_SWITCH+"\t Value should be set to 7 for morph representation or 12 for chroma.",
 			""
 			);
 }
@@ -882,7 +891,7 @@ private static void writeSwitchesToFile(String[] args) {
 	}
 }
 
-private static void analyse(String[] args) throws MissingTieStartNoteException, FileNotFoundException, IncompatibleRecurSIAAlgorithmException {
+private static void analyse(String[] args) throws NoMorpheticPitchException, MissingTieStartNoteException, FileNotFoundException, IncompatibleRecurSIAAlgorithmException {
 	if (OUTPUT_FILE == null)
 		writeSwitchesToFile(args);
 	Encoding encoding = null;
@@ -924,7 +933,8 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 						//					boolean bbMode,
 						BB_MODE,
 						//					String omnisiaOutputFilePathString					
-						(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null)
+						(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
+						MORPH_OR_CHROMA
 				);
 
 	//		switch (BASIC_ALGORITHM) {
@@ -987,7 +997,7 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 	}
 }
 
-private static COSIATECEncoding runCOSIATEC() throws MissingTieStartNoteException, FileNotFoundException {
+private static COSIATECEncoding runCOSIATEC() throws NoMorpheticPitchException, MissingTieStartNoteException, FileNotFoundException {
 	return new COSIATECEncoding(
 			null, 
 			OUTPUT_DIR==null?null:OUTPUT_DIR.getAbsolutePath(), 
@@ -1015,7 +1025,8 @@ private static COSIATECEncoding runCOSIATEC() throws MissingTieStartNoteExceptio
 					SORT_BY_PATTERN_SIZE,
 					TEC_PRIORITY_STRING,
 					DUAL_TEC_PRIORITY_STRING,
-					COMPACTNESS_TYPE
+					COMPACTNESS_TYPE,
+					MORPH_OR_CHROMA
 			);
 }
 
@@ -1039,7 +1050,8 @@ private static SIATECCompressEncoding runSIATECCompress() {
 				BB_MODE,
 				(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
 				TOP_N_PATTERNS,
-				WITHOUT_CHANNEL_10);
+				WITHOUT_CHANNEL_10,
+				MORPH_OR_CHROMA);
 	} catch (NoMorpheticPitchException e) {
 		e.printStackTrace();
 	} catch (IOException e) {
@@ -1069,7 +1081,8 @@ private static SIAEncoding runSIA() throws MissingTieStartNoteException {
 				(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
 				TOP_N_PATTERNS,
 				WITHOUT_CHANNEL_10,
-				GPU_ACCEL);
+				GPU_ACCEL,
+				MORPH_OR_CHROMA);
 	} catch (NoMorpheticPitchException e) {
 		e.printStackTrace();
 	} catch (IOException e) {
@@ -1107,7 +1120,8 @@ private static SIATECEncoding runSIATEC() throws MissingTieStartNoteException {
 				(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
 				TOP_N_PATTERNS,
 				WITHOUT_CHANNEL_10,
-				RRT
+				RRT,
+				MORPH_OR_CHROMA
 				);
 	} catch (NoMorpheticPitchException e) {
 		e.printStackTrace();
@@ -1121,7 +1135,7 @@ private static SIATECEncoding runSIATEC() throws MissingTieStartNoteException {
 	return null;
 }
 
-private static ForthEncoding runForth() throws MissingTieStartNoteException, FileNotFoundException {
+private static ForthEncoding runForth() throws NoMorpheticPitchException, MissingTieStartNoteException, FileNotFoundException {
 	PointSet pointSet = new PointSet(INPUT_FILE.getAbsolutePath(),DIATONIC_PITCH,WITHOUT_CHANNEL_10);
 	return new ForthEncoding(
 			pointSet,
@@ -1146,11 +1160,12 @@ private static ForthEncoding runForth() throws MissingTieStartNoteException, Fil
 			(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
 			TOP_N_PATTERNS,
 			WITHOUT_CHANNEL_10,
-			true //fromOMNISA
+			true, //fromOMNISA
+			MORPH_OR_CHROMA
 			);
 }
 
-private static RecurSIAEncoding runRecurSIA() throws FileNotFoundException, MissingTieStartNoteException, IncompatibleRecurSIAAlgorithmException {
+private static RecurSIAEncoding runRecurSIA() throws NoMorpheticPitchException, FileNotFoundException, MissingTieStartNoteException, IncompatibleRecurSIAAlgorithmException {
 	return new RecurSIAEncoding(
 			//				private static File INPUT_FILE 					= null;
 			INPUT_FILE.getAbsolutePath(),
@@ -1200,7 +1215,8 @@ private static RecurSIAEncoding runRecurSIA() throws FileNotFoundException, Miss
 							SORT_BY_PATTERN_SIZE,
 							TEC_PRIORITY_STRING,
 							DUAL_TEC_PRIORITY_STRING,
-							COMPACTNESS_TYPE
+							COMPACTNESS_TYPE,
+							MORPH_OR_CHROMA
 			);
 }
 
@@ -1231,6 +1247,7 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 
 
 	getRecurSIAAlgorithm(args);
+	getMorphOrChroma(args);
 	getMIREX(args);
 	getCompactnessTrawler(args);
 	getRSuperdiagonals(args);
@@ -1310,6 +1327,8 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 	} catch (FileNotFoundException e) {
 		e.printStackTrace();
 	} catch (IncompatibleRecurSIAAlgorithmException e) {
+		e.printStackTrace();
+	} catch (NoMorpheticPitchException e) {
 		e.printStackTrace();
 	}
 	closeLogFile();

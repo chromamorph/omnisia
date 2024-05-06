@@ -10,9 +10,9 @@ class RecurSIAMtpComparator implements Comparator<MtpCisPair> {
 		PointSet ps1 = new PointSet();
 		PointSet ps2 = new PointSet();
 		ps1.addAll(o1.getMtp());
-		ps1.addAll(o1.getMtp().translate(o1.getVectorSet().get(0)));
+		ps1.addAll(o1.getMtp().translate(o1.getVectorSet().get(0), 0));
 		ps2.addAll(o2.getMtp());
-		ps2.addAll(o2.getMtp().translate(o2.getVectorSet().get(0)));
+		ps2.addAll(o2.getMtp().translate(o2.getVectorSet().get(0), 0));
 		int d = ps2.size() - ps1.size();
 		if (d != 0) return d;
 		//				Prefer larger MTP

@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 public class SIAR {
 
-	static public ArrayList<MtpCisPair> run(PointSet dataset, int r) {
+	static public ArrayList<MtpCisPair> run(PointSet dataset, int r, int morphOrChroma) {
 		System.out.println("Starting SIAR.run() with dataset of size "+dataset.size()+" and r = "+r);
 		if (dataset.isEmpty()) System.out.println(">>>>dataset is empty in SIAR.run()<<<<<<");
 		if (dataset.size() < 2) //Then there are not MTPs
@@ -16,7 +16,7 @@ public class SIAR {
 		for(int i = 0; i < dataset.size()-1; i++) {
 			int j = i+1;
 			while (j < dataset.size() && j <= i + r) {
-				VSet.add(new VectorPointPair(new Vector(dataset.get(i),dataset.get(j)),dataset.get(i)));
+				VSet.add(new VectorPointPair(new Vector(dataset.get(i),dataset.get(j), morphOrChroma),dataset.get(i),morphOrChroma));
 				j++;
 			}
 		}
@@ -49,7 +49,7 @@ public class SIAR {
 //			System.out.println("  e.size()="+e.size());
 			for(int j = 0; j < e.size()-1; j++) {
 				for(int k = j+1; k < e.size(); k++) {
-					L.add(new Vector(e.get(j),e.get(k)));
+					L.add(new Vector(e.get(j),e.get(k), morphOrChroma));
 				}
 			}
 		}
@@ -80,7 +80,7 @@ public class SIAR {
 
 		ArrayList<MtpCisPair> mtpCisPairs = new ArrayList<MtpCisPair>();
 		for(VectorFrequencyPair vf : M) {
-			PointSet pattern = dataset.intersection(dataset.translate(vf.getVector().inverse()));
+			PointSet pattern = dataset.intersection(dataset.translate(vf.getVector().inverse(),morphOrChroma));
 			VectorSet vectorSet = new VectorSet(vf.getVector());
 			MtpCisPair mtpCisPair = new MtpCisPair(pattern,dataset,vectorSet);
 			mtpCisPairs.add(mtpCisPair);

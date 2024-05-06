@@ -16,18 +16,18 @@ public class VectorizedMtpCisPair implements Comparable<VectorizedMtpCisPair> {
 		return vectorizedRepresentation;
 	}
 
-	public VectorizedMtpCisPair(MtpCisPair mtpCisPair) {
+	public VectorizedMtpCisPair(MtpCisPair mtpCisPair, int morphOrChroma) {
 		this.mtpCisPair = mtpCisPair;
 		//		System.out.println("\n  Computing VectorizedMtpCisPair for "+mtpCisPair);
-		computeVectorizedRepresentation();
+		computeVectorizedRepresentation(morphOrChroma);
 	}
 
-	private void computeVectorizedRepresentation() {
+	private void computeVectorizedRepresentation(int morphOrChroma) {
 		PointSet mtp = getMtpCisPair().getMtp();
 
 		Point firstPoint = mtp.first();
 		for(int i = 1; i < mtp.size(); i++)
-			vectorizedRepresentation.add(new Vector(firstPoint, mtp.get(i)));
+			vectorizedRepresentation.add(new Vector(firstPoint, mtp.get(i), morphOrChroma));
 	}
 
 	@Override
@@ -46,12 +46,12 @@ public class VectorizedMtpCisPair implements Comparable<VectorizedMtpCisPair> {
 	}
 
 
-	public static ArrayList<MtpCisPair> removeTranslationallyEquivalentMtps(ArrayList<MtpCisPair> mtpCisPairs) {
+	public static ArrayList<MtpCisPair> removeTranslationallyEquivalentMtps(ArrayList<MtpCisPair> mtpCisPairs, int morphOrChroma) {
 
 		TreeSet<VectorizedMtpCisPair> vectorizedMtps = new TreeSet<VectorizedMtpCisPair>();
 		System.out.println("\nComputing vectorized Mtps");
 		for(MtpCisPair mtpCisPair : mtpCisPairs)
-			vectorizedMtps.add(new VectorizedMtpCisPair(mtpCisPair));
+			vectorizedMtps.add(new VectorizedMtpCisPair(mtpCisPair, morphOrChroma));
 		System.out.println("DONE: "+vectorizedMtps.size()+" vectorized MTPs created");
 
 		/*

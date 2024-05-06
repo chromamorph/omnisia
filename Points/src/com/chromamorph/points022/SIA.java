@@ -15,11 +15,11 @@ public class SIA {
 	public static int TOTAL_NUMBER_OF_MTPs = 0;
 
 	public static VectorPointPair[][] computeVectorTable(PointSet points, boolean useGPUAcceleration) {
-		return computeVectorTable(points,null, useGPUAcceleration);
+		return computeVectorTable(points,null, useGPUAcceleration, 0);
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static VectorPointPair[][] computeVectorTableWithGPUAcceleration(PointSet points) {
+	public static VectorPointPair[][] computeVectorTableWithGPUAcceleration(PointSet points, int morphOrChroma) {
 		
 		System.out.print("\nComputing vector table with GPU acceleration...");
 		
@@ -51,13 +51,14 @@ public class SIA {
 		for (int g = 0; g < n * n; g++) {
 			vectorTable[g/n][g%n] = new VectorPointPair(vecXValues[g],vecYValues[g], 
 														pntXValues[g/n],pntYValues[g%n],
-														g/n);
+														g/n,
+														morphOrChroma);
 		}
 		System.out.println("Done!");
 		return vectorTable;
 	}
 	
-	public static VectorPointPair[][] computeVectorTable(PointSet points, PrintStream logPrintStream, boolean useGPUAcceleration) {
+	public static VectorPointPair[][] computeVectorTable(PointSet points, PrintStream logPrintStream, boolean useGPUAcceleration, int morphOrChroma) {
 		LogPrintStream.print(logPrintStream, "computeVectorTable...");
 		TreeSet<Point> pointsTreeSet = points.getPoints();
 		
@@ -74,13 +75,13 @@ public class SIA {
 		
 		long cvtStartTime = System.currentTimeMillis();
 		if (useGPUAcceleration) {
-			vectorTable = computeVectorTableWithGPUAcceleration(points);
+			vectorTable = computeVectorTableWithGPUAcceleration(points, morphOrChroma);
 		} else {
 			int i = 0;
 			for(Point p1 : pointsTreeSet) {
 				int j = 0;
 				for(Point p2 : pointsTreeSet) {
-					VectorPointPair vp = new VectorPointPair(p1,p2,i);
+					VectorPointPair vp = new VectorPointPair(p1,p2,i, morphOrChroma);
 					vectorTable[i][j] = vp;
 					//FOLLOWING TO COMPARE WITH LAAKSONEN'S PARALLEL IMPLEMENTATIONS OF SIA
 					if (OMNISIA.NUM_MTPS_ONLY)
@@ -115,7 +116,8 @@ public class SIA {
 			PrintStream logPrintStream,
 			boolean removeTranslationallyEquivalentMtps,
 			boolean mergeVectors,
-			int minPatternSize) {
+			int minPatternSize,
+			int morphOrChroma) {
 		return run (points,
 			vectorTable,
 			forRSuperdiagonals, r,
@@ -123,7 +125,8 @@ public class SIA {
 			logPrintStream,
 			removeTranslationallyEquivalentMtps,
 			mergeVectors,
-			minPatternSize,0);
+			minPatternSize,0,
+			morphOrChroma);
 	}
 	
 	public static ArrayList<MtpCisPair> run(
@@ -135,14 +138,15 @@ public class SIA {
 			boolean removeTranslationallyEquivalentMtps,
 			boolean mergeVectors,
 			int minPatternSize,
-			int maxPatternSize) throws IllegalArgumentException {
+			int maxPatternSize,
+			int morphOrChroma) throws IllegalArgumentException {
 		if (points.size() < 2) //There are no MTPs
 			return new ArrayList<MtpCisPair>();
 		if (mergeVectors && removeTranslationallyEquivalentMtps)
 			throw new IllegalArgumentException("Cannot merge vectors and remove translationally equivalent Mtps");
 		ArrayList<MtpCisPair> mtpCisPairs = null;
 		if (forRSuperdiagonals)
-			mtpCisPairs = SIAR.run(points, r);
+			mtpCisPairs = SIAR.run(points, r, morphOrChroma);
 		else {
 			LogPrintStream.print(logPrintStream,"computeMtpCisPairs...");
 			mtpCisPairs = computeMtpCisPairs(vectorTable,0);
@@ -170,12 +174,12 @@ public class SIA {
 		}
 		if (removeTranslationallyEquivalentMtps) {
 			LogPrintStream.println(logPrintStream,"\nremoveTranslationallyEquivalentMtps");
-			mtpCisPairs = VectorizedMtpCisPair.removeTranslationallyEquivalentMtps(mtpCisPairs);
+			mtpCisPairs = VectorizedMtpCisPair.removeTranslationallyEquivalentMtps(mtpCisPairs,morphOrChroma);
 		}
 		if (withCompactnessTrawler) {
 			mtpCisPairs = CompactnessTrawler.trawl(mtpCisPairs, a, b);
 			if (!mtpCisPairs.isEmpty())
-				mtpCisPairs = VectorizedMtpCisPair.removeTranslationallyEquivalentMtps(mtpCisPairs);
+				mtpCisPairs = VectorizedMtpCisPair.removeTranslationallyEquivalentMtps(mtpCisPairs,morphOrChroma);
 		}
 		return mtpCisPairs;
 	}
@@ -340,8 +344,8 @@ public class SIA {
 				null, //logPrintStream
 				false, //removeTranslationallyEquivalentMtps
 				true, //mergeVectors
-				0 //minPatternSize
-				);
+				0, //minPatternSize
+				0);
 		System.out.println("Output of run");
 		for(MtpCisPair mtpCisPair : mtpCisPairs)
 			System.out.println(mtpCisPair);

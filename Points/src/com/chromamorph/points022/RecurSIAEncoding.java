@@ -39,8 +39,9 @@ public class RecurSIAEncoding extends Encoding {
 			boolean sortByPatternSize,
 			String tecPriorityString,
 			String dualTecPriorityString,
-			CompactnessType compactnessType
-			) throws MissingTieStartNoteException, FileNotFoundException, IncompatibleRecurSIAAlgorithmException {
+			CompactnessType compactnessType,
+			int morphOrChroma
+			) throws MissingTieStartNoteException, FileNotFoundException, IncompatibleRecurSIAAlgorithmException, NoMorpheticPitchException {
 		super(null,inputFilePathString,
 				outputDirectoryPathString,
 				isDiatonic,
@@ -50,7 +51,8 @@ public class RecurSIAEncoding extends Encoding {
 				forMirex,
 				segmentMode,
 				bbMode,
-				omnisiaOutputFilePathString);
+				omnisiaOutputFilePathString,
+				morphOrChroma);
 
 		long startTime = System.currentTimeMillis();
 
@@ -110,7 +112,7 @@ public class RecurSIAEncoding extends Encoding {
 			String tecPriorityString,
 			String dualTecPriorityString,
 			CompactnessType compactnessType
-			) throws FileNotFoundException, MissingTieStartNoteException, IncompatibleRecurSIAAlgorithmException {
+			) throws NoMorpheticPitchException, FileNotFoundException, MissingTieStartNoteException, IncompatibleRecurSIAAlgorithmException {
 		Encoding encoding = new Encoding();
 		if (pointSet.isEmpty()) System.out.println(">>>>>> pointSet argument is empty in recurSIA()<<<<<<<<");
 		switch(algorithm) {
@@ -139,7 +141,8 @@ public class RecurSIAEncoding extends Encoding {
 					sortByPatternSize,
 					tecPriorityString,
 					dualTecPriorityString,
-					compactnessType); 
+					compactnessType,
+					morphOrChroma); 
 			break;
 		case SIATECCompress:
 			SIATECCompress siatecCompress = new SIATECCompress();
@@ -176,7 +179,8 @@ public class RecurSIAEncoding extends Encoding {
 					null, //omnisiaOutputFilePath
 					topNPatterns,
 					withoutChannel10, //Added 2/8/16 19:53
-					fromOMNISIA
+					fromOMNISIA,
+					morphOrChroma
 					);
 			break;
 		default: 
@@ -287,7 +291,8 @@ public class RecurSIAEncoding extends Encoding {
 						sortByPatternSize,
 						tecPriorityString,
 						dualTecPriorityString,
-						compactnessType
+						compactnessType,
+						0
 						);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -295,8 +300,9 @@ public class RecurSIAEncoding extends Encoding {
 				e.printStackTrace();
 			} catch (IncompatibleRecurSIAAlgorithmException e) {
 				e.printStackTrace();
+			} catch (NoMorpheticPitchException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-
 }

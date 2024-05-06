@@ -33,7 +33,7 @@ public class PatternPair implements Comparable<PatternPair>{
 	 * @param l A string representation of a pattern pair
 	 * @throws InvalidArgumentException 
 	 */
-	public PatternPair(String l) throws InvalidArgumentException {
+	public PatternPair(String l, int morphOrChroma) throws InvalidArgumentException {
 		if (!l.startsWith("PP("))
 			throw new InvalidArgumentException("Argument to PatternPair constructor has an invalid format.");
 		String l2 = l.trim();
@@ -47,13 +47,13 @@ public class PatternPair implements Comparable<PatternPair>{
 		pattern1 = new PointSet();
 		for(int i = 2;i < patternOneString.length()-1;i++) {
 			int pointEndPos = patternOneString.indexOf(")",i)+1;
-			pattern1.add(new Point(patternOneString.substring(i,pointEndPos)));
+			pattern1.add(new Point(patternOneString.substring(i,pointEndPos), morphOrChroma));
 			i = pointEndPos;
 		}
 		pattern2 = new PointSet();
 		for(int i = 2;i < patternTwoString.length()-1;i++) {
 			int pointEndPos = patternTwoString.indexOf(")",i)+1;
-			pattern2.add(new Point(patternTwoString.substring(i,pointEndPos)));
+			pattern2.add(new Point(patternTwoString.substring(i,pointEndPos), morphOrChroma));
 			i = pointEndPos;
 		}
 	}
@@ -79,13 +79,13 @@ public class PatternPair implements Comparable<PatternPair>{
 		return "PP("+pattern1+","+pattern2+")";
 	}
 	
-	public static TreeSet<PatternPair> readPatternPairsFromFile(String fileName) throws IOException, InvalidArgumentException {
+	public static TreeSet<PatternPair> readPatternPairsFromFile(String fileName, int morphOrChroma) throws IOException, InvalidArgumentException {
 		TreeSet<PatternPair> patternPairs = new TreeSet<PatternPair>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String l;
 		while ((l = br.readLine())!=null) {
 			if (l.startsWith("PP("))
-				patternPairs.add(new PatternPair(l));
+				patternPairs.add(new PatternPair(l, morphOrChroma));
 		}
 		br.close();
 		return patternPairs;
@@ -121,7 +121,7 @@ public class PatternPair implements Comparable<PatternPair>{
 			PointSet pointSet = new PointSet("C:/cygwin64/home/dave/laaksonen-lemstrom/bwv846b-done.pts");
 
 //			TreeSet<PatternPair> patternPairs = readPatternPairsFromFile("C:/cygwin64/home/dave/laaksonen-lemstrom/output-test.txt");
-			TreeSet<PatternPair> patternPairs = readPatternPairsFromFile("C:/cygwin64/home/dave/laaksonen-lemstrom/bwv846b-done.out");
+			TreeSet<PatternPair> patternPairs = readPatternPairsFromFile("C:/cygwin64/home/dave/laaksonen-lemstrom/bwv846b-done.out", 0);
 			patternPairs = PatternPair.removeSubsumedPatternPairs(patternPairs);
 			pointSet.draw(patternPairs);
 			System.out.println(patternPairs);

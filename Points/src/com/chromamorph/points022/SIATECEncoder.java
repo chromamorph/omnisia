@@ -13,7 +13,7 @@ public class SIATECEncoder implements Encoder {
 	private double minimumTECOverlap = 0.3;
 
 	@Override
-	public Encoding encode(final PointSet points) {
+	public Encoding encode(final PointSet points, int morphOrChroma, final CompactnessType compactnessType) {
 		long t1 = System.currentTimeMillis();
 		String thisEncoderName = this.getClass().toString();
 		System.out.println(thisEncoderName + "\n=====================================\n");
@@ -71,7 +71,7 @@ public class SIATECEncoder implements Encoder {
 		ArrayList<TEC> mtpCISPairs = new ArrayList<TEC>();
 		int m = MTPs.size();
 		for(int i = 0; i < m; i++) {
-			mtpCISPairs.add(new TEC(MTPs.get(i),CISs.get(i), points));
+			mtpCISPairs.add(new TEC(MTPs.get(i),CISs.get(i), points, morphOrChroma));
 		}
 
 		//////////////////////////////
@@ -95,7 +95,7 @@ public class SIATECEncoder implements Encoder {
 			int x = s1.getPattern().size();
 			boolean found = false;
 			for(int j = i + 1; !found && j < m && (s2 = mtpCISPairs.get(j)).getPattern().size() == x; j++) {
-				if (s1.getPattern().translationallyEquivalentTo(s2.getPattern()))
+				if (s1.getPattern().translationallyEquivalentTo(s2.getPattern(),morphOrChroma))
 					found = true;
 			}
 			if (!found)
@@ -138,11 +138,11 @@ public class SIATECEncoder implements Encoder {
 
 		for(TEC tec : newTECList) {
 			TEC dual = tec.getDual();
-			if (dual.getCompactness() >= minimumCompactness &&
+			if (dual.getCompactness(compactnessType) >= minimumCompactness &&
 				dual.getPattern().size() >= minimumPatternSize &&
 				dual.getPattern().getTemporalDensity() >= minimumTemporalDensity)
 				tecs.add(dual);
-			if (tec.getCompactness() >= minimumCompactness &&
+			if (tec.getCompactness(compactnessType) >= minimumCompactness &&
 				tec.getPattern().size() >= minimumPatternSize &&
 				tec.getPattern().getTemporalDensity() >= minimumTemporalDensity)
 				tecs.add(tec);

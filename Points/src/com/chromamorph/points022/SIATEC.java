@@ -9,13 +9,15 @@ public class SIATEC {
 			VectorPointPair[][] vectorTable, 
 			ArrayList<MtpCisPair> mtpCisPairs, 
 			int minMtpSize, 
-			int minTranslatorSetSize) {
+			int minTranslatorSetSize,
+			int morphOrChroma) {
 		return computeMtpTecs(points, 
 			vectorTable, 
 			mtpCisPairs, 
 			minMtpSize,
 			0,
-			minTranslatorSetSize);
+			minTranslatorSetSize,
+			morphOrChroma);
 	}
 	public static ArrayList<TEC> computeMtpTecs(
 			PointSet points, 
@@ -23,7 +25,8 @@ public class SIATEC {
 			ArrayList<MtpCisPair> mtpCisPairs, 
 			int minMtpSize,
 			int maxMtpSize,
-			int minTranslatorSetSize) {
+			int minTranslatorSetSize,
+			int morphOrChroma) {
 		System.out.println("\ncomputeMtpTecs");
 		if (points.size() < 2) //There are no MTPs 
 			return new ArrayList<TEC>();
@@ -37,7 +40,7 @@ public class SIATEC {
 				System.out.println();
 				System.out.flush();
 			}
-			TEC tec = computeTEC(mtpCisPairs.get(i), points, vectorTable);
+			TEC tec = computeTEC(mtpCisPairs.get(i), points, vectorTable, morphOrChroma);
 			if (tec.getPatternSize() >= minMtpSize && tec.getTranslatorSetSize() >= minTranslatorSetSize && (maxMtpSize==0 || tec.getPatternSize() <= maxMtpSize))
 				tecs.add(tec);
 		}
@@ -46,7 +49,7 @@ public class SIATEC {
 		return tecs;
 	}
 	
-	public static TEC computeTEC(MtpCisPair mtpCisPair, PointSet points, VectorPointPair[][] vectorTable) {
+	public static TEC computeTEC(MtpCisPair mtpCisPair, PointSet points, VectorPointPair[][] vectorTable, int morphOrChroma) {
 		VectorSet translators = new VectorSet();
 		Integer[] cols = new Integer[mtpCisPair.getCis().size()];
 		mtpCisPair.getCis().toArray(cols);
@@ -67,7 +70,7 @@ public class SIATEC {
 			if (found || patSize == 1) translators.add(v0);
 			rows[0]++;
 		}
-		return new TEC(mtpCisPair.getMtp(),translators,points);
+		return new TEC(mtpCisPair.getMtp(),translators,points,morphOrChroma);
 	}
 
 }

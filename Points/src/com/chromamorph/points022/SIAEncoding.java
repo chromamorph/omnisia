@@ -28,14 +28,16 @@ public class SIAEncoding extends Encoding {
 	public SIAEncoding(String inputFilePathName,
 			String outputDirectoryPathName,
 			boolean forRSubdiagonals, int r,
-			boolean withCompactnessTrawler, double a, int b) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withCompactnessTrawler, double a, int b,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(inputFilePathName,
 				outputDirectoryPathName,
 				0,
 				PitchRepresentation.MORPHETIC_PITCH,
 				false,
 				forRSubdiagonals, r,
-				withCompactnessTrawler, a, b);		
+				withCompactnessTrawler, a, b,
+				morphOrChroma);		
 	}
 
 	public SIAEncoding(String inputFilePathName, 
@@ -49,7 +51,7 @@ public class SIAEncoding extends Encoding {
 				pitchRepresentation, 
 				drawOutput,
 				false, 0,
-				false, 0.0, 0);
+				false, 0.0, 0, 0);
 	}
 
 	public SIAEncoding(String inputFilePathName, 
@@ -58,7 +60,8 @@ public class SIAEncoding extends Encoding {
 			PitchRepresentation pitchRepresentation, 
 			boolean drawOutput,
 			boolean forRSubdiagonals, int r,
-			boolean withCompactnessTrawler, double a, int b) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withCompactnessTrawler, double a, int b,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(inputFilePathName, 
 				outputDirectoryPathName, 
 				minPatternSize,
@@ -73,7 +76,8 @@ public class SIAEncoding extends Encoding {
 				null, //omnisiaOutputFilePath
 				0, //topNPatterns
 				false, //withoutChannel10
-				false //useGPUAcceleration
+				false, //useGPUAcceleration
+				morphOrChroma
 				);
 	}
 
@@ -89,7 +93,8 @@ public class SIAEncoding extends Encoding {
 			String omnisiaOutputFilePath,
 			int topNPatterns,
 			boolean withoutChannel10,
-			boolean useGPUAcceleration) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean useGPUAcceleration,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		super(null,
 				inputFilePathName,
 				outputDirectoryPathName,
@@ -100,7 +105,8 @@ public class SIAEncoding extends Encoding {
 				mirex,
 				segmentMode,
 				bbMode,
-				omnisiaOutputFilePath
+				omnisiaOutputFilePath,
+				morphOrChroma
 				);
 		long startTime = System.currentTimeMillis();
 		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset,useGPUAcceleration);
@@ -133,7 +139,7 @@ public class SIAEncoding extends Encoding {
 				PointSet pattern = patternVectorSetPair.getMtp();
 				VectorSet vectorSet = patternVectorSetPair.getVectorSet();
 				vectorSet.add(new Vector(0,0));
-				addTEC(new TEC(pattern,vectorSet,dataset));
+				addTEC(new TEC(pattern,vectorSet,dataset,morphOrChroma));
 			}
 			
 			writeToFile();			
@@ -142,7 +148,7 @@ public class SIAEncoding extends Encoding {
 	}	
 
 
-	public static void main(String[] args) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException {
+	public static void main(String[] args) {
 		//		String inputFilePath = "/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/Lartillot/ClosedSubstrings001.opnd";
 		//		String outputFileDirectoryPath = "/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/Lartillot";
 		String inputFilePath = "/Users/dave/Documents/Work/Research/2014-09-15-workspace/Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv847b-done.opnd";
@@ -161,9 +167,10 @@ public class SIAEncoding extends Encoding {
 					r,
 					withCompactnessTrawler, 
 					a, 
-					b);
+					b,
+					0);
 			encoding.draw();
-		} catch (MissingTieStartNoteException e) {
+		} catch (MissingTieStartNoteException|NoMorpheticPitchException|IOException|UnimplementedInputFileFormatException|InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
 	}

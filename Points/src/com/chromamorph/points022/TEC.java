@@ -16,6 +16,7 @@ public class TEC implements Comparable<TEC>{
 	private boolean isDual = false;
 	private ArrayList<TEC> patternTecs = null;
 	private Double segmentCompactness = null;
+	private int morphOrChroma = 0;
 
 	public TEC() {}
 
@@ -45,32 +46,37 @@ public class TEC implements Comparable<TEC>{
 				newTEC.patternTecs.add(patternTec.copy());
 		}
 		newTEC.translators = translators.copy();
+		newTEC.morphOrChroma = morphOrChroma;
 		newTEC.reset();
 		return newTEC;
 	}
 	
-	public TEC(PointSet pattern, PointSet dataset) {
+	public TEC(PointSet pattern, PointSet dataset, int morphOrChroma) {
 		setPattern(pattern);
 		setDataset(dataset);
 		translators.add(new Vector(0,0));
+		this.morphOrChroma = morphOrChroma;
 	}
 
-	public TEC(PointSet pointSet, ArrayList<Integer> cis, PointSet dataSet) {
+	public TEC(PointSet pointSet, ArrayList<Integer> cis, PointSet dataSet, int morphOrChroma) {
 		setPattern(pointSet);
 		this.cis = cis;
 		setDataset(dataSet);
+		this.morphOrChroma = morphOrChroma;
 	}
 
-	public TEC(PointSet pattern, VectorSet translators, PointSet dataset) {
+	public TEC(PointSet pattern, VectorSet translators, PointSet dataset, int morphOrChroma) {
 		setPattern(pattern);
 		setTranslators(translators);
 		setDataset(dataset);
+		this.morphOrChroma = morphOrChroma;
 	}
 
-	public TEC(ArrayList<TEC> patternTecs, VectorSet translators, PointSet dataset) {
+	public TEC(ArrayList<TEC> patternTecs, VectorSet translators, PointSet dataset, int morphOrChroma) {
 		setPatternTecs(patternTecs);
 		setTranslators(translators);
 		setDataset(dataset);
+		this.morphOrChroma = morphOrChroma;
 	}
 
 	public void setPatternTecs(ArrayList<TEC> patternTecs) {
@@ -89,8 +95,8 @@ public class TEC implements Comparable<TEC>{
 	 * where x and y are integers.
 	 * @param l
 	 */
-	public TEC(String l) {
-		PointSet pointSet = PointSet.getPointSetFromString(l);
+	public TEC(String l,int morphOrChroma) {
+		PointSet pointSet = PointSet.getPointSetFromString(l,morphOrChroma);
 		VectorSet vectorSet = VectorSet.getVectorSetFromString(l);
 		setPattern(pointSet);
 		setTranslators(vectorSet);
@@ -133,7 +139,7 @@ public class TEC implements Comparable<TEC>{
 	public String toString() {
 		String outString = null;
 		if (pattern != null) { // In this TEC, the pattern is just a point set
-			PointSet normalizedPattern = pattern.translate(translators.get(0));
+			PointSet normalizedPattern = pattern.translate(translators.get(0),morphOrChroma);
 			VectorSet normalizedTranslators = translators.translate(translators.get(0).inverse());
 			outString = "T("+normalizedPattern+","+normalizedTranslators+")";
 		}
@@ -183,7 +189,7 @@ public class TEC implements Comparable<TEC>{
 		PointSet patt = getPattern();
 		TreeSet<Vector> vectors = translators.getVectors();
 		for(Vector vector : vectors)
-			newCoveredSet.addAll(patt.translate(vector)); //Translators includes zero vector.
+			newCoveredSet.addAll(patt.translate(vector,morphOrChroma)); //Translators includes zero vector.
 		coveredPoints = newCoveredSet;
 		return coveredPoints;
 	}
@@ -219,7 +225,7 @@ public class TEC implements Comparable<TEC>{
 		if (compactness != null) return compactness;
 		compactness = 0.0;
 		for(Vector v : getTranslators().getVectors()) {
-			double c = getPattern().translate(v).getCompactness(getDataset(), compactnessType);
+			double c = getPattern().translate(v, morphOrChroma).getCompactness(getDataset(), compactnessType, morphOrChroma);
 			if (c > compactness) compactness = c;
 		}
 		return compactness;
@@ -229,7 +235,7 @@ public class TEC implements Comparable<TEC>{
 		if (segmentCompactness != null) return segmentCompactness;
 		segmentCompactness = 0.0;
 		for(Vector v : getTranslators().getVectors()) {
-			double c = getPattern().translate(v).getSegmentCompactness(getDataset());
+			double c = getPattern().translate(v, morphOrChroma).getSegmentCompactness(getDataset());
 			if (c > segmentCompactness) segmentCompactness = c;
 		}
 		return segmentCompactness;
@@ -255,10 +261,10 @@ public class TEC implements Comparable<TEC>{
 		Point firstPoint = getPattern().first();
 		dual.pattern.add(firstPoint);
 		for(Vector v : translators.getVectors())
-			dual.pattern.add(firstPoint.translate(v));
+			dual.pattern.add(firstPoint.translate(v, morphOrChroma));
 		TreeSet<Point> patternPoints = getPattern().getPoints();
 		for(Point p : patternPoints)
-			dual.translators.add(new Vector(firstPoint,p));
+			dual.translators.add(new Vector(firstPoint,p, morphOrChroma));
 		dual.reset();
 		dual.dataset = dataset;
 		dual.setDual(true);
@@ -270,7 +276,7 @@ public class TEC implements Comparable<TEC>{
 		TreeSet<Point> patternPoints = getPattern().getPoints();
 		for(Point p : patternPoints)
 			for(Vector v : translators.getVectors())
-				pfs.addPoint(p.translate(v));
+				pfs.addPoint(p.translate(v, morphOrChroma));
 		return pfs;
 	}
 
@@ -324,7 +330,7 @@ public class TEC implements Comparable<TEC>{
 		TreeSet<VectorPointPair> siamTable = new TreeSet<VectorPointPair>();
 		for(Point p1 : getPattern().getPoints()) 
 			for(PointFreq p2 : pfs.getMultiPoints()) 
-				siamTable.add(new VectorPointPair(p1,p2.getPoint()));
+				siamTable.add(new VectorPointPair(p1,p2.getPoint(), morphOrChroma));
 
 //		String siamTableLatexString = getSIAMTableLatexString(siamTable);
 //		System.out.println("\n"+siamTableLatexString);
@@ -364,7 +370,7 @@ public class TEC implements Comparable<TEC>{
 		for(Vector vec : removableVectors) {
 			TreeSet<Point> patternPoints = getPattern().getPoints();
 			for(Point pnt : patternPoints) {
-				Point newPoint = pnt.translate(vec);
+				Point newPoint = pnt.translate(vec, morphOrChroma);
 				PointFreq pf = remVecPFS.addPoint(newPoint,vec);
 				if (pf.getFreq() == pfs.getFreq(newPoint)) { 
 					//Then we've removed all instances of this point
@@ -513,7 +519,7 @@ public class TEC implements Comparable<TEC>{
 		TreeSet<Vector> translators = getTranslators().getVectors();
 		PointSet patternPointSet = getPattern();
 		for (Vector vector : translators) {
-			pointSets.add(patternPointSet.translate(vector));
+			pointSets.add(patternPointSet.translate(vector, morphOrChroma));
 		}
 		return pointSets;
 	}
@@ -545,7 +551,7 @@ public class TEC implements Comparable<TEC>{
 		//		TECQualityComparator comp = new TECQualityComparator();
 		//		System.out.println(comp.compare(tec, dual));
 		
-		TEC tec1 = new TEC("T(P(p(1,1),p(2,2),p(3,3)),V(v(0,0),v(1,1),v(2,2),v(3,3),v(4,4)))");
+		TEC tec1 = new TEC("T(P(p(1,1),p(2,2),p(3,3)),V(v(0,0),v(1,1),v(2,2),v(3,3),v(4,4)))", 0);
 		System.out.println(tec1.getLatexString());
 		tec1.removeRedundantTranslators();
 		System.out.println(tec1.getPattern());

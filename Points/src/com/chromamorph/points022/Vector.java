@@ -1,5 +1,7 @@
 package com.chromamorph.points022;
 
+import com.chromamorph.maths.Maths;
+
 public class Vector implements Comparable<Vector>{
 	private long x;
 	private int y;
@@ -14,9 +16,12 @@ public class Vector implements Comparable<Vector>{
 		setY(y);
 	}
 	
-	public Vector(Point p, Point q) {
+	public Vector(Point p, Point q, int morphOrChroma) {
 		setX(q.getX()-p.getX());
-		setY(q.getY()-p.getY());
+		int newY = q.getY()-p.getY();
+		if (morphOrChroma != 0)
+			newY = Maths.mod(newY, morphOrChroma);
+		setY(newY);
 	}
 	
 	/**

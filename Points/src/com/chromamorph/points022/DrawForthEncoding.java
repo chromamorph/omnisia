@@ -10,7 +10,7 @@ public class DrawForthEncoding {
 	public static void main(String[] args) {
 		try {
 			PointSet dataset;
-			dataset = new PointSet("/Users/dave/Documents/Work/Research/Data/Francois/07-map-GM.mid", PitchRepresentation.MORPHETIC_PITCH);
+			dataset = new PointSet("/Users/dave/Documents/Work/Research/Data/Francois/07-map-GM.mid", PitchRepresentation.MORPHETIC_PITCH, 0);
 			ForthEncoding encoding = new ForthEncoding("/Users/dave/Documents/Work/Research/Data/Francois/07-map-GM/Forth/07-map-GM.alltecs",dataset);
 			encoding.draw();
 		} catch (NoMorpheticPitchException e) {

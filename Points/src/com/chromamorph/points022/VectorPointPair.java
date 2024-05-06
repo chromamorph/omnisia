@@ -5,27 +5,32 @@ public class VectorPointPair implements Comparable<VectorPointPair>{
 	private Vector vector;
 	private Point point;
 	private Integer index;
+	private int morphOrChroma = 0;
 
-	public VectorPointPair(Point p1, Point p2, int columnIndex) {
-		vector = new Vector(p1,p2);
+	public VectorPointPair(Point p1, Point p2, int columnIndex, int morphOrChroma) {
+		vector = new Vector(p1,p2, morphOrChroma);
 		point = p1;
 		this.index = columnIndex;
+		this.morphOrChroma = morphOrChroma;
 	}
 	
-	public VectorPointPair(long vecX, int vecY, long pntX, int pntY, int colIndex) {
+	public VectorPointPair(long vecX, int vecY, long pntX, int pntY, int colIndex, int morphOrChroma) {
 		vector = new Vector(vecX, vecY);
 		point = new Point(pntX, pntY);
 		index = colIndex;
+		this.morphOrChroma = morphOrChroma;
 	}
 	
-	public VectorPointPair(Point p1, Point p2) {
-		vector = new Vector(p1,p2);
+	public VectorPointPair(Point p1, Point p2, int morphOrChroma) {
+		vector = new Vector(p1,p2, morphOrChroma);
 		point = p1;
+		this.morphOrChroma = morphOrChroma;
 	}
 	
-	public VectorPointPair(Vector v, Point p) {
+	public VectorPointPair(Vector v, Point p, int morphOrChroma) {
 		this.vector = v;
 		this.point = p;
+		this.morphOrChroma = morphOrChroma;
 	}
 
 	@Override

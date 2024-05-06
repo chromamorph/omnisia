@@ -125,7 +125,7 @@ public class ViewCOSEncoding {
 
 		ArrayList<TEC> tecs = new ArrayList<TEC>();
 		for(int i = 0; i < tecStrings.size(); i++)
-			tecs.add(new TEC(tecStrings.get(i)));
+			tecs.add(new TEC(tecStrings.get(i),0));
 
 		return tecs;
 	}

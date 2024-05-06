@@ -16,7 +16,8 @@ public class SIATECEncoding extends Encoding {
 			String inputFilePath,
 			String outputDirectoryPath,
 			boolean forRSuperdiagonals, int r,
-			boolean withCompactnessTrawler, double a, int b) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withCompactnessTrawler, double a, int b,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(null,
 				inputFilePath,
 				outputDirectoryPath,
@@ -25,7 +26,8 @@ public class SIATECEncoding extends Encoding {
 				false, //drawOutput
 				false, //verbose
 				forRSuperdiagonals, r,
-				withCompactnessTrawler, a, b);
+				withCompactnessTrawler, a, b,
+				morphOrChroma);
 	}
 
 	public SIATECEncoding(String inputFilePathName, String outputDirectoryPathName, Integer minPatternSize, PitchRepresentation pitchRepresentation, boolean drawOutput) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
@@ -37,7 +39,8 @@ public class SIATECEncoding extends Encoding {
 				drawOutput, 
 				false, //verbose
 				false, 0,
-				false, 0.0, 0);
+				false, 0.0, 0,
+				0);
 	}
 
 	public SIATECEncoding(PointSet pointSet, 
@@ -48,7 +51,8 @@ public class SIATECEncoding extends Encoding {
 			boolean drawOutput, 
 			boolean verbose,
 			boolean forRSuperdiagonals, int r,
-			boolean withCompactnessTrawler, double a, int b) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withCompactnessTrawler, double a, int b,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(pointSet, 
 				inputFilePathNameOrOutputFileName, 
 				outputDirectoryPathName, 
@@ -58,7 +62,8 @@ public class SIATECEncoding extends Encoding {
 				drawOutput, 
 				verbose,
 				forRSuperdiagonals, r,
-				withCompactnessTrawler, a, b);
+				withCompactnessTrawler, a, b,
+				morphOrChroma);
 	}
 
 	public SIATECEncoding(PointSet pointSet, 
@@ -70,7 +75,8 @@ public class SIATECEncoding extends Encoding {
 			boolean drawOutput, 
 			boolean verbose,
 			boolean forRSuperdiagonals, int r,
-			boolean withCompactnessTrawler, double a, int b) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean withCompactnessTrawler, double a, int b,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(pointSet, 
 				inputFilePathNameOrOutputFileName, 
 				outputDirectoryPathName, 
@@ -86,7 +92,8 @@ public class SIATECEncoding extends Encoding {
 				null,
 				0,
 				true, //withoutChannel10
-				false //removeRedundantTranslators
+				false, //removeRedundantTranslators
+				morphOrChroma
 				);
 
 	}
@@ -106,7 +113,8 @@ public class SIATECEncoding extends Encoding {
 			String omnisiaOutputFilePath,
 			int topNPatterns,
 			boolean withoutChannel10,
-			boolean removeRedundantTranslators) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean removeRedundantTranslators,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(pointSet, 
 			inputFilePathNameOrOutputFileName, 
 			outputDirectoryPathName, 
@@ -123,7 +131,8 @@ public class SIATECEncoding extends Encoding {
 			topNPatterns,
 			withoutChannel10,
 			removeRedundantTranslators,
-			false // calledFromForthEncoding
+			false, // calledFromForthEncoding
+			morphOrChroma
 				);
 	}
 	
@@ -143,7 +152,8 @@ public class SIATECEncoding extends Encoding {
 			int topNPatterns,
 			boolean withoutChannel10,
 			boolean removeRedundantTranslators,
-			boolean calledFromForthEncoding) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+			boolean calledFromForthEncoding,
+			int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		super(
 				pointSet,
 				inputFilePathNameOrOutputFileName,
@@ -155,7 +165,8 @@ public class SIATECEncoding extends Encoding {
 				mirex,
 				segmentMode,
 				bbMode,
-				omnisiaOutputFilePath
+				omnisiaOutputFilePath,
+				morphOrChroma
 				);
 		if (pointSet.isEmpty())
 			System.out.println(">>>>>pointSet is empty in SIATECEncoding constructor<<<<<");
@@ -351,47 +362,5 @@ public class SIATECEncoding extends Encoding {
 //		return sb.toString();
 //	}
 
-	public static void main(String[] args) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException {
-		//		String inputFilePath = "/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/Lartillot/ClosedSubstrings001.opnd";
-		//		String outputFileDirectoryPath = "/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/Lartillot";
-		//		String inputFilePath = "/Users/dave/Documents/Work/Research/2014-09-15-workspace/Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv847b-done.opnd";
-		//		String outputFileDirectoryPath = "/Users/dave/Documents/Work/Research/2014-09-15-workspace/Points/output/points018";
-		//		String inputFilePath = "/Users/dave/Documents/Work/Research/Data/Mozart-Haydn/Themefinder/Haydn/op74n1-04.mid";
-//		String inputFilePath = "/Users/dave/Documents/Work/Research/Data/Sony/From Emmanuel/to David Meredith/SC045 - Buddha Bar - Bestof by Ravin 2013 - Alfida - Allaya Lee.mid";
-//		String outputFileDirectoryPath = "/Users/dave/Documents/Work/Research/2015-02-15-workspace/Points/output/points018";
-//		boolean forRSubdiagonals = false;
-//		int r = 0;
-//		boolean withCompactnessTrawler = false;
-//		double a = 1.0;
-//		int b = 2;
-//		int minPatternSize = 5;
-//		PointSet pointSet = null;
-//		PitchRepresentation pitchRepresentation = PitchRepresentation.CHROMATIC_PITCH;
-//		boolean drawOutput = true;
-//		boolean verbose = false;
-//		SIATECEncoding encoding = new SIATECEncoding(
-//				inputFilePath,
-//				outputFileDirectoryPath,
-//				forRSubdiagonals, 
-//				r,
-//				withCompactnessTrawler, 
-//				a, 
-//				b);
-
-		//		SIATECEncoding encoding = new SIATECEncoding(
-		//				pointSet, 
-		//				inputFilePath, 
-		//				outputFileDirectoryPath, 
-		//				minPatternSize, 
-		//				pitchRepresentation, 
-		//				drawOutput, 
-		//				verbose,
-		//				forRSubdiagonals, 
-		//				r,
-		//				withCompactnessTrawler, 
-		//				a, 
-		//				b);
-//		encoding.draw();
-	}
 
 }

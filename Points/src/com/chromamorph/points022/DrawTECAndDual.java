@@ -13,7 +13,7 @@ public class DrawTECAndDual {
 			Notes notes;
 			notes = Notes.fromOPND(opndFileName);
 			PointSet dataset;
-			dataset = new PointSet(notes,true);
+			dataset = new PointSet(notes,true,0);
 			COSIATECEncoding E = new COSIATECEncoding(dataset);
 			for(TEC tec : E.getTECs()) {
 				tecs.add(tec);

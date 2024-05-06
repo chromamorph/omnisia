@@ -67,6 +67,7 @@ public class DrawPoints extends PApplet {
 	private ArrayList<String> outputFilePathStrings = null;
 	private int outputFileIndex = 0;
 	private boolean firstTime = true;
+	private int morphOrChroma = 0;
 
 	public DrawPoints() {
 		super();
@@ -393,8 +394,8 @@ public class DrawPoints extends PApplet {
 		return outputString;
 	}
 
-	public void loadEncodingFromFile(String outputFilePath) {
-		Encoding encoding = new Encoding(outputFilePath);
+	public void loadEncodingFromFile(String outputFilePath, int morphOrChroma) {
+		Encoding encoding = new Encoding(outputFilePath, morphOrChroma);
 		points = encoding.getDataset();
 		occurrenceSets = encoding.getOccurrenceSets();
 		diatonicPitch = encoding.isDiatonic();
@@ -407,7 +408,7 @@ public class DrawPoints extends PApplet {
 	public void draw() {
 		if (outputFilePathStrings != null && !firstTime && outputFileIndex < outputFilePathStrings.size()) {
 			outputFilePath = outputFilePathStrings.get(outputFileIndex);
-			loadEncodingFromFile(outputFilePath); //Needs to load points and occurrenceSets
+			loadEncodingFromFile(outputFilePath, morphOrChroma); //Needs to load points and occurrenceSets
 			maxDataY = OMNISIA.RHYTHM_ONLY?max(occurrenceSets.size()+1,1):max(points.getMaxY(),1);
 			maxDataX = (long) max(points.getMaxX(),1);
 			minDataY = min(points.getMinY(),0);
@@ -440,7 +441,7 @@ public class DrawPoints extends PApplet {
 		else if (occurrenceSets != null)
 			drawOccurrenceSet();
 		else if (tecs != null && !tecs.isEmpty())
-			drawTEC();
+			drawTEC(morphOrChroma);
 		else if (patternPairs != null) {
 			drawPatternPair();
 		}
@@ -658,7 +659,7 @@ public class DrawPoints extends PApplet {
 		}
 	}
 
-	private void drawTEC() {
+	private void drawTEC(int morphOrChroma) {
 		int col = color(255,0,0);
 		if (tec.isDual())
 			col = color(0,0,255);
@@ -676,9 +677,9 @@ public class DrawPoints extends PApplet {
 		drawRectangle(topLeft,bottomRight);
 		for(Vector v : tec.getTranslators().getVectors()) {
 			for(Point p : tec.getPattern().getPoints()) {
-				drawPoint(p.translate(v),col,col,1f,ROUND,2,2);
+				drawPoint(p.translate(v, morphOrChroma),col,col,1f,ROUND,2,2);
 			}
-			Point tl = topLeft.translate(v), br = bottomRight.translate(v); 
+			Point tl = topLeft.translate(v, morphOrChroma), br = bottomRight.translate(v, morphOrChroma); 
 			drawRectangle(tl,br);
 		}
 	}
@@ -771,7 +772,7 @@ public class DrawPoints extends PApplet {
 
 		//Draw occurrences
 		for(Vector v : patternVectorSetPair.getVectorSet().getVectors())
-			drawPatternWithBoundingBox(patternVectorSetPair.getMtp().translate(v), occurrenceColor, 1);
+			drawPatternWithBoundingBox(patternVectorSetPair.getMtp().translate(v, morphOrChroma), occurrenceColor, 1);
 	}
 
 	private void drawPatternWithBoundingBox(PointSet pattern, int color, int pointSize) {
@@ -956,7 +957,7 @@ public class DrawPoints extends PApplet {
 		if (points != null && points.isEmpty() && outputFilePathStrings == null) exit();
 		if (outputFilePathStrings != null) {
 			outputFilePath = outputFilePathStrings.get(outputFileIndex);
-			loadEncodingFromFile(outputFilePath); //Needs to load points and occurrenceSets
+			loadEncodingFromFile(outputFilePath, morphOrChroma); //Needs to load points and occurrenceSets
 			outputFileIndex++;			
 		}
 		minScreenX = margin;

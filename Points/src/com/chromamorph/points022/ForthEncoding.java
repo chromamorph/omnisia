@@ -62,7 +62,7 @@ public class ForthEncoding extends Encoding {
 		//			allTecs = new ArrayList<TEC>();
 		for(int i = 0; i < tecStrings.size(); i++) {
 			//			System.out.println("tecString: "+tecStrings.get(i));
-			TEC tec = new TEC(tecStrings.get(i));
+			TEC tec = new TEC(tecStrings.get(i), morphOrChroma);
 			//			System.out.println("TEC "+i+": "+tec);
 			//			System.out.println("getTECs() = "+getTECs());
 			getTECs().add(tec);
@@ -93,8 +93,9 @@ public class ForthEncoding extends Encoding {
 			String omnisiaOutputFilePath,
 			int topNPatterns,
 			boolean withoutChannel10,
-			boolean fromOMNISIA
-			) throws MissingTieStartNoteException, FileNotFoundException {
+			boolean fromOMNISIA,
+			int morphOrChroma
+			) throws NoMorpheticPitchException, MissingTieStartNoteException, FileNotFoundException {
 		super(pointSet,
 				inputFilePathOrOutputFileName,
 				outputDirectoryPath,
@@ -105,7 +106,8 @@ public class ForthEncoding extends Encoding {
 						mirex,
 						segmentMode,
 						bbMode,
-						omnisiaOutputFilePath);
+						omnisiaOutputFilePath,
+						morphOrChroma);
 		if (pointSet.isEmpty())
 			System.out.println(">>>>> pointSet argument is empty in ForthEncoding constructor <<<<<<");
 		this.compVHigh = compVHigh;
@@ -139,7 +141,8 @@ public class ForthEncoding extends Encoding {
 					topNPatterns,
 					withoutChannel10,
 					removeRedundantTranslators,
-					true //Called from ForthEncoding
+					true, //Called from ForthEncoding
+					morphOrChroma
 					);
 			ArrayList<TEC> tecs = siatecEncoding.getTECs();
 			System.out.println("DONE: "+tecs.size()+" TECs found");
@@ -216,7 +219,7 @@ public class ForthEncoding extends Encoding {
 			PointSet uncoveredPoints = dataset.diff(coveredSetOfAllTecs);
 			//			Now add uncoveredPoints as a residual point set TEC to alltecs
 			if (!uncoveredPoints.isEmpty())
-				addTEC(new TEC(uncoveredPoints,dataset));
+				addTEC(new TEC(uncoveredPoints,dataset, morphOrChroma));
 
 			if (removeRedundantTranslators)
 				SIATECCompress.removeRedundantTranslators(getTECs());
@@ -341,7 +344,7 @@ public class ForthEncoding extends Encoding {
 		TreeSet<Vector> vectors = tec.getTranslators().getVectors();
 		PointSet pattern = tec.getPattern();
 		for(Vector v : vectors) {
-			PointSet thisPattern = pattern.translate(v);
+			PointSet thisPattern = pattern.translate(v, morphOrChroma);
 			double thisWCompV = (thisPattern.size() * 1.0)/segV(thisPattern).size();
 			if (maxWCompV == null || thisWCompV > maxWCompV)
 				maxWCompV = thisWCompV;

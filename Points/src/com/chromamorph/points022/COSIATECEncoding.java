@@ -56,7 +56,7 @@ public class COSIATECEncoding extends Encoding {
 		//store these TECs in a new list.
 
 		for(int i = 0; i < tecStrings.size(); i++)
-			getTECs().add(new TEC(tecStrings.get(i)));
+			getTECs().add(new TEC(tecStrings.get(i), morphOrChroma));
 
 		//Now we need to find the complete set of points covered 
 		//by the set of TECs that we've just read in.
@@ -100,7 +100,8 @@ public class COSIATECEncoding extends Encoding {
 			boolean sortPatternsBySize,
 			String tecPriorityString,
 			String dualTecPriorityString,
-			CompactnessType compactnessType) throws MissingTieStartNoteException, FileNotFoundException {
+			CompactnessType compactnessType,
+			int morphOrChroma) throws NoMorpheticPitchException, MissingTieStartNoteException, FileNotFoundException {
 		super(dataset,inputFilePathString,
 				outputDirectoryPathString,
 				diatonicPitch,
@@ -110,7 +111,8 @@ public class COSIATECEncoding extends Encoding {
 				mirex,
 				segmentMode,
 				bbMode,
-				omnisiaOutputFilePathString);
+				omnisiaOutputFilePathString,
+				morphOrChroma);
 
 		try {
 
@@ -132,7 +134,8 @@ public class COSIATECEncoding extends Encoding {
 						sortPatternsBySize,
 						tecPriorityString,
 						dualTecPriorityString,
-						compactnessType);
+						compactnessType,
+						morphOrChroma);
 				getTECs().add(bestTEC);
 				points.remove(bestTEC.getCoveredPoints());
 			}
@@ -161,18 +164,19 @@ public class COSIATECEncoding extends Encoding {
 			boolean sortPatternsBySize,
 			String tecPriorityString,
 			String dualTecPriorityString,
-			CompactnessType compactnessType) {
+			CompactnessType compactnessType,
+			int morphOrChroma) {
 		if (points.isEmpty())
 			throw new IllegalArgumentException("getBestTEC called with empty point set!");
 		System.out.println("getBestTEC:");
 		if (points.size() == 1) {
 			TEC tec = new TEC(points.copy(), //NOTE THAT points HAS TO BE COPIED BECAUSE THE POINT IS REMOVED LATER!!! 
-					new VectorSet(new Vector(0,0)), points);
+					new VectorSet(new Vector(0,0)), points, morphOrChroma);
 			System.out.println("\n\n____________\ngetBestTEC given a point set of size 1: " + points+"\nReturning TEC: "+tec+"\n______________\n\n");
 			return tec;
 		}
 
-		VectorPointPair[][] vectorTable = SIA.computeVectorTable(points,logPrintStream, false);
+		VectorPointPair[][] vectorTable = SIA.computeVectorTable(points,logPrintStream, false, morphOrChroma);
 		ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
 				points, 
 				vectorTable, 
@@ -189,7 +193,7 @@ public class COSIATECEncoding extends Encoding {
 
 		if (mtpCisPairs.isEmpty()) {
 			LogPrintStream.println(logPrintStream, "No remaining patterns after trawling, so remainder of dataset returned as TEC!");
-			TEC bestTEC = new TEC(points.copy(), new VectorSet(new Vector(0,0)), dataset);
+			TEC bestTEC = new TEC(points.copy(), new VectorSet(new Vector(0,0)), dataset, morphOrChroma);
 			LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness(OMNISIA.COMPACTNESS_TYPE))+ ") "+bestTEC.toString());
 			return bestTEC;
 		}
@@ -247,7 +251,7 @@ public class COSIATECEncoding extends Encoding {
 		}
 
 		if (bestTEC == null)
-			bestTEC = new TEC(points.copy(),new VectorSet(new Vector(0,0)),dataset);
+			bestTEC = new TEC(points.copy(),new VectorSet(new Vector(0,0)),dataset, morphOrChroma);
 
 		LogPrintStream.println(logPrintStream, "\nBest TEC: ("+String.format("%.2f",bestTEC.getCompressionRatio())+","+ String.format("%.2f", bestTEC.getCompactness(OMNISIA.COMPACTNESS_TYPE))+ ") "+bestTEC.toString());
 		return bestTEC;
@@ -276,7 +280,7 @@ public class COSIATECEncoding extends Encoding {
 			rows[0]++;
 		}
 
-		return new TEC(mtpCisPair.getMtp(),translators,this.dataset);
+		return new TEC(mtpCisPair.getMtp(),translators,this.dataset, morphOrChroma);
 	}
 
 
@@ -309,7 +313,7 @@ public class COSIATECEncoding extends Encoding {
 		boolean diatonic = false;
 		if (encodingFileName.contains("diat"))
 			diatonic = true;
-		PointSet pointSet = new PointSet(Notes.fromOPND(pointSetFileName),diatonic);
+		PointSet pointSet = new PointSet(Notes.fromOPND(pointSetFileName),diatonic, 0);
 		return encoding.compareWithPointSet(pointSet);	
 	}
 

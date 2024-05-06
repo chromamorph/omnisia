@@ -1,5 +1,5 @@
 package com.chromamorph.points022;
 
 public interface Encoder {
-	Encoding encode(PointSet points);
+	Encoding encode(PointSet points, int morphOrChroma, CompactnessType compactnessType);
 }

@@ -1,5 +1,7 @@
 package com.chromamorph.points022;
 
+import com.chromamorph.maths.Maths;
+
 /**
  * 
  * @author David Meredith
@@ -27,7 +29,7 @@ public class Point implements Comparable<Point>{
 		setY(y);
 	}
 
-	public Point(String l) {
+	public Point(String l, int morphOrChroma) {
 		if (l.startsWith("p(")) {
 			int start = 2;
 			int end = l.indexOf(",");
@@ -35,10 +37,14 @@ public class Point implements Comparable<Point>{
 			start = end+1;
 			end = l.indexOf(")");
 			y = Integer.parseInt(l.substring(start,end));
+			if (morphOrChroma != 0)
+				y = Maths.mod(y,morphOrChroma);
 		} else {
 			String[] array = l.split(" ");
 			x = Long.parseLong(array[0]);
 			y = Integer.parseInt(array[1]);
+			if (morphOrChroma != 0)
+				y = Maths.mod(y,morphOrChroma);
 		}
 	}
 
@@ -109,8 +115,11 @@ public class Point implements Comparable<Point>{
 		return compareTo((Point)obj) == 0;
 	}
 
-	public Point translate(Vector vector) {
-		return new Point(getX()+vector.getX(),getY()+vector.getY(),getVoice(),getDuration());
+	public Point translate(Vector vector, int morphOrChroma) {
+		int yComponent = getY()+vector.getY();
+		if (morphOrChroma != 0)
+			yComponent = Maths.mod(yComponent, morphOrChroma);
+		return new Point(getX()+vector.getX(),yComponent,getVoice(),getDuration());
 		
 	}
 

@@ -211,7 +211,7 @@ public class SIATECCompress implements Encoder {
 	//	}
 
 	@Override
-	public Encoding encode(final PointSet points) {
+	public Encoding encode(final PointSet points, int morphOrChroma, CompactnessType compactnessType) {
 		return encode(points, false, 0.0, 0, false, 0, 0,1);
 	}
 

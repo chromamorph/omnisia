@@ -257,7 +257,11 @@ public class MIREX2013Entries {
 	}
 
 	public static ArrayList<TomDavePoint> readLispFileIntoPointSet(String lispFileName) {
-		return readLispFileIntoPointSet(lispFileName,true);
+		return readLispFileIntoPointSet(lispFileName,true, 0);
+	}
+	
+	public static ArrayList<TomDavePoint> readLispFileIntoPointSet(String lispFileName, int morphOrChroma) {
+		return readLispFileIntoPointSet(lispFileName,true, morphOrChroma);
 	}
 	
 	/**
@@ -269,7 +273,7 @@ public class MIREX2013Entries {
 	 * Stores the gcd and product of denominators so that the onsets
 	 * can be restored to Collins' format for the output.
 	 */
-	public static ArrayList<TomDavePoint> readLispFileIntoPointSet(String lispFileName, boolean diatonicPitch) {
+	public static ArrayList<TomDavePoint> readLispFileIntoPointSet(String lispFileName, boolean diatonicPitch, int morphOrChroma) {
 
 		//Read Collins lisp file into a StringBuilder
 		StringBuilder sb = new StringBuilder();
@@ -332,6 +336,10 @@ public class MIREX2013Entries {
 			int onset = (c.getOnsetNumerator() * PRODUCT_OF_DENOMINATORS) / (GCD * c.getOnsetDenominator());
 			int morpheticPitch = c.getCollinsMorpheticPitch() - 37;
 			int chromaticPitch = c.getMidiNoteNumber() - 21;
+			if (morphOrChroma == 7)
+				morpheticPitch %= 7;
+			if (morphOrChroma == 12)
+				chromaticPitch %= 12;
 			DATASET.add(new Point(onset,diatonicPitch?morpheticPitch:chromaticPitch));
 			TomDavePoint tomDavePoint = new TomDavePoint();
 			tomDavePoint.davesOnset = onset;

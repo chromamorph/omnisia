@@ -73,24 +73,28 @@ public class PointSet implements Comparable<PointSet>{
 	};
 	
 	public PointSet(String fileName, boolean isDiatonic, boolean withoutChannel10) throws MissingTieStartNoteException {
+		this( fileName, isDiatonic, withoutChannel10, 0);
+	}
+	
+	public PointSet(String fileName, boolean isDiatonic, boolean withoutChannel10, int morphOrChroma) throws MissingTieStartNoteException {
 		if (fileName.toLowerCase().endsWith(".pts"))
-			makePointsObjectFromPTSFile(fileName);
+			makePointsObjectFromPTSFile(fileName, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith(".pointset"))
-			makePointSetObjectFromPointSetFile(fileName);
+			makePointSetObjectFromPointSetFile(fileName, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith(".krn"))
-			makePointSetObjectFromKernFile(fileName, isDiatonic);
+			makePointSetObjectFromKernFile(fileName, isDiatonic, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith(".opnd") || fileName.toLowerCase().endsWith(".opndv"))
-			makePointSetObjectFromOPNDFile(fileName, isDiatonic);
+			makePointSetObjectFromOPNDFile(fileName, isDiatonic, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith(".midi") || fileName.toLowerCase().endsWith(".mid"))
-			makePointSetObjectFromMIDIFile(fileName, isDiatonic, withoutChannel10);
+			makePointSetObjectFromMIDIFile(fileName, isDiatonic, withoutChannel10, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith(".notes"))
-			makePointSetObjectFromNotesFile(fileName, isDiatonic);
+			makePointSetObjectFromNotesFile(fileName, isDiatonic, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith(".png"))
 			makePointSetObjectFromPNGFile(fileName);
 		else if (fileName.toLowerCase().endsWith(".gv"))
 			makePointSetObjectFromGVFile(fileName);
 		else if (fileName.toLowerCase().endsWith(".txt") || fileName.toLowerCase().endsWith(".opdv"))
-			makePointSetObjectFromCollinsLispFile(fileName, isDiatonic);
+			makePointSetObjectFromCollinsLispFile(fileName, isDiatonic, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith(".xml") || fileName.toLowerCase().endsWith(".musicxml"))
 			makePointSetObjectFromMusicXMLFile(fileName, isDiatonic);
 		else if (fileName.toLowerCase().endsWith(".masom"))
@@ -281,8 +285,8 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 	
-	private void makePointSetObjectFromCollinsLispFile(String collinsLispFilePathName, boolean isDiatonic) {
-		MIREX2013Entries.readLispFileIntoPointSet(collinsLispFilePathName, isDiatonic);
+	private void makePointSetObjectFromCollinsLispFile(String collinsLispFilePathName, boolean isDiatonic, int morphOrChroma) {
+		MIREX2013Entries.readLispFileIntoPointSet(collinsLispFilePathName, isDiatonic, morphOrChroma);
 		points = MIREX2013Entries.DATASET.points;
 	}
 	
@@ -330,10 +334,10 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 	
-	private void makePointSetObjectFromNotesFile(String filename, boolean isDiatonic) {
+	private void makePointSetObjectFromNotesFile(String filename, boolean isDiatonic, int morphOrChoma) {
 		try {
 			Notes notes = new Notes(new File(filename));
-			PointSet pointSet = new PointSet(notes, isDiatonic);
+			PointSet pointSet = new PointSet(notes, isDiatonic, morphOrChoma);
 			points = pointSet.points;
 			ticksPerSecond= pointSet.getTicksPerSecond();
 		} catch (IOException e) {
@@ -343,9 +347,9 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 	
-	private void makePointSetObjectFromMIDIFile(String fileName, boolean isDiatonic, boolean withoutChannel10) {
+	private void makePointSetObjectFromMIDIFile(String fileName, boolean isDiatonic, boolean withoutChannel10, int morphOrChroma) {
 		try{
-			PointSet pointSet = new PointSet(Notes.fromMIDI(fileName,true,withoutChannel10),isDiatonic);
+			PointSet pointSet = new PointSet(Notes.fromMIDI(fileName,true,withoutChannel10), isDiatonic, morphOrChroma);
 			points = pointSet.points;
 			ticksPerSecond = pointSet.getTicksPerSecond();
 		} catch (Exception e) {
@@ -353,25 +357,25 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	private void makePointSetObjectFromOPNDFile(String fileName, boolean isDiatonic) {
+	private void makePointSetObjectFromOPNDFile(String fileName, boolean isDiatonic, int morphOrChroma) {
 		try {
-			PointSet pointSet = new PointSet(Notes.fromOPND(fileName),isDiatonic);
+			PointSet pointSet = new PointSet(Notes.fromOPND(fileName),isDiatonic, morphOrChroma);
 			points = pointSet.points;
 		} catch (NoMorpheticPitchException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void makePointSetObjectFromKernFile(String kernFilePathName, boolean isDiatonic) throws MissingTieStartNoteException {
+	private void makePointSetObjectFromKernFile(String kernFilePathName, boolean isDiatonic, int morphOrChroma) throws MissingTieStartNoteException {
 		try {
-			PointSet pointSet = new PointSet(Notes.fromKern(kernFilePathName),isDiatonic);
+			PointSet pointSet = new PointSet(Notes.fromKern(kernFilePathName),isDiatonic, morphOrChroma);
 			points = pointSet.points;
 		} catch (NoMorpheticPitchException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void makePointSetObjectFromPointSetFile(String pointSetFilePathName) {
+	private void makePointSetObjectFromPointSetFile(String pointSetFilePathName, int morphOrChroma) {
 		BufferedReader br;
 		try {
 			br = new BufferedReader(new FileReader(pointSetFilePathName));
@@ -381,7 +385,7 @@ public class PointSet implements Comparable<PointSet>{
 				sb.append(l);
 			br.close();
 
-			PointSet pointSet = PointSet.getPointSetFromString(sb.toString());
+			PointSet pointSet = PointSet.getPointSetFromString(sb.toString(), morphOrChroma);
 			for(Point point : pointSet.getPoints())
 				add(point);
 		} catch (FileNotFoundException e) {
@@ -392,12 +396,12 @@ public class PointSet implements Comparable<PointSet>{
 
 	}
 
-	private void makePointsObjectFromPTSFile(String fileName) {
+	private void makePointsObjectFromPTSFile(String fileName, int morphOrChroma) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(fileName));
 			String l = br.readLine();
 			while(l != null) {
-				points.add(new Point(l));
+				points.add(new Point(l, morphOrChroma));
 				l = br.readLine();
 			}
 			br.close();
@@ -408,19 +412,19 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	public PointSet(String fileName, PitchRepresentation pitchRepresentation) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+	public PointSet(String fileName, PitchRepresentation pitchRepresentation, int morphOrChroma) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		boolean diatonicPitch = true;
 		if (pitchRepresentation.equals(PitchRepresentation.CHROMATIC_PITCH))
 			diatonicPitch = false;
 		if (fileName.toLowerCase().endsWith(".pointset"))
-			makePointSetObjectFromPointSetFile(fileName);
+			makePointSetObjectFromPointSetFile(fileName, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith("pts"))
-			makePointsObjectFromPTSFile(fileName);
+			makePointsObjectFromPTSFile(fileName, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith("opnd"))
-			getPointSetFromNotes(Notes.fromOPND(fileName),diatonicPitch);
+			getPointSetFromNotes(Notes.fromOPND(fileName),diatonicPitch, morphOrChroma);
 		else if (fileName.toLowerCase().endsWith("mid") || fileName.toLowerCase().endsWith("midi")) {
 			Notes notes = Notes.fromMIDI(fileName,diatonicPitch);
-			getPointSetFromNotes(notes,diatonicPitch);
+			getPointSetFromNotes(notes,diatonicPitch, morphOrChroma);
 		} else if (fileName.toLowerCase().endsWith("txt")) { //assume Collins lisp format
 			MIREX2013Entries.readLispFileIntoPointSet(fileName);
 			points = MIREX2013Entries.DATASET.getPoints();
@@ -431,11 +435,11 @@ public class PointSet implements Comparable<PointSet>{
 			throw new UnimplementedInputFileFormatException(fileName+" is not of a known input file type");
 	}
 
-	public PointSet(Notes notes, boolean diatonicPitch) throws NoMorpheticPitchException {
-		getPointSetFromNotes(notes,diatonicPitch);
+	public PointSet(Notes notes, boolean diatonicPitch, int morphOrChroma) throws NoMorpheticPitchException {
+		getPointSetFromNotes(notes,diatonicPitch, morphOrChroma);
 	}
 
-	private void getPointSetFromNotes(Notes notes, boolean diatonicPitch) throws NoMorpheticPitchException {
+	private void getPointSetFromNotes(Notes notes, boolean diatonicPitch, int morphOrChroma) throws NoMorpheticPitchException {
 		setTicksPerSecond(notes.getTicksPerSecond());
 		//		System.out.println("in PointSet, ticksPerSecond == "+ticksPerSecond);
 		for(Note note : notes.getNotes()) {
@@ -449,10 +453,16 @@ public class PointSet implements Comparable<PointSet>{
 					morpheticPitch = note.getComputedPitch().getMorpheticPitch();
 				if (morpheticPitch == null)
 					throw new NoMorpheticPitchException("The following note has no morphetic pitch: "+note);
+				if (morphOrChroma != 0)
+					morpheticPitch %= 7;
 				points.add(new Point(note.getOnset(),morpheticPitch,voice,duration));
 			}
-			else
-				points.add(new Point(note.getOnset(),note.getPitch().getChromaticPitch(),voice,duration));
+			else {
+				int chromaticPitch = note.getPitch().getChromaticPitch();
+				if (morphOrChroma != 0)
+					chromaticPitch %= 12;
+				points.add(new Point(note.getOnset(),chromaticPitch,voice,duration));				
+			}
 		}
 	}
 
@@ -519,8 +529,8 @@ public class PointSet implements Comparable<PointSet>{
 		return true;
 	}
 
-	public Encoding encode(Encoder encoder) {
-		return encoder.encode(this);
+	public Encoding encode(Encoder encoder, int morphOrChroma, CompactnessType compactnessType) {
+		return encoder.encode(this,morphOrChroma,compactnessType);
 	}
 
 	public boolean isEmpty() {
@@ -795,8 +805,8 @@ public class PointSet implements Comparable<PointSet>{
 		return compareTo((PointSet)obj) == 0;
 	}
 
-	public double getCompactness(PointSet dataSet, CompactnessType compactnessType) {
-		if (compactnessType.equals(CompactnessType.SEGMENT)) {
+	public double getCompactness(PointSet dataSet, CompactnessType compactnessType, int morphOrChroma) {
+		if (compactnessType.equals(CompactnessType.SEGMENT) || morphOrChroma != 0) {
 			PointSet segment = dataSet.getSegment(getMinX(), getMaxX(), true);
 			return size()*1.0/segment.size();
 		} 
@@ -806,14 +816,20 @@ public class PointSet implements Comparable<PointSet>{
 		return C;			
 	}
 
-	public boolean translationallyEquivalentTo(PointSet otherPointSet) {
+	public boolean translationallyEquivalentTo(PointSet otherPointSet, int morphOrChroma) {
 		if (otherPointSet == null) return false;
 		if (otherPointSet.size() != size()) return false;
 		Vector vector = null;
+		long deltaT = otherPointSet.getMinX() - getMinX();
+		if (morphOrChroma != 0) {
+			for(int pint = 0; pint < morphOrChroma; pint++) {
+				PointSet ps2 = translate(new Vector(deltaT,pint),morphOrChroma);
+			}
+		}
 		for(int i = 0; i < size(); i++) {
 			if (vector == null)
-				vector = new Vector(get(i),otherPointSet.get(i));
-			else if (!vector.equals(new Vector(get(i),otherPointSet.get(i))))
+				vector = new Vector(get(i),otherPointSet.get(i), morphOrChroma);
+			else if (!vector.equals(new Vector(get(i),otherPointSet.get(i), morphOrChroma)))
 				return false;
 		}
 		return true;
@@ -824,10 +840,10 @@ public class PointSet implements Comparable<PointSet>{
 		return a.get(i);
 	}
 
-	public PointSet translate(Vector vector) {
+	public PointSet translate(Vector vector, int morphOrChroma) {
 		PointSet newPoints = new PointSet();
 		for(Point point : points)
-			newPoints.add(point.translate(vector));
+			newPoints.add(point.translate(vector, morphOrChroma));
 		return newPoints;
 	}
 
@@ -959,13 +975,13 @@ public class PointSet implements Comparable<PointSet>{
 		return setChanged;
 	}
 
-	public double getMinSIAMEuclidDistance(PointSet ps) {
+	public double getMinSIAMEuclidDistance(PointSet ps, int morphOrChroma) {
 		//From this to ps
 		double fromThisToPS = 0.0;
 		for (Point p1 : getPoints()) {
 			Double leastDistance = null;
 			for(Point p2 : ps.getPoints()) {
-				double thisDistance = new Vector(p1,p2).getLength();
+				double thisDistance = new Vector(p1,p2, morphOrChroma).getLength();
 				if (leastDistance == null || thisDistance < leastDistance)
 					leastDistance = thisDistance;
 			}
@@ -976,7 +992,7 @@ public class PointSet implements Comparable<PointSet>{
 		for (Point p1 : ps.getPoints()) {
 			Double leastDistance = null;
 			for(Point p2 : getPoints()) {
-				double thisDistance = new Vector(p1,p2).getLength();
+				double thisDistance = new Vector(p1,p2, morphOrChroma).getLength();
 				if (leastDistance == null || thisDistance < leastDistance)
 					leastDistance = thisDistance;
 			}
@@ -1019,18 +1035,18 @@ public class PointSet implements Comparable<PointSet>{
 		ps.close();
 	}
 
-	public static PointSet getPointSetFromTECString(String tecString) {
+	public static PointSet getPointSetFromTECString(String tecString, int morphOrChroma) {
 		/*
 		 * tecString has form:
 		 * 
 		 * T(P(p(x1,y1),p(x2,y2),...p(xn,yn)),V(v(u1,w1),v(u2,w2),...v(um,wm)))
 		 */
 
-		TEC tec = new TEC(tecString);
+		TEC tec = new TEC(tecString,morphOrChroma);
 		return tec.getCoveredPoints();
 	}
 
-	public static PointSet getPointSetFromString(String l) {
+	public static PointSet getPointSetFromString(String l, int morphOrChroma) {
 		System.out.println(l);
 		if (l.equals("P()"))
 			return new PointSet();
@@ -1046,7 +1062,7 @@ public class PointSet implements Comparable<PointSet>{
 		for(int start = 0; start < pointSequence.length();) {
 			int end = pointSequence.indexOf(")",start)+1;
 			String pointString = pointSequence.substring(start, end);
-			Point point = new Point(pointString);
+			Point point = new Point(pointString, morphOrChroma);
 			outputPointSet.add(point);
 			start = end+1;
 		}
@@ -1103,30 +1119,30 @@ public class PointSet implements Comparable<PointSet>{
 	 * @param f
 	 * @return
 	 */
-	public PointSet scale(Rational f) {
+	public PointSet scale(Rational f, int morphOrChroma) {
 		PointSet imagePattern = new PointSet();
 		Point minPoint = first();
 		for(Point p : points) {
-			Vector minPointToP = new Vector(minPoint,p);
+			Vector minPointToP = new Vector(minPoint,p, morphOrChroma);
 			long minPointToPTimeComponent = minPointToP.getX();
 			int minPointToPPitchComponent = minPointToP.getY();
 			long imageOfMinPointToPTimeComponent = f.times(new Rational(minPointToPTimeComponent,1l)).getNumerator();
 			Vector imageOfMinPointToP = new Vector(imageOfMinPointToPTimeComponent,minPointToPPitchComponent);
-			Point q = minPoint.translate(imageOfMinPointToP);
+			Point q = minPoint.translate(imageOfMinPointToP,morphOrChroma);
 			imagePattern.add(q);
 		}
 		return imagePattern;
 	}
 
-	public PointSet invert() {
+	public PointSet invert(int morphOrChroma) {
 		PointSet imagePattern = new PointSet();
 		Point minPoint = first();
 		for(Point p : points) {
-			Vector minPointToP = new Vector(minPoint,p);
+			Vector minPointToP = new Vector(minPoint,p, morphOrChroma);
 			long minPointToPTimeComponent = minPointToP.getX();
 			int minPointToPPitchComponent = minPointToP.getY();
 			Vector imageOfMinPointToP = new Vector(minPointToPTimeComponent,-minPointToPPitchComponent);
-			Point q = minPoint.translate(imageOfMinPointToP);
+			Point q = minPoint.translate(imageOfMinPointToP,morphOrChroma);
 			imagePattern.add(q);
 		}
 		return imagePattern;
