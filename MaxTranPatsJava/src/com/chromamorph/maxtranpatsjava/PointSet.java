@@ -1094,6 +1094,7 @@ public class PointSet implements Comparable<PointSet>{
 		
 		for(int size : mtpSizes)
 			for(int i = 0; i < mtpOccurrenceSets[size].size(); i++) {
+//				System.out.println(mtpOccurrenceSets[size].get(i));
 				if (mtpOccurrenceSets[size].get(i).getTransformations().isEmpty()) {
 					mtpOccurrenceSets[size].remove(i);
 					i--;
@@ -1374,13 +1375,16 @@ public class PointSet implements Comparable<PointSet>{
 		ps.removeOccurrenceSetsWithNoTransformations();
 		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
 		
-		ps.computeSortedOccurrenceSets(ps.isMTM()?OccurrenceSet.DECREASING_PATTERN_SIZE:OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
-		log.add(new LogInfo("computeSortedOccurrenceSets ends", true));
-
 		if (ps.isMTM()) {
 			ps.removeContainedOccurrences();			
 		}
-		
+
+		ps.removeOccurrenceSetsWithNoTransformations();
+		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
+
+		ps.computeSortedOccurrenceSets(ps.isMTM()?OccurrenceSet.DECREASING_PATTERN_SIZE:OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
+		log.add(new LogInfo("computeSortedOccurrenceSets ends", true));
+
 		ps.computeEncoding();
 		log.add(new LogInfo("computeEncoding ends", true));
 
@@ -1837,62 +1841,110 @@ public class PointSet implements Comparable<PointSet>{
 		}
 
 	}
-
+	
+	private static String getStringValue(ArrayList<String> argList, String sw) {
+		String str = null;
+		int i = argList.lastIndexOf(sw);
+		if (i >= 0)
+			str = argList.get(i+1);
+		return str;
+	}
+	
+	private static Integer getIntValue(ArrayList<String> argList, String sw) {
+		Integer val = null;
+		int i = argList.lastIndexOf(sw);
+		if (i >= 0)
+			val = Integer.parseInt(argList.get(i+1));
+		return val;
+	}
+	
+	private static Double getDoubleValue(ArrayList<String> argList, String sw) {
+		Double val = null;
+		int i = argList.lastIndexOf(sw);
+		if (i >= 0)
+			val = Double.parseDouble(argList.get(i+1));
+		return val;
+	}
+	
+	private static TransformationClass[] getTransformationClasses(ArrayList<String> argList) {
+		ArrayList<TransformationClass> transformationClassList = new ArrayList<TransformationClass>();
+		String[] allTransClassStrings = new String[] {
+				"F_2STR_FIXED",
+				"F_2STR_Rational",
+				"F_2STR",
+				"F_2T",
+				"F_2TR"};
+		TransformationClass[] allTransClasses = new TransformationClass[] {
+				new F_2STR_FIXED(),
+				new F_2STR_Rational(),
+				new F_2STR(),
+				new F_2T(),
+				new F_2TR()
+		};
+		for(int j = 0; j < allTransClassStrings.length; j++) {
+			int i = argList.lastIndexOf(allTransClassStrings[j]);
+			if (i >= 0)	{			
+				transformationClassList.add(allTransClasses[j]);
+			}
+		}
+		TransformationClass[] transformationClasses = new TransformationClass[transformationClassList.size()];
+		transformationClassList.toArray(transformationClasses);
+		return transformationClasses;
+	}
+	
 	public static void main(String[] args) {
-		if (args.length < 2) {
-			System.out.println("Syntax: java -jar mtptest.jar <output-folder> <input-file> [<input-file-2> minCompactness minOccurrenceCompactness minSize]");
-		} else if (args.length == 2) {
-			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
-//			TransformationClass[] transformationClasses = new TransformationClass[] {
-//					new F_2STR_FIXED()
-//					new F_2STR(),
-//					new F_2T(),
-//					new F_2TR()
-//					};
-			String fileName = args[1];
-			System.out.println("Input file: "+args[1]+"\n");
+		ArrayList<String> argArray = new ArrayList<String>();
+		for(String arg: args)
+			argArray.add(arg);
+
+		String fileName = getStringValue(argArray, "-i");
+		if (fileName == null) {
+			System.out.println("Must provide the name of an input file: -i <input-file-name>");
+			return;
+		}
+		String outputDir = getStringValue(argArray, "-o");
+		Integer minSize = getIntValue(argArray, "-minSize");
+		Double minCompactness = getDoubleValue(argArray, "-minComp");
+		if (minCompactness == null)
+			minCompactness = 0.0;
+		Double minOccComp = getDoubleValue(argArray, "-minOccComp");
+		if (minOccComp == null)
+			minOccComp = 0.0;
+		String queryFileName = getStringValue(argArray, "-q");		
+		TransformationClass[] transformationClasses = getTransformationClasses(argArray);
+		boolean pitchSpell = true;
+		boolean midTimePoint = true;
+		String dimensionMask = "1100";
+		boolean useScalexia = false;
+		boolean draw = true;
+		
+		if (queryFileName == null) {
 			encodePointSetFromFile(
 					fileName, 
 					transformationClasses,
-					true, //pitchSpell
-					true, //midTimePoint
-					"1100", //dimensionMask
-					args[0], //outputDir
-					false, //useScalexia
-					0, //minSize
-					true, //draw
-					0.0,
-					0.0
-					);
-		} else if (args.length == 6) {
-//			TransformationClass[] transformationClasses = new TransformationClass[] {new F_2STR_FIXED()};
-			TransformationClass[] transformationClasses = new TransformationClass[] {
-//					new F_2STR_FIXED()
-					new F_2STR(),
-					new F_2T(),
-					new F_2TR()
-					};			
-			String patternFileName = args[1];
-			String datasetFileName = args[2];
-			String outputDir = args[0];
-			double minCompactness = Double.parseDouble(args[3]);
-			double minOccurrenceCompactness = Double.parseDouble(args[4]);
-			int minSize = Integer.parseInt(args[5]);
-			System.out.println("Pattern file name: "+patternFileName);
-			System.out.println("Dataset file name: "+datasetFileName);
-			System.out.println("Output directory: "+outputDir);
-			maximalTransformedMatchesFromFiles(
-					patternFileName,
-					datasetFileName,
-					transformationClasses,
-					true, //pitchSpell
-					true, //midTimePoint
-					"1100", //dimensionMask
-					args[0], //outputDir
+					pitchSpell, //pitchSpell
+					midTimePoint, //midTimePoint
+					dimensionMask, //dimensionMask
+					outputDir, //outputDir
+					useScalexia, //useScalexia
 					minSize, //minSize
-					true, //draw
+					draw, //draw
 					minCompactness,
-					minOccurrenceCompactness
+					minOccComp
+					);
+		} else {
+			maximalTransformedMatchesFromFiles(
+					queryFileName,
+					fileName,
+					transformationClasses,
+					pitchSpell, //pitchSpell
+					midTimePoint, //midTimePoint
+					dimensionMask, //dimensionMask
+					outputDir, //outputDir
+					minSize, //minSize
+					draw, //draw
+					minCompactness,
+					minOccComp
 					);
 		}
 	}

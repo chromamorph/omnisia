@@ -35,7 +35,7 @@ import com.chromamorph.maths.Rational;
  */
 public class F_2STR_Rational extends TransformationClass {
 
-	public public F_2STR_Rational() {
+	public F_2STR_Rational() {
 		super();
 		setName("F_2STR_Rational");
 		setSigmaLength(5);
