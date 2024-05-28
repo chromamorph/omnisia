@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeSet;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -20,16 +21,6 @@ public class ForthEncoding extends Encoding {
 	private double minCr, maxCr, minCompV, maxCompV, sigmaMin;
 	private double crLow, crHigh, compVLow, compVHigh;
 	private int cMin;
-
-	class TECWeightPair {
-		TEC tec;
-		double weight;
-
-		TECWeightPair(TEC tec, double weight) {
-			this.tec = tec;
-			this.weight = weight;
-		}
-	}
 
 	private ArrayList<TECWeightPair> tecWeights = null;
 	private ArrayList<ArrayList<TEC>> S = null; //The cover computed
@@ -187,6 +178,13 @@ public class ForthEncoding extends Encoding {
 					tecWeights.add(new TECWeightPair(tecs.get(i),weights[i]));
 				}
 
+				Collections.sort(tecWeights);
+				
+				for(int i = 0; i < 20; i++) {
+					if (tecWeights.get(i).getWeight() != 0)
+						System.out.println(tecWeights.get(i));
+				}
+				
 				//Now we compute the cover using the pseudocode in the 
 				//JNMR 2014 paper
 				forthCover();
@@ -270,12 +268,12 @@ public class ForthEncoding extends Encoding {
 			Integer bestTECIndex = null; 
 			TreeSet<Integer> tecWeightsToBeRemoved = new TreeSet<Integer>();
 			for(int i = 0; i < tecWeights.size(); i++) {
-				int c = tecWeights.get(i).tec.getCoveredPoints().diff(P).size();
+				int c = tecWeights.get(i).getTEC().getCoveredPoints().diff(P).size();
 				if (c < cMin) { 
 					tecWeightsToBeRemoved.add(i);
 					continue;
 				}
-				double gamma = c * tecWeights.get(i).weight;
+				double gamma = c * tecWeights.get(i).getWeight();
 				if (gamma > gammaMax) {
 					gammaMax = gamma;
 					bestTEC = tecWeights.get(i);
@@ -284,17 +282,17 @@ public class ForthEncoding extends Encoding {
 			}
 			if (bestTEC != null) {
 				tecWeightsToBeRemoved.add(bestTECIndex);
-				System.out.println("TEC added to cover: "+bestTEC.tec+", "+bestTEC.weight);
+				System.out.println("TEC added to cover: "+bestTEC.getTEC()+", "+bestTEC.getWeight());
 				found = true;
 
 				System.out.println("Checking for primary...");
 				int i = 0;
 				boolean primaryFound = false;
 				while (!primaryFound && i < S.size()) {
-					double intersectionSize = 1.0 * S.get(i).get(0).getCoveredPoints().intersection(bestTEC.tec.getCoveredPoints()).size();
+					double intersectionSize = 1.0 * S.get(i).get(0).getCoveredPoints().intersection(bestTEC.getTEC().getCoveredPoints()).size();
 					double primaryTECCoveredSetSize = 1.0 * S.get(i).get(0).getCoveredPoints().size();
 					if (intersectionSize/primaryTECCoveredSetSize > sigmaMin) {
-						S.get(i).add(bestTEC.tec);
+						S.get(i).add(bestTEC.getTEC());
 						primaryFound = true;
 					}
 					i++;
@@ -302,10 +300,10 @@ public class ForthEncoding extends Encoding {
 				System.out.println("...DONE: "+(primaryFound?"Primary found":"No primary found"));
 				if (!primaryFound) {
 					ArrayList<TEC> newPrimaryTEC = new ArrayList<TEC>();
-					newPrimaryTEC.add(bestTEC.tec);
+					newPrimaryTEC.add(bestTEC.getTEC());
 					S.add(newPrimaryTEC);
 				}
-				P.addAll(bestTEC.tec.getCoveredPoints());
+				P.addAll(bestTEC.getTEC().getCoveredPoints());
 			}
 			//Remove TECs from tecWeights whose indices are in tecWeightsToBeRemoved
 			System.out.print("Removing TECs and weights no longer needed...");
@@ -323,6 +321,7 @@ public class ForthEncoding extends Encoding {
 	private double wDashCr(int i) {
 		double wDashCr = (wCrArray[i]-minCr)/(maxCr-minCr);
 		if (wDashCr > crHigh || wDashCr < crLow) wDashCr = 0.0;
+//		if (wDashCr != 0) System.out.print(wDashCr+" ");
 		return wDashCr;
 	}
 
@@ -332,6 +331,7 @@ public class ForthEncoding extends Encoding {
 
 	private double wDashCompV(int i) {
 		double wDashCompV = (wCompVArray[i]-minCompV)/(maxCompV-minCompV);
+		if (maxCompV - minCompV == 0) System.out.println("Divide by zero error in wDashCompV"); 
 		if (wDashCompV > compVHigh || wDashCompV < compVLow) wDashCompV = 0.0;
 		return wDashCompV;
 	}
