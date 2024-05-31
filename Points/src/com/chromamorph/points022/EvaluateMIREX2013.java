@@ -320,7 +320,7 @@ public class EvaluateMIREX2013 {
 		return (2*Pb*Rb)/(Pb+Rb);
 	}
 
-	private static double getPb(ArrayList<PointSet> groundTruthOccurrenceSet, ArrayList<PointSet> computedOccurrenceSet) {
+	public static double getPb(ArrayList<PointSet> groundTruthOccurrenceSet, ArrayList<PointSet> computedOccurrenceSet) {
 		double sum = 0.0;
 		for(PointSet computedOccurrence : computedOccurrenceSet) {
 			double max = 0.0;
@@ -334,7 +334,7 @@ public class EvaluateMIREX2013 {
 		return sum/computedOccurrenceSet.size();		
 	}
 
-	private static double getRb(ArrayList<PointSet> groundTruthOccurrenceSet, ArrayList<PointSet> computedOccurrenceSet) {
+	public static double getRb(ArrayList<PointSet> groundTruthOccurrenceSet, ArrayList<PointSet> computedOccurrenceSet) {
 		double sum = 0.0;
 		for(PointSet groundTruthOccurrence : groundTruthOccurrenceSet) {
 			double max = 0.0;

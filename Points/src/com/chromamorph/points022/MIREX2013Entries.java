@@ -118,8 +118,12 @@ public class MIREX2013Entries {
 
 	public static long START_TIME, END_TIME;
 
-	static class TomDavePoint {
-		int tomsNumerator, tomsDenominator, davesOnset, tomsPitch, davesPitch;
+	public static class TomDavePoint {
+		public int tomsNumerator;
+		public int tomsDenominator;
+		public int davesOnset;
+		public int tomsPitch;
+		public int davesPitch;
 
 		public String toString() {
 			return "tdp(tn("+tomsNumerator+"),td("+tomsDenominator+"),tp("+tomsPitch+"),do("+davesOnset+"),dp("+davesPitch+"))";
