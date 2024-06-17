@@ -525,7 +525,7 @@ public class Notes {
 		BufferedReader br = new BufferedReader(new FileReader(new File(opndFileName)));
 		Notes notes = new Notes();
 		String l = br.readLine();
-		while (l == null || l.trim().length()==0 || l.trim().startsWith("%")) l = br.readLine();
+		while (l == null || l.trim().length()==0 || l.trim().startsWith("%") || l.trim().startsWith(";") || l.trim().startsWith("//")) l = br.readLine();
 		String[] sa2 = null;
 		String[] sa = null;
 		//		System.out.println(l);
@@ -534,7 +534,7 @@ public class Notes {
 			StringBuilder sb = new StringBuilder();
 			sb.append(l);
 			while ((l = br.readLine()) != null)
-				if (!l.trim().startsWith("%"))
+				if (!(l.trim().startsWith("%") || l.trim().startsWith(";") || l.trim().startsWith("//")))
 					sb.append(l);
 			String text = sb.toString();
 			sa2 = text.split("[()]");
@@ -1438,6 +1438,21 @@ public class Notes {
 		
 		Notes notes = new Notes("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI.opnd");
 		notes.toOPNDFile("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI-from-notes.opnd");
+	}
+
+	public Notes getSegment(Long startTatum, Long endTatum, boolean zeroOnset) {
+		Notes segment = new Notes();
+		TreeSet<Note> noteSet = getNotes();
+		for(Note note : noteSet) {
+			if ((note.getOnset() <= endTatum ||) && note.getOnset() >= startTatum)
+				segment.addNote(note);
+		}
+		Long segmentOnset = segment.getNotes().first().getOnset();
+		if (segmentOnset != 0l && zeroOnset) {
+			for(Note note : segment.getNotes())
+				note.setOnset(note.getOnset()-segmentOnset);
+		}
+		return segment;
 	}
 
 }

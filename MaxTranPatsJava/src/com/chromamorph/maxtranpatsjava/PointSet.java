@@ -1489,7 +1489,7 @@ public class PointSet implements Comparable<PointSet>{
 			BufferedReader br = new BufferedReader(new FileReader(groundTruthFilePath));
 			String line = br.readLine();
 			while (line != null) {
-				if (!line.isEmpty() && !line.startsWith("%") && !line.startsWith("//"))
+				if (!line.isEmpty() && !line.startsWith("%") && !line.startsWith("//") && !line.startsWith(";"))
 					sb.append(line.trim());
 				line = br.readLine();
 			}
