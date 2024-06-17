@@ -1452,8 +1452,6 @@ public class PointSet implements Comparable<PointSet>{
 		
 //		Compare computed encoding with ground truth file
 		if (groundTruthFileName != null) {
-			int endIndex = outputFilePath.lastIndexOf('/');
-			String outputDir = outputFilePath.substring(0, endIndex);
 			ps.compareWithGroundTruthFile(groundTruthFileName, diatonicPitch, outputFilePath, !ps.isMTM(), ps.isMTM());
 		}
 		
@@ -1466,7 +1464,23 @@ public class PointSet implements Comparable<PointSet>{
 		return ps;
 	}
 
-	
+	public static StringBuilder readGroundTruthFileIntoStringBuilder(String groundTruthFilePath) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(groundTruthFilePath));
+			String line = br.readLine();
+			while (line != null) {
+				if (!line.isEmpty() && !line.startsWith("%") && !line.startsWith("//") && !line.startsWith(";"))
+					sb.append(line.trim());
+				line = br.readLine();
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb;
+
+	}
 
 	/**
 	 * Assumes ground-truth pattern file has following format:
@@ -1484,19 +1498,7 @@ public class PointSet implements Comparable<PointSet>{
 	 * 
 	 */
 	private ArrayList<ArrayList<com.chromamorph.points022.PointSet>> readGroundTruthPatternsFromFile(String groundTruthFilePath, boolean diatonicPitch) {
-		StringBuilder sb = new StringBuilder();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(groundTruthFilePath));
-			String line = br.readLine();
-			while (line != null) {
-				if (!line.isEmpty() && !line.startsWith("%") && !line.startsWith("//") && !line.startsWith(";"))
-					sb.append(line.trim());
-				line = br.readLine();
-			}
-			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		StringBuilder sb = readGroundTruthFileIntoStringBuilder(groundTruthFilePath);
 		
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
 		
