@@ -189,7 +189,7 @@ public class MaxTranPats {
 		}
 		
 		if (DIMENSION_MASK == null)
-			DIMENSION_MASK = "1011";
+			DIMENSION_MASK = "1100";
 		
 		if (QUERY_FILE_PATH == null) {
 			PointSet.encodePointSetFromFile(

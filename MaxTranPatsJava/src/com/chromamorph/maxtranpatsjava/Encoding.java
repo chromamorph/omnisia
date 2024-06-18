@@ -12,9 +12,6 @@ import java.util.TreeSet;
 import javax.swing.JFrame;
 
 import com.chromamorph.points022.DrawPoints;
-import com.chromamorph.points022.MIREX2013Entries;
-import com.chromamorph.points022.Point;
-import com.chromamorph.points022.MIREX2013Entries.TomDavePoint;
 
 import processing.core.PApplet;
 
