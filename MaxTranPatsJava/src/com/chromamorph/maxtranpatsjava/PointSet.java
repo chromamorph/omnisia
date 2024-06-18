@@ -1325,6 +1325,7 @@ public class PointSet implements Comparable<PointSet>{
 				);
 	}
 	
+	
 	public static PointSet encodePointSet (
 			PointSet ps, 
 			String outputFilePath, 
@@ -1340,8 +1341,11 @@ public class PointSet implements Comparable<PointSet>{
 			String groundTruthFileName) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
-		if (ps2 != null)
+		if (ps2 != null) {
 			ps.setMTM(true);
+//			if (minSize < 0)
+//				minSize = ps2.size()-minSize;
+		}
 		
 		ps.addTransformationClasses(transformationClasses);		
 
@@ -1441,6 +1445,8 @@ public class PointSet implements Comparable<PointSet>{
 //		Utility.println(output, "Number of MTPs before removal: " + numMTPsBeforeRemoval);
 		Utility.println(output, "Number of OSs after removal: " + ps.sortedOccurrenceSets.size());
 
+		Utility.println(output, MaxTranPats.getParameterSettings());
+		
 		output.close();
 
 ////		Output MIREX format file for comparison with ground truth.
@@ -1775,6 +1781,8 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell,
 					midTimePoint,
 					dimensionMask);
+			if (minSize < 0)
+				minSize = pattern.size()+minSize;
 			return maximalTransformedMatches(
 					pattern, 
 					dataset, 
@@ -2087,119 +2095,5 @@ public class PointSet implements Comparable<PointSet>{
 
 	}
 	
-	private static String getStringValue(ArrayList<String> argList, String sw) {
-		String str = null;
-		int i = argList.lastIndexOf(sw);
-		if (i >= 0)
-			str = argList.get(i+1);
-		return str;
-	}
 	
-	private static boolean getBooleanValue(ArrayList<String> argList, String sw) {
-		int i = argList.lastIndexOf(sw);
-		return (i >= 0);
-	}
-	
-	private static Integer getIntValue(ArrayList<String> argList, String sw, int defaultValue) {
-		Integer val = defaultValue;
-		int i = argList.lastIndexOf(sw);
-		if (i >= 0)
-			val = Integer.parseInt(argList.get(i+1));
-		return val;
-	}
-	
-	private static Double getDoubleValue(ArrayList<String> argList, String sw, double defaultValue) {
-		Double val = defaultValue;
-		int i = argList.lastIndexOf(sw);
-		if (i >= 0)
-			val = Double.parseDouble(argList.get(i+1));
-		return val;
-	}
-	
-	private static TransformationClass[] getTransformationClasses(ArrayList<String> argList) {
-		ArrayList<TransformationClass> transformationClassList = new ArrayList<TransformationClass>();
-		String[] allTransClassStrings = new String[] {
-				"F_2STR_FIXED",
-				"F_2STR_Rational",
-				"F_2STR",
-				"F_2T",
-				"F_2TR"};
-		TransformationClass[] allTransClasses = new TransformationClass[] {
-				new F_2STR_FIXED(),
-				new F_2STR_Rational(),
-				new F_2STR(),
-				new F_2T(),
-				new F_2TR()
-		};
-		for(int j = 0; j < allTransClassStrings.length; j++) {
-			int i = argList.lastIndexOf(allTransClassStrings[j]);
-			if (i >= 0)	{			
-				transformationClassList.add(allTransClasses[j]);
-			}
-		}
-		TransformationClass[] transformationClasses = new TransformationClass[transformationClassList.size()];
-		transformationClassList.toArray(transformationClasses);
-		return transformationClasses;
-	}
-	
-	public static void main(String[] args) {
-		ArrayList<String> argArray = new ArrayList<String>();
-		for(String arg: args)
-			argArray.add(arg);
-
-		String fileName = getStringValue(argArray, "-i");
-		if (fileName == null) {
-			System.out.println("Must provide the name of an input file: -i <input-file-name>");
-			return;
-		}
-		String outputDir = getStringValue(argArray, "-o");
-		String groundTruthFileName = getStringValue(argArray, "-gt");
-		Integer minSize = getIntValue(argArray, "-minSize",0);
-		Double minCompactness = getDoubleValue(argArray, "-minComp",0.0);
-		if (minCompactness == null)
-			minCompactness = 0.0;
-		Double minOccComp = getDoubleValue(argArray, "-minOccComp",0.0);
-		if (minOccComp == null)
-			minOccComp = 0.0;
-		String queryFileName = getStringValue(argArray, "-q");		
-		TransformationClass[] transformationClasses = getTransformationClasses(argArray);
-		boolean pitchSpell = true;
-		boolean midTimePoint = getBooleanValue(argArray,"-midTimePoint");
-		String dimensionMask = "1100";
-		boolean useScalexia = false;
-		boolean draw = true;
-		
-		if (queryFileName == null) {
-			encodePointSetFromFile(
-					fileName, 
-					transformationClasses,
-					pitchSpell, //pitchSpell
-					midTimePoint, //midTimePoint
-					dimensionMask, //dimensionMask
-					outputDir, //outputDir
-					useScalexia, //useScalexia
-					minSize, //minSize
-					draw, //draw
-					minCompactness,
-					minOccComp,
-					groundTruthFileName
-					);
-		} else {
-			maximalTransformedMatchesFromFiles(
-					queryFileName,
-					fileName,
-					transformationClasses,
-					pitchSpell, //pitchSpell
-					midTimePoint, //midTimePoint
-					dimensionMask, //dimensionMask
-					outputDir, //outputDir
-					minSize, //minSize
-					draw, //draw
-					minCompactness,
-					minOccComp,
-					groundTruthFileName
-					);
-		}
-	}
-
 }

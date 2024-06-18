@@ -1,0 +1,50 @@
+OS(P(p(1.0,1.0),p(1.0,2.0),p(2.0,3.0),p(4.0,1.0),p(4.0,2.0)),[T(F_2STR,[-2.0, 13.0, -1.0, 1.0]), T(F_2STR,[-1.0, 11.0, -10.0, -1.0]), T(F_2STR,[-1.0, 12.0, 3.0, 1.0]), T(F_2STR,[1.0, 0.0, -1.0, 1.0]), T(F_2STR,[1.0, 2.0, -9.0, -1.0]), T(F_2STR,[2.0, -1.0, -6.0, -1.0])],null)
+
+
+Coverage: 33
+Dataset size: 30
+Uncompressed length: 66
+Encoding length: 34
+Compression factor: 1.9411764705882353
+Running time in milliseconds: 486
+Encoding length without residual point set: 34
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.9411764705882353
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            458 ms            458 ms  computeMaximalTransformablePatterns ends
+            459 ms              1 ms  computeSizeMTPSetArray ends
+            461 ms              2 ms  mergeMTPs ends
+            461 ms              0 ms  computeSuperMTPs ends
+            462 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+            483 ms             21 ms  removeDuplicateOccurrenceSets ends
+            484 ms              1 ms  removeRedundantTransformations ends
+            485 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            485 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            485 ms              0 ms  computeSortedOccurrenceSets ends
+            486 ms              1 ms  computeEncoding ends
+            486 ms              0 ms  Program ends
+
+
+Number of points: 30
+Number of OSs after removal: 1
+Parameter settings:
+Input file path (-i): data/MML2024/example3.pts
+Query file path (-q): data/MML2024/example2-query.pts
+Ground-truth file path (-gt): data/MML2024/example3.gt
+Mid-time point (-mt): false
+Output directory (-o): output/MML2024/
+Minimum pattern size (-min): 5
+Minimum occurrence set compactness (-minc): 0.5
+Minimum occurrence compactness (-minoc): 0.7
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1011
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+
