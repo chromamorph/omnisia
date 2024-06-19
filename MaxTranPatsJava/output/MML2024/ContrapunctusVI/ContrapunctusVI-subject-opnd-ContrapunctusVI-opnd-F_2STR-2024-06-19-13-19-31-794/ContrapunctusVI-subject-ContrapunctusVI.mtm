@@ -1,0 +1,51 @@
+OS(P(p(0,17.0),p(16,21.0),p(28,20.0),p(32,19.0),p(44,18.0),p(48,17.0),p(64,16.0),p(80,17.0),p(92,18.0),p(96,19.0),p(118,20.0),p(120,19.0),p(126,18.0),p(128,17.0)),[T(F_2STR,[2.0, 0.0, 0.0, 1.0]), T(F_2STR,[2.0, 1920.0, 0.0, 1.0])],null)
+OS(P(p(0,17.0),p(16,21.0),p(28,20.0),p(32,19.0),p(44,18.0),p(48,17.0),p(64,16.0),p(80,17.0),p(92,18.0),p(96,19.0),p(118,20.0),p(120,19.0),p(126,18.0)),[T(F_2STR,[2.0, 448.0, 11.0, 1.0]), T(F_2STR,[2.0, 960.0, 7.0, 1.0]), T(F_2STR,[2.0, 1248.0, -40.0, -1.0]), T(F_2STR,[2.0, 1536.0, 9.0, 1.0]), T(F_2STR,[2.0, 2176.0, -48.0, -1.0]), T(F_2STR,[2.0, 2944.0, -31.0, -1.0]), T(F_2STR,[2.0, 3648.0, -45.0, -1.0]), T(F_2STR,[2.0, 4064.0, -45.0, -1.0]), T(F_2STR,[2.0, 4768.0, -48.0, -1.0])],null)
+
+
+Coverage: 159
+Dataset size: 1679
+Uncompressed length: 318
+Encoding length: 98
+Compression factor: 3.2448979591836733
+Running time in milliseconds: 220199
+Encoding length without residual point set: 98
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 3.2448979591836733
+Number of occurrence sets: 2
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+         212202 ms         212202 ms  computeMaximalTransformablePatterns ends
+         212204 ms              2 ms  computeSizeMTPSetArray ends
+         212207 ms              3 ms  mergeMTPs ends
+         212209 ms              2 ms  computeSuperMTPs ends
+         212209 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+         220196 ms           7987 ms  removeDuplicateOccurrenceSets ends
+         220197 ms              1 ms  removeRedundantTransformations ends
+         220197 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         220198 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         220198 ms              0 ms  computeSortedOccurrenceSets ends
+         220199 ms              1 ms  computeEncoding ends
+         220199 ms              0 ms  Program ends
+
+
+Number of points: 1679
+Number of OSs after removal: 2
+Parameter settings:
+Input file path (-i): data/MML2024/ContrapunctusVI/ContrapunctusVI.opnd
+Query file path (-q): data/MML2024/ContrapunctusVI/ContrapunctusVI-subject.opnd
+Ground-truth file path (-gt): data/MML2024/ContrapunctusVI/ContrapunctusVI-ground-truth-subject-entries.gt
+Mid-time point (-mt): true
+Output directory (-o): output/MML2024/ContrapunctusVI
+Minimum pattern size (-min): -2
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+

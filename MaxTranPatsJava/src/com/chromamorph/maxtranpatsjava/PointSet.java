@@ -51,6 +51,7 @@ public class PointSet implements Comparable<PointSet>{
 	private Long tatumsPerBar = null; 
 	private Long barOneStartsAt = null;
 	private String title = "";
+	public static double TIME_SCALE_FACTOR = 1.0;
 	
 	public void setTitle(String title) {
 		this.title = title;
@@ -216,6 +217,8 @@ public class PointSet implements Comparable<PointSet>{
 				zeroPoint5Present = true;
 				break;
 			}
+		if (zeroPoint5Present)
+			TIME_SCALE_FACTOR = 2.0;
 		if (zeroPoint5Present) {
 			if (getTatumsPerBar() != null)
 				setTatumsPerBar(getTatumsPerBar()*2);
@@ -1265,8 +1268,8 @@ public class PointSet implements Comparable<PointSet>{
 		setEncoding(encoding);
 	}
 
-	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch, double minCompactness, double minOccurrenceCompactness, String groundTruthFileName) throws Exception {
-		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch, minCompactness, minOccurrenceCompactness, groundTruthFileName);
+	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch, double minCompactness, double minOccurrenceCompactness, String groundTruthFileName, boolean midTimePoint) throws Exception {
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint);
 	}
 	
 	public static PointSet maximalTransformedMatches(
@@ -1280,7 +1283,8 @@ public class PointSet implements Comparable<PointSet>{
 			boolean pitchSpell,
 			double minCompactness,
 			double minOccurrenceCompactness,
-			String groundTruthFileName) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			String groundTruthFileName,
+			boolean midTimePoint) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		return encodePointSet(
 				dataset, 
 				outputFilePath, 
@@ -1293,7 +1297,8 @@ public class PointSet implements Comparable<PointSet>{
 				pattern,
 				minCompactness,
 				minOccurrenceCompactness,
-				groundTruthFileName
+				groundTruthFileName,
+				midTimePoint
 				);
 	}
 	
@@ -1308,7 +1313,8 @@ public class PointSet implements Comparable<PointSet>{
 			boolean diatonicPitch,
 			double minCompactness,
 			double minOccurrenceCompactness,
-			String groundTruthFileName) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			String groundTruthFileName,
+			boolean midTimePoint) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		encodePointSet (
 				ps, 
 				outputFilePath, 
@@ -1321,7 +1327,8 @@ public class PointSet implements Comparable<PointSet>{
 				null,
 				minCompactness,
 				minOccurrenceCompactness,
-				groundTruthFileName
+				groundTruthFileName,
+				midTimePoint
 				);
 	}
 	
@@ -1338,7 +1345,8 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps2,
 			double minCompactness,
 			double minOccurrenceCompactness,
-			String groundTruthFileName) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			String groundTruthFileName,
+			boolean midTimePoint) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
 		if (ps2 != null) {
@@ -1458,13 +1466,13 @@ public class PointSet implements Comparable<PointSet>{
 		
 //		Compare computed encoding with ground truth file
 		if (groundTruthFileName != null) {
-			ps.compareWithGroundTruthFile(groundTruthFileName, diatonicPitch, outputFilePath, !ps.isMTM(), ps.isMTM());
+			ps.compareWithGroundTruthFile(groundTruthFileName, diatonicPitch, outputFilePath, !ps.isMTM(), ps.isMTM(), midTimePoint);
 		}
 		
 		if (draw) {
 			int posOfDot = outputFilePath.lastIndexOf(".");
 			String imageFilePath = outputFilePath.substring(0,posOfDot) + ".png";
-			ps.getEncoding().drawOccurrenceSets(imageFilePath,diatonicPitch,!ps.isMTM());
+			ps.getEncoding().drawOccurrenceSets(imageFilePath,diatonicPitch,!ps.isMTM(),midTimePoint);
 		}
 
 		return ps;
@@ -1503,7 +1511,7 @@ public class PointSet implements Comparable<PointSet>{
 	 * from the pitch name.
 	 * 
 	 */
-	private ArrayList<ArrayList<com.chromamorph.points022.PointSet>> readGroundTruthPatternsFromFile(String groundTruthFilePath, boolean diatonicPitch) {
+	private ArrayList<ArrayList<com.chromamorph.points022.PointSet>> readGroundTruthPatternsFromFile(String groundTruthFilePath, boolean diatonicPitch, boolean withMidTimePoints) {
 		StringBuilder sb = readGroundTruthFileIntoStringBuilder(groundTruthFilePath);
 		
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
@@ -1512,7 +1520,7 @@ public class PointSet implements Comparable<PointSet>{
 		while (i < sb.length()) {
 			while (i < sb.length() && sb.charAt(i) != '(') i++; //Puts i at beginning of encoding of next occurrence set or end of file
 			if (i < sb.length()) {
-				OccurrenceSetEndIndexPair osei = readOccurrenceSet(sb,i, diatonicPitch);
+				OccurrenceSetEndIndexPair osei = readOccurrenceSet(sb,i, diatonicPitch, withMidTimePoints);
 				i = osei.endIndex; //Should be one character after the end of the occurrence set encoding
 				groundTruthPatterns.add(osei.occurrenceSet);
 			}
@@ -1543,14 +1551,14 @@ public class PointSet implements Comparable<PointSet>{
 	 * @param startIndex
 	 * @return
 	 */
-	private OccurrenceSetEndIndexPair readOccurrenceSet(StringBuilder sb, int startIndex, boolean diatonicPitch) {
+	private OccurrenceSetEndIndexPair readOccurrenceSet(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints) {
 		OccurrenceSetEndIndexPair osei = new OccurrenceSetEndIndexPair();
 		//Find start of first pattern within this occurrence set
 		int i = startIndex + 1;
 		while (sb.charAt(i) != ')') {
 			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next pattern occurrence or end of occurrence set
 			if (sb.charAt(i) != ')') {
-				OccurrenceEndIndexPair occEi = readOccurrence(sb,i, diatonicPitch);
+				OccurrenceEndIndexPair occEi = readOccurrence(sb,i, diatonicPitch, withMidTimePoints);
 				i = occEi.endIndex; //Should be one character after the occurrence just read.
 				osei.occurrenceSet.add(occEi.occurrence);
 			}
@@ -1564,13 +1572,13 @@ public class PointSet implements Comparable<PointSet>{
 		int endIndex = 0;
 	}
 	
-	private OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex, boolean diatonicPitch) {
+	private OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints) {
 		OccurrenceEndIndexPair occEi = new OccurrenceEndIndexPair();
 		int i = startIndex + 1;
 		while (sb.charAt(i) != ')') {
 			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next point or end of point set
 			if (sb.charAt(i) != ')') {
-				PointEndIndexPair pEi = readPoint(sb,i, diatonicPitch);
+				PointEndIndexPair pEi = readPoint(sb,i, diatonicPitch, withMidTimePoints);
 				i = pEi.endIndex;
 				occEi.occurrence.add(pEi.point);
 			}
@@ -1584,14 +1592,20 @@ public class PointSet implements Comparable<PointSet>{
 		int endIndex;
 	}
 	
-	private PointEndIndexPair readPoint(StringBuilder sb, int startIndex, boolean diatonicPitch) {
+	private PointEndIndexPair readPoint(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints) {
 		PointEndIndexPair pEi = new PointEndIndexPair();
 		int endIndex = sb.indexOf(")", startIndex);
 		//Assume startIndex is index of opening parenthesis of point encoding.
 		String pointString = sb.substring(startIndex+1, endIndex);
 		String[] a = pointString.split("\s");
 //		pointString has format onset pitch-name duration [voice]
-		long x = Long.parseLong(a[0]);
+		long originalOnset = Long.parseLong(a[0]);
+		long duration = Long.parseLong(a[2]);
+		double xdbl = originalOnset;
+		if (withMidTimePoints)
+			xdbl = originalOnset + (duration/2.0);
+		long x = (long)(xdbl * TIME_SCALE_FACTOR);
+		
 		com.chromamorph.pitch.Pitch p = new com.chromamorph.pitch.Pitch();
 		int y;
 		if ("0123456789".contains(a[1].subSequence(0, 1)))
@@ -1605,8 +1619,8 @@ public class PointSet implements Comparable<PointSet>{
 		return pEi;
 	}
 	
-	private void compareWithGroundTruthFile(String groundTruthFilePath, boolean diatonicPitch, String outputFilePath, boolean includePattern, boolean isMTM) {
-		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch);
+	private void compareWithGroundTruthFile(String groundTruthFilePath, boolean diatonicPitch, String outputFilePath, boolean includePattern, boolean isMTM, boolean withMidTimePoints) {
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, withMidTimePoints);
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> computedPatterns = getEncoding().getOccurrenceSetsAsArrayListsOfPointSets(includePattern);
 		if (isMTM) {
 			ArrayList<ArrayList<com.chromamorph.points022.PointSet>> newComputedPatterns = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
@@ -1713,7 +1727,7 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1746,7 +1760,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName);
+			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1783,6 +1797,7 @@ public class PointSet implements Comparable<PointSet>{
 					dimensionMask);
 			if (minSize < 0)
 				minSize = pattern.size()+minSize;
+			if (minSize < 0) System.out.println(">>>ERROR! minSize is still less than zero: "+minSize+"<<<");
 			return maximalTransformedMatches(
 					pattern, 
 					dataset, 
@@ -1794,12 +1809,17 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					minCompactness, 
 					minOccurrenceCompactness,
-					groundTruthFileName);
+					groundTruthFileName,
+					midTimePoint);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (SuperMTPsNotNullException e) {
+			e.printStackTrace();
+		} catch (NoTransformationClassesDefinedException e) {
+			e.printStackTrace();
+		} catch (TimeOutException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -1825,7 +1845,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint);
 			return ps;
 		} catch (IOException e) {
 			e.printStackTrace();

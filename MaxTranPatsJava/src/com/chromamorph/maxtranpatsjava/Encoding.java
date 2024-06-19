@@ -238,7 +238,7 @@ public class Encoding {
 				com.chromamorph.maxtranpatsjava.PointSet thisPattern = tran.phi(os.getPattern());
 				points = thisPattern.getPoints();
 				for(com.chromamorph.maxtranpatsjava.Point p : points) {
-					thisOcc.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+					thisOcc.add(new com.chromamorph.points022.Point((long)Math.floor(p.get(0)),(int)(Math.floor(p.get(1)))));
 				}
 				thisOccSet.add(thisOcc);
 			}
@@ -246,12 +246,13 @@ public class Encoding {
 		return occSets;
 	}
 	
-	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern) {
+	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern, boolean withMidTimePoints) {
 		final PointSet dataset = getOccurrenceSets().get(0).getDataset();
 		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
 		for(com.chromamorph.maxtranpatsjava.Point p : points) {
-			ps.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+			long onset = withMidTimePoints?(long)Math.floor(p.get(0)):p.getOnset();
+			ps.add(new com.chromamorph.points022.Point(onset,(int)(Math.floor(p.get(1)))));
 		}
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
