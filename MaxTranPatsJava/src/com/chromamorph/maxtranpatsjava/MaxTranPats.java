@@ -4,43 +4,43 @@ import java.util.ArrayList;
 
 public class MaxTranPats {
 
-	private static String INPUT_FILE_PATH 					= null;
-	private static String QUERY_FILE_PATH 					= null;
-	private static String GROUND_TRUTH_FILE_PATH 			= null;
-	private static boolean MID_TIME_POINT					= false;
-	private static String OUTPUT_DIR_PATH					= null;
-	private static int MIN_PATTERN_SIZE						= 0;
-	private static double MIN_COMPACTNESS					= 0.0;
-	private static double MIN_OCC_COMPACTNESS				= 0.0;
-	private static boolean DIATONIC_PITCH					= false;
-	private static TransformationClass[] TRANSFORMATION_CLASSES = null;
-	private static String DIMENSION_MASK					= null;
-	private static boolean SCALEXIA							= false;
-	private static boolean DRAW								= false;
-	private static boolean HELP								= false;
+	public static String INPUT_FILE_PATH 					= null;
+	public static String QUERY_FILE_PATH 					= null;
+	public static String GROUND_TRUTH_FILE_PATH 			= null;
+	public static boolean MID_TIME_POINT					= false;
+	public static String OUTPUT_DIR_PATH					= null;
+	public static int MIN_PATTERN_SIZE						= 0;
+	public static double MIN_COMPACTNESS					= 0.0;
+	public static double MIN_OCC_COMPACTNESS				= 0.0;
+	public static boolean DIATONIC_PITCH					= false;
+	public static TransformationClass[] TRANSFORMATION_CLASSES = null;
+	public static String DIMENSION_MASK					= null;
+	public static boolean SCALEXIA							= false;
+	public static boolean DRAW								= false;
+	public static boolean HELP								= false;
 	
-	private static String INPUT_FILE_PATH_SWITCH 			= "i";
-	private static String QUERY_FILE_PATH_SWITCH 			= "q";
-	private static String GROUND_TRUTH_FILE_PATH_SWITCH 	= "gt";
-	private static String MID_TIME_POINT_SWITCH 			= "mt";
-	private static String OUTPUT_DIR_PATH_SWITCH 			= "o";
-	private static String MIN_PATTERN_SIZE_SWITCH			= "min";
-	private static String MIN_COMPACTNESS_SWITCH			= "minc";
-	private static String MIN_OCC_COMPACTNESS_SWITCH		= "minoc";
-	private static String DIATONIC_PITCH_SWITCH				= "d";
-	private static String TRANSFORMATION_CLASSES_SWITCH		= "tc";
-	private static String DIMENSION_MASK_SWITCH				= "dm";
-	private static String SCALEXIA_SWITCH					= "scal";
-	private static String DRAW_SWITCH						= "draw";
-	private static String HELP_SWITCH						= "h";
+	public static String INPUT_FILE_PATH_SWITCH 			= "i";
+	public static String QUERY_FILE_PATH_SWITCH 			= "q";
+	public static String GROUND_TRUTH_FILE_PATH_SWITCH 	= "gt";
+	public static String MID_TIME_POINT_SWITCH 			= "mt";
+	public static String OUTPUT_DIR_PATH_SWITCH 			= "o";
+	public static String MIN_PATTERN_SIZE_SWITCH			= "min";
+	public static String MIN_COMPACTNESS_SWITCH			= "minc";
+	public static String MIN_OCC_COMPACTNESS_SWITCH		= "minoc";
+	public static String DIATONIC_PITCH_SWITCH				= "d";
+	public static String TRANSFORMATION_CLASSES_SWITCH		= "tc";
+	public static String DIMENSION_MASK_SWITCH				= "dm";
+	public static String SCALEXIA_SWITCH					= "scal";
+	public static String DRAW_SWITCH						= "draw";
+	public static String HELP_SWITCH						= "h";
 	
-	private static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
+	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
 			"F_2STR_Rational",
 			"F_2STR",
 			"F_2T",
 			"F_2TR"};
-	private static TransformationClass[] ALL_TRANS_CLASSES = new TransformationClass[] {
+	public static TransformationClass[] ALL_TRANS_CLASSES = new TransformationClass[] {
 			new F_2STR_FIXED(),
 			new F_2STR_Rational(),
 			new F_2STR(),

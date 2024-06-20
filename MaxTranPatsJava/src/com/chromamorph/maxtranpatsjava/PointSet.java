@@ -1798,6 +1798,21 @@ public class PointSet implements Comparable<PointSet>{
 			if (minSize < 0)
 				minSize = pattern.size()+minSize;
 			if (minSize < 0) System.out.println(">>>ERROR! minSize is still less than zero: "+minSize+"<<<");
+			int beginIndex = patternFileName.lastIndexOf("/")+1;
+			String patternFileNameOnly = patternFileName.substring(beginIndex);
+			beginIndex = datasetFileName.lastIndexOf("/")+1;
+			String datasetFileNameOnly = datasetFileName.substring(beginIndex);
+			dataset.setTitle(String.format("Matches of %s in %s wrt to %s, with parameters %s%s%s%s%s%s",
+					patternFileNameOnly,
+					datasetFileNameOnly,
+					MaxTranPats.getTransformationClasses(),
+					pitchSpell?"-"+MaxTranPats.DIATONIC_PITCH_SWITCH:"",
+					midTimePoint?" -"+MaxTranPats.MID_TIME_POINT_SWITCH:"",
+					(" -"+MaxTranPats.DIMENSION_MASK_SWITCH +" "+ MaxTranPats.DIMENSION_MASK),
+					minSize != 0?" -"+MaxTranPats.MIN_PATTERN_SIZE_SWITCH+ " " + MaxTranPats.MIN_PATTERN_SIZE:"",
+					minCompactness != 0.0?" -"+MaxTranPats.MIN_COMPACTNESS_SWITCH+" "+MaxTranPats.MIN_COMPACTNESS:"",
+					minOccurrenceCompactness != 0.0?" -"+MaxTranPats.MIN_OCC_COMPACTNESS_SWITCH+" "+MaxTranPats.MIN_OCC_COMPACTNESS:""
+					));
 			return maximalTransformedMatches(
 					pattern, 
 					dataset, 

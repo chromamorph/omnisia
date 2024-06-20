@@ -1,0 +1,53 @@
+OS(P(p(0.0,17.0),p(16.0,21.0),p(28.0,20.0),p(32.0,19.0),p(44.0,18.0),p(48.0,17.0),p(64.0,16.0),p(80.0,17.0),p(92.0,18.0),p(96.0,19.0),p(118.0,20.0),p(120.0,19.0),p(126.0,18.0),p(128.0,17.0)),[T(F_2STR,[1.0, 0.0, 0.0, 1.0]), T(F_2STR,[1.0, 224.0, 11.0, 1.0]), T(F_2STR,[1.0, 480.0, 7.0, 1.0]), T(F_2STR,[1.0, 624.0, -40.0, -1.0]), T(F_2STR,[1.0, 768.0, 9.0, 1.0]), T(F_2STR,[1.0, 960.0, 0.0, 1.0]), T(F_2STR,[1.0, 1088.0, -48.0, -1.0]), T(F_2STR,[1.0, 1472.0, -31.0, -1.0]), T(F_2STR,[1.0, 1824.0, -45.0, -1.0]), T(F_2STR,[1.0, 2032.0, -45.0, -1.0]), T(F_2STR,[1.0, 2384.0, -48.0, -1.0])],null)
+OS(P(p(0.0,17.0),p(16.0,21.0),p(28.0,20.0),p(32.0,19.0),p(44.0,18.0),p(48.0,17.0),p(64.0,16.0),p(80.0,17.0),p(92.0,18.0),p(96.0,19.0),p(120.0,19.0),p(128.0,17.0)),[T(F_2STR,[0.5, 32.0, -52.0, -1.0]), T(F_2STR,[0.5, 80.0, 7.0, 1.0]), T(F_2STR,[0.5, 304.0, 11.0, 1.0]), T(F_2STR,[0.5, 448.0, -38.0, -1.0]), T(F_2STR,[0.5, 496.0, -52.0, -1.0]), T(F_2STR,[0.5, 800.0, -40.0, -1.0]), T(F_2STR,[0.5, 992.0, -45.0, -1.0]), T(F_2STR,[0.5, 1120.0, -4.0, 1.0]), T(F_2STR,[0.5, 1168.0, -41.0, -1.0]), T(F_2STR,[0.5, 1312.0, -43.0, -1.0]), T(F_2STR,[0.5, 1504.0, 0.0, 1.0]), T(F_2STR,[0.5, 2000.0, 2.0, 1.0]), T(F_2STR,[0.5, 2064.0, 7.0, 1.0]), T(F_2STR,[0.5, 2416.0, 10.0, 1.0])],null)
+OS(P(p(16.0,21.0),p(28.0,20.0),p(32.0,19.0),p(44.0,18.0),p(48.0,17.0),p(64.0,16.0),p(80.0,17.0),p(92.0,18.0),p(96.0,19.0),p(120.0,19.0),p(128.0,17.0)),[T(F_2STR,[0.5, 192.0, -42.0, -1.0]), T(F_2STR,[0.5, 1792.0, 14.0, 1.0]), T(F_2STR,[0.5, 2352.0, 3.0, 1.0])],null)
+OS(P(p(0.0,17.0),p(16.0,21.0),p(28.0,20.0),p(32.0,19.0),p(44.0,18.0),p(48.0,17.0),p(64.0,16.0),p(80.0,17.0),p(92.0,18.0),p(96.0,19.0)),[T(F_2STR,[0.5, 1840.0, 7.0, 1.0])],null)
+
+
+Coverage: 360
+Dataset size: 1665
+Uncompressed length: 720
+Encoding length: 210
+Compression factor: 3.4285714285714284
+Running time in milliseconds: 222110
+Encoding length without residual point set: 210
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 3.4285714285714284
+Number of occurrence sets: 4
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+         208086 ms         208086 ms  computeMaximalTransformablePatterns ends
+         208088 ms              2 ms  computeSizeMTPSetArray ends
+         208090 ms              2 ms  mergeMTPs ends
+         208093 ms              3 ms  computeSuperMTPs ends
+         208093 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+         222091 ms          13998 ms  removeDuplicateOccurrenceSets ends
+         222091 ms              0 ms  removeRedundantTransformations ends
+         222092 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         222108 ms             16 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         222109 ms              1 ms  computeSortedOccurrenceSets ends
+         222110 ms              1 ms  computeEncoding ends
+         222110 ms              0 ms  Program ends
+
+
+Number of points: 1665
+Number of OSs after removal: 4
+Parameter settings:
+Input file path (-i): data/MML2024/ContrapunctusVI/ContrapunctusVI.opnd
+Query file path (-q): data/MML2024/ContrapunctusVI/ContrapunctusVI-subject.opnd
+Ground-truth file path (-gt): data/MML2024/ContrapunctusVI/ContrapunctusVI-ground-truth-subject-entries.gt
+Mid-time point (-mt): false
+Output directory (-o): output/MML2024/ContrapunctusVI
+Minimum pattern size (-min): -4
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+

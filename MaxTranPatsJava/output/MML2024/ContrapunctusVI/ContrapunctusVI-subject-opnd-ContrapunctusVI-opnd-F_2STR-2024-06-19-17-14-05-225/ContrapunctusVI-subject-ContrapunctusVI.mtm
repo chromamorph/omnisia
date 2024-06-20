@@ -7,7 +7,7 @@ Dataset size: 1679
 Uncompressed length: 318
 Encoding length: 98
 Compression factor: 3.2448979591836733
-Running time in milliseconds: 210098
+Running time in milliseconds: 238097
 Encoding length without residual point set: 98
 Number of residual points: 0
 Percentage of residual points: 0.00%
@@ -18,29 +18,29 @@ Number of occurrence sets: 2
 
 Log:
               0 ms              0 ms  computeMaximalTransformablePatterns starts
-         202143 ms         202143 ms  computeMaximalTransformablePatterns ends
-         202145 ms              2 ms  computeSizeMTPSetArray ends
-         202148 ms              3 ms  mergeMTPs ends
-         202150 ms              2 ms  computeSuperMTPs ends
-         202150 ms              0 ms  computeHeterogeneousOccurrenceSets ends
-         210095 ms           7945 ms  removeDuplicateOccurrenceSets ends
-         210095 ms              0 ms  removeRedundantTransformations ends
-         210095 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
-         210096 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
-         210096 ms              0 ms  computeSortedOccurrenceSets ends
-         210098 ms              2 ms  computeEncoding ends
-         210098 ms              0 ms  Program ends
+         230079 ms         230079 ms  computeMaximalTransformablePatterns ends
+         230080 ms              1 ms  computeSizeMTPSetArray ends
+         230083 ms              3 ms  mergeMTPs ends
+         230085 ms              2 ms  computeSuperMTPs ends
+         230086 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+         238092 ms           8006 ms  removeDuplicateOccurrenceSets ends
+         238093 ms              1 ms  removeRedundantTransformations ends
+         238093 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         238095 ms              2 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         238095 ms              0 ms  computeSortedOccurrenceSets ends
+         238096 ms              1 ms  computeEncoding ends
+         238097 ms              1 ms  Program ends
 
 
 Number of points: 1679
 Number of OSs after removal: 2
 Parameter settings:
-Input file path (-i): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/MML2024/ContrapunctusVI/ContrapunctusVI.opnd
-Query file path (-q): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/MML2024/ContrapunctusVI/ContrapunctusVI-subject.opnd
-Ground-truth file path (-gt): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/MML2024/ContrapunctusVI/ContrapunctusVI-ground-truth-subject-entries.gt
+Input file path (-i): data/MML2024/ContrapunctusVI/ContrapunctusVI.opnd
+Query file path (-q): data/MML2024/ContrapunctusVI/ContrapunctusVI-subject.opnd
+Ground-truth file path (-gt): data/MML2024/ContrapunctusVI/ContrapunctusVI-ground-truth-subject-entries.gt
 Mid-time point (-mt): true
-Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/MML2024/ContrapunctusVI
-Minimum pattern size (-min): 12
+Output directory (-o): output/MML2024/ContrapunctusVI
+Minimum pattern size (-min): -4
 Minimum occurrence set compactness (-minc): 0.0
 Minimum occurrence compactness (-minoc): 0.0
 Morphetic pitch (-d): true
