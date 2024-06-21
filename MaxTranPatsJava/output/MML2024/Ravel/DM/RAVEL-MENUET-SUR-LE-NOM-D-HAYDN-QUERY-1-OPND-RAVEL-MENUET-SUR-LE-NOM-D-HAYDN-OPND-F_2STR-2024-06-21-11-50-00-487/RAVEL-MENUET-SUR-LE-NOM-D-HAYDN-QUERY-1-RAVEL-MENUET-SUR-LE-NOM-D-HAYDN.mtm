@@ -1,0 +1,55 @@
+OS(P(p(0.0,29.0),p(4.0,28.0),p(6.0,31.0),p(8.0,31.0),p(10.0,34.0)),[T(F_2STR,[1.0, 0.0, 0.0, 1.0]), T(F_2STR,[1.0, 48.0, 0.0, 1.0]), T(F_2STR,[1.0, 190.0, -51.0, -1.0])],null)
+
+
+Coverage: 15
+Dataset size: 574
+Uncompressed length: 30
+Encoding length: 22
+Compression factor: 1.3636363636363635
+Running time in milliseconds: 25200
+Encoding length without residual point set: 22
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.3636363636363635
+Number of occurrence sets: 1
+
+
+
+Log:
+          23377 ms              6 ms  computeMaximalTransformablePatterns starts
+          25061 ms           1684 ms  computeMaximalTransformablePatterns ends
+          25061 ms              0 ms  computeSizeMTPSetArray ends
+          25061 ms              0 ms  mergeMTPs ends
+          25062 ms              1 ms  computeSuperMTPs ends
+          25062 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+          25199 ms            137 ms  removeDuplicateOccurrenceSets ends
+          25199 ms              0 ms  removeRedundantTransformations ends
+          25200 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          25200 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          25200 ms              0 ms  computeSortedOccurrenceSets ends
+          25200 ms              0 ms  computeEncoding ends
+          25200 ms              0 ms  Program ends
+
+
+Number of points: 574
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND
+Query file path (-q): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN-QUERY-1.OPND
+Ground-truth file path (-gt): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/Ground-truth-files/RAVEL-HAYDN-GROUND-TRUTH-DM-one-os.gt
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/MML2024/Ravel/DM
+Minimum pattern size (-min): 5
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.5
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(1,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): true
+

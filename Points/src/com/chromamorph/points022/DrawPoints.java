@@ -67,6 +67,7 @@ public class DrawPoints extends PApplet {
 	private ArrayList<String> outputFilePathStrings = null;
 	private int outputFileIndex = 0;
 	private boolean firstTime = true;
+	private boolean drawBoundingBoxes = false;
 
 	public DrawPoints() {
 		super();
@@ -299,6 +300,34 @@ public class DrawPoints extends PApplet {
 	}
 
 	public DrawPoints(PointSet dataset, 
+			ArrayList<ArrayList<PointSet>> occurrenceSets, 
+			boolean drawAllOccurrenceSetsAtOnce,
+			boolean diatonicPitch,
+			Long tatumsPerBar,
+			Long barOneStartsAt,
+			String title,
+			String outputFilePath,
+			boolean segmentation,
+			boolean writeToImageFile,
+			boolean drawBoundingBoxes) {
+		super();
+		this.points = dataset;
+		this.occurrenceSets = occurrenceSets;
+		this.drawAllOccurrenceSetsAtOnce = drawAllOccurrenceSetsAtOnce;
+		this.occurrenceSetIndex = 0;
+		this.diatonicPitch = diatonicPitch;
+		this.tatumsPerBar = tatumsPerBar;
+		this.barOneStartsAt = barOneStartsAt==null?0:barOneStartsAt;
+		this.title = title;
+		this.segmentation = segmentation;
+		this.outputFilePath = outputFilePath;
+		this.writeToImageFile = writeToImageFile;
+		this.drawBoundingBoxes = drawBoundingBoxes;
+		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
+	}
+
+	
+	public DrawPoints(PointSet dataset, 
 			ArrayList<TEC> tecs, 
 			boolean diatonicPitch,
 			Long tatumsPerBar,
@@ -464,11 +493,13 @@ public class DrawPoints extends PApplet {
 		}
 		if (writeToImageFile) {
 			this.save(outputImageFile);
-			//noLoop();
+			noLoop();
 			//exit();
 		}
-		if (outputFilePathStrings == null || outputFileIndex >= outputFilePathStrings.size())
-			exit();
+//		if (outputFilePathStrings == null || outputFileIndex >= outputFilePathStrings.size()) {
+//			noLoop();
+//			exit();
+//		}
 	}
 
 	public void keyPressed() {
@@ -630,9 +661,11 @@ public class DrawPoints extends PApplet {
 					//					drawLine(lastPoint,p,0,lineWidth,ROUND);
 					lastPoint = p;
 				}
-//				Point topLeft = occurrence.getTopLeft();
-//				Point bottomRight = occurrence.getBottomRight();
-//				drawRectangle(col,topLeft,bottomRight);
+				if (this.drawBoundingBoxes) {
+					Point topLeft = occurrence.getTopLeft();
+					Point bottomRight = occurrence.getBottomRight();
+					drawRectangle(col,topLeft,bottomRight);
+				}
 				firstOccurrence = false;
 			}
 			if ((numberOfTecs-i)%500==0)

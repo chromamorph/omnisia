@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
@@ -174,9 +175,11 @@ public class Encoding {
 	}
 	
 	public OccurrenceSet getResidualPointSetAsOccurrenceSet() {
-		OccurrenceSet lastOS = getOccurrenceSets().get(getNumberOfOccurrenceSets()-1);
-		if (lastOS.getTransformations() == null || lastOS.getTransformations().size() == 0)
-			return lastOS;
+		if (getOccurrenceSets().size() != 0) {
+			OccurrenceSet lastOS = getOccurrenceSets().get(getNumberOfOccurrenceSets()-1);
+			if (lastOS.getTransformations() == null || lastOS.getTransformations().size() == 0)
+				return lastOS;
+		}
 		return null;
 	}
 	
@@ -209,7 +212,11 @@ public class Encoding {
 	}
 	
 	public int getDimensionality() {
-		return getOccurrenceSets().get(0).getPattern().getDimensionality();
+		if (getOccurrenceSets().size() != 0)
+			return getOccurrenceSets().get(0).getPattern().getDimensionality();
+		else if (getDataset().size() != 0)
+			return getDataset().getDimensionality();
+		return 0;
 	}
 	
 	public double getCompressionFactor() throws Exception {
@@ -246,7 +253,7 @@ public class Encoding {
 		return occSets;
 	}
 	
-	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern, boolean withMidTimePoints) {
+	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern, boolean withMidTimePoints, boolean drawBoundingBoxes) {
 		final PointSet dataset = getOccurrenceSets().get(0).getDataset();
 		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
@@ -254,7 +261,8 @@ public class Encoding {
 			long onset = withMidTimePoints?(long)Math.floor(p.get(0)):p.getOnset();
 			ps.add(new com.chromamorph.points022.Point(onset,(int)(Math.floor(p.get(1)))));
 		}
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		
+		final Runnable drawOccurrenceSetsRunnable = new Runnable() {
 			public void run() {
 				JFrame frame = new JFrame();
 				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
@@ -269,14 +277,30 @@ public class Encoding {
 						dataset.getTitle(),
 						outputFilePath,
 						false, //segmentation
-						true //writeToImageFile
+						true, //writeToImageFile
+						drawBoundingBoxes
 						);
 				frame.add(embed);
 				embed.init();
 				frame.pack();
 				frame.setVisible(true);
 			}
-		});
+		};
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					javax.swing.SwingUtilities.invokeAndWait(drawOccurrenceSetsRunnable);
+				} catch (InvocationTargetException | InterruptedException e) {
+					e.printStackTrace();
+				}				
+			}
+		};
+		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	

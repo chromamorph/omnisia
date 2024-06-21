@@ -1,5 +1,6 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MaxTranPats {
@@ -18,21 +19,25 @@ public class MaxTranPats {
 	public static boolean SCALEXIA							= false;
 	public static boolean DRAW								= false;
 	public static boolean HELP								= false;
+	public static boolean DRAW_GROUND_TRUTH					= false;
+	public static boolean DRAW_BOUNDING_BOXES				= false;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
-	public static String GROUND_TRUTH_FILE_PATH_SWITCH 	= "gt";
-	public static String MID_TIME_POINT_SWITCH 			= "mt";
+	public static String GROUND_TRUTH_FILE_PATH_SWITCH 		= "gt";
+	public static String MID_TIME_POINT_SWITCH 				= "mt";
 	public static String OUTPUT_DIR_PATH_SWITCH 			= "o";
 	public static String MIN_PATTERN_SIZE_SWITCH			= "min";
-	public static String MIN_COMPACTNESS_SWITCH			= "minc";
-	public static String MIN_OCC_COMPACTNESS_SWITCH		= "minoc";
+	public static String MIN_COMPACTNESS_SWITCH				= "minc";
+	public static String MIN_OCC_COMPACTNESS_SWITCH			= "minoc";
 	public static String DIATONIC_PITCH_SWITCH				= "d";
 	public static String TRANSFORMATION_CLASSES_SWITCH		= "tc";
 	public static String DIMENSION_MASK_SWITCH				= "dm";
 	public static String SCALEXIA_SWITCH					= "scal";
 	public static String DRAW_SWITCH						= "draw";
 	public static String HELP_SWITCH						= "h";
+	public static String DRAW_GROUND_TRUTH_SWITCH			= "drawgt";
+	public static String DRAW_BOUNDING_BOXES_SWITCH			= "drawbb";
 	
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
@@ -59,7 +64,7 @@ public class MaxTranPats {
 	}
 	
 	public static String getParameterSettings() {
-		StringBuilder sb = new StringBuilder("Parameter settings:\n");
+		StringBuilder sb = new StringBuilder("\n\nParameter settings:\n===================\n");
 		sb.append("Input file path (-"+INPUT_FILE_PATH_SWITCH+"): "+INPUT_FILE_PATH+"\n");
 		sb.append("Query file path (-"+QUERY_FILE_PATH_SWITCH+"): "+QUERY_FILE_PATH+"\n");
 		sb.append("Ground-truth file path (-"+GROUND_TRUTH_FILE_PATH_SWITCH+"): "+GROUND_TRUTH_FILE_PATH+"\n");
@@ -73,6 +78,9 @@ public class MaxTranPats {
 		sb.append(String.format("%s (-%s): %s\n", "Dimension mask", DIMENSION_MASK_SWITCH, DIMENSION_MASK));
 		sb.append(String.format("%s (-%s): %s\n", "Use ScaleXIA", SCALEXIA_SWITCH, SCALEXIA));
 		sb.append(String.format("%s (-%s): %s\n", "Draw patterns", DRAW_SWITCH, DRAW));
+		sb.append(String.format("%s (-%s): %s\n", "Draw ground truth", DRAW_GROUND_TRUTH_SWITCH, DRAW_GROUND_TRUTH));
+		sb.append(String.format("%s (-%s): %s\n", "Draw bounding boxes around patterns", DRAW_BOUNDING_BOXES_SWITCH, DRAW_BOUNDING_BOXES));
+		
 		return sb.toString();
 	}
 
@@ -155,8 +163,10 @@ public class MaxTranPats {
 				"-"+DIMENSION_MASK_SWITCH+"\tA binary string in which a 1 indicates that a dimenion is to be used.",
 				"-"+SCALEXIA_SWITCH+"\tUse Scalexia rather than a transformation class.",
 				"-"+DRAW_SWITCH+"\tDraw results in a graph.",
-				"-"+HELP_SWITCH+"\tDisplay this help."
-				);
+				"-"+HELP_SWITCH+"\tDisplay this help.",
+				"-"+DRAW_GROUND_TRUTH_SWITCH+"\tDraw ground truth file (.gt file).",
+				"-"+DRAW_BOUNDING_BOXES_SWITCH+"\tDraw bounding boxes around patterns."
+		);
 	}
 	
 	public static void main(String[] args) {
@@ -182,6 +192,8 @@ public class MaxTranPats {
 		SCALEXIA = getBooleanValue(argArray,SCALEXIA_SWITCH);
 		DRAW = getBooleanValue(argArray,DRAW_SWITCH);
 		HELP = getBooleanValue(argArray,HELP_SWITCH);
+		DRAW_GROUND_TRUTH = getBooleanValue(argArray,DRAW_GROUND_TRUTH_SWITCH);
+		DRAW_BOUNDING_BOXES = getBooleanValue(argArray,DRAW_BOUNDING_BOXES_SWITCH);
 
 		if (OUTPUT_DIR_PATH == null) {
 			int end = INPUT_FILE_PATH.lastIndexOf("/");
@@ -191,7 +203,19 @@ public class MaxTranPats {
 		if (DIMENSION_MASK == null)
 			DIMENSION_MASK = "1100";
 		
-		if (QUERY_FILE_PATH == null) {
+		if (DRAW_GROUND_TRUTH)
+			try {
+				PointSet.drawGroundTruthFile(
+						GROUND_TRUTH_FILE_PATH, 
+						INPUT_FILE_PATH, 
+						DIATONIC_PITCH, 
+						MID_TIME_POINT,
+						DIMENSION_MASK,
+						DRAW_BOUNDING_BOXES);
+			} catch (IOException | DimensionalityException e) {
+				e.printStackTrace();
+			}
+		else if (QUERY_FILE_PATH == null) {
 			PointSet.encodePointSetFromFile(
 					INPUT_FILE_PATH, 
 					TRANSFORMATION_CLASSES,
@@ -204,7 +228,8 @@ public class MaxTranPats {
 					DRAW, //draw
 					MIN_COMPACTNESS,
 					MIN_OCC_COMPACTNESS,
-					GROUND_TRUTH_FILE_PATH
+					GROUND_TRUTH_FILE_PATH,
+					DRAW_BOUNDING_BOXES
 					);
 		} else {
 			PointSet.maximalTransformedMatchesFromFiles(
@@ -219,7 +244,8 @@ public class MaxTranPats {
 					DRAW, //draw
 					MIN_COMPACTNESS,
 					MIN_OCC_COMPACTNESS,
-					GROUND_TRUTH_FILE_PATH
+					GROUND_TRUTH_FILE_PATH,
+					DRAW_BOUNDING_BOXES
 					);
 		}
 	}
