@@ -1,0 +1,55 @@
+OS(P(p(0.0,17.0),p(16.0,21.0),p(28.0,20.0),p(32.0,19.0),p(44.0,18.0),p(48.0,17.0),p(64.0,16.0),p(80.0,17.0),p(92.0,18.0),p(96.0,19.0),p(118.0,20.0),p(120.0,19.0),p(126.0,18.0),p(128.0,17.0)),[T(F_2STR,[1.0, 0.0, 0.0, 1.0]), T(F_2STR,[1.0, 224.0, 11.0, 1.0]), T(F_2STR,[1.0, 480.0, 7.0, 1.0]), T(F_2STR,[1.0, 624.0, -40.0, -1.0]), T(F_2STR,[1.0, 768.0, 9.0, 1.0]), T(F_2STR,[1.0, 960.0, 0.0, 1.0]), T(F_2STR,[1.0, 1088.0, -48.0, -1.0]), T(F_2STR,[1.0, 1472.0, -31.0, -1.0]), T(F_2STR,[1.0, 1824.0, -45.0, -1.0]), T(F_2STR,[1.0, 2032.0, -45.0, -1.0]), T(F_2STR,[1.0, 2384.0, -48.0, -1.0])],null)
+
+
+Coverage: 154
+Dataset size: 1665
+Uncompressed length: 308
+Encoding length: 72
+Compression factor: 4.277777777777778
+Running time in milliseconds: 1206300
+Encoding length without residual point set: 72
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 4.277777777777778
+Number of occurrence sets: 1
+
+
+
+Log:
+         985932 ms              8 ms  computeMaximalTransformablePatterns starts
+        1199990 ms         214058 ms  computeMaximalTransformablePatterns ends
+        1199990 ms              0 ms  computeSizeMTPSetArray ends
+        1199990 ms              0 ms  mergeMTPs ends
+        1199990 ms              0 ms  computeSuperMTPs ends
+        1199990 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+        1206300 ms           6310 ms  removeDuplicateOccurrenceSets ends
+        1206300 ms              0 ms  removeRedundantTransformations ends
+        1206300 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        1206300 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        1206300 ms              0 ms  computeSortedOccurrenceSets ends
+        1206300 ms              0 ms  computeEncoding ends
+        1206300 ms              0 ms  Program ends
+
+
+Number of points: 1665
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/data/BachJS/DieKunstDerFuge/ContrapunctusVI/Lilypond/score-from-midi.opnd
+Query file path (-q): /Users/susanne/Repos/data/BachJS/DieKunstDerFuge/ContrapunctusVI/Bach-JS-ContrapunctusVI-subject.opnd
+Ground-truth file path (-gt): /Users/susanne/Repos/data/BachJS/DieKunstDerFuge/ContrapunctusVI/Bach-JS-Contrapunctus-VI-Subject-entries.gt
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/MML2024/ContrapunctusVI
+Minimum pattern size (-min): 13
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(1,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): true
+

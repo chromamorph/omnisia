@@ -1,0 +1,56 @@
+OS(P(p(0,17.0),p(16,21.0),p(28,20.0),p(32,19.0),p(44,18.0),p(48,17.0),p(64,16.0),p(80,17.0),p(92,18.0),p(96,19.0),p(118,20.0),p(120,19.0),p(126,18.0),p(128,17.0)),[T(F_2STR,[2.0, 0.0, 0.0, 1.0]), T(F_2STR,[2.0, 1920.0, 0.0, 1.0])],null)
+OS(P(p(0,17.0),p(16,21.0),p(28,20.0),p(32,19.0),p(44,18.0),p(48,17.0),p(64,16.0),p(80,17.0),p(92,18.0),p(96,19.0),p(118,20.0),p(120,19.0),p(126,18.0)),[T(F_2STR,[2.0, 2944.0, -31.0, -1.0])],null)
+
+
+Coverage: 55
+Dataset size: 1679
+Uncompressed length: 110
+Encoding length: 66
+Compression factor: 1.6666666666666667
+Running time in milliseconds: 2358209
+Encoding length without residual point set: 66
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.6666666666666667
+Number of occurrence sets: 2
+
+
+
+Log:
+        2118255 ms             12 ms  computeMaximalTransformablePatterns starts
+        2346162 ms         227907 ms  computeMaximalTransformablePatterns ends
+        2346162 ms              0 ms  computeSizeMTPSetArray ends
+        2346162 ms              0 ms  mergeMTPs ends
+        2346163 ms              1 ms  computeSuperMTPs ends
+        2346163 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+        2358208 ms          12045 ms  removeDuplicateOccurrenceSets ends
+        2358208 ms              0 ms  removeRedundantTransformations ends
+        2358208 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        2358208 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        2358209 ms              1 ms  computeSortedOccurrenceSets ends
+        2358209 ms              0 ms  computeEncoding ends
+        2358209 ms              0 ms  Program ends
+
+
+Number of points: 1679
+Number of OSs after removal: 2
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/data/BachJS/DieKunstDerFuge/ContrapunctusVI/Lilypond/score-from-midi.opnd
+Query file path (-q): /Users/susanne/Repos/data/BachJS/DieKunstDerFuge/ContrapunctusVI/Bach-JS-ContrapunctusVI-subject.opnd
+Ground-truth file path (-gt): /Users/susanne/Repos/data/BachJS/DieKunstDerFuge/ContrapunctusVI/Bach-JS-Contrapunctus-VI-Subject-entries.gt
+Mid-time point (-mt): true
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/MML2024/ContrapunctusVI
+Minimum pattern size (-min): 12
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.75
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(1,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): true
+
