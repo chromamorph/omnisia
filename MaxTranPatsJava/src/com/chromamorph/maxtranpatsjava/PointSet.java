@@ -1,5 +1,6 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,12 +17,17 @@ import java.util.TreeSet;
 import java.util.concurrent.ForkJoinPool;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.swing.JFrame;
 
 import com.chromamorph.notes.Note;
 import com.chromamorph.notes.Notes;
+import com.chromamorph.pitch.Pitch;
+import com.chromamorph.points022.DrawPoints;
 import com.chromamorph.points022.NoMorpheticPitchException;
 import com.chromamorph.points022.SCALEXIA3Encoding;
 import com.chromamorph.points022.SCALEXIA3Encoding.PVF;
+
+import processing.core.PApplet;
 
 public class PointSet implements Comparable<PointSet>{
 
@@ -50,6 +56,7 @@ public class PointSet implements Comparable<PointSet>{
 	private Long tatumsPerBar = null; 
 	private Long barOneStartsAt = null;
 	private String title = "";
+	public static double TIME_SCALE_FACTOR = 1.0;
 	
 	public void setTitle(String title) {
 		this.title = title;
@@ -170,6 +177,7 @@ public class PointSet implements Comparable<PointSet>{
 		//		System.out.println("in PointSet, ticksPerSecond == "+ticksPerSecond);
 		for(Note note : notes.getNotes()) {
 			double onset = (double)note.getOnset();
+			double originalOnset = onset;
 			if (midTimePoint) {
 				onset += note.getDuration() * 0.5;
 			}
@@ -197,6 +205,11 @@ public class PointSet implements Comparable<PointSet>{
 										dimensionMask.charAt(2) == '1'?(double)voice:null,
 												dimensionMask.charAt(3) == '1'?(double)duration:null);
 			}
+			p.setDuration(duration);
+			p.setOnset((long)originalOnset);
+			p.setVoice(voice);
+			p.setPitch(note.getPitch());
+			
 			points.add(p);
 		}
 		//		We want to avoid having points with non-integer x values, specifically
@@ -209,6 +222,8 @@ public class PointSet implements Comparable<PointSet>{
 				zeroPoint5Present = true;
 				break;
 			}
+		if (zeroPoint5Present)
+			TIME_SCALE_FACTOR = 2.0;
 		if (zeroPoint5Present) {
 			if (getTatumsPerBar() != null)
 				setTatumsPerBar(getTatumsPerBar()*2);
@@ -1233,6 +1248,7 @@ public class PointSet implements Comparable<PointSet>{
 
 		if (sortedOccurrenceSets.isEmpty()) {
 			System.out.println("sortedOccurrenceSets is empty in computeEncoding");
+			setEncoding(encoding);
 			return;
 		}
 		// Assumes first occurrence set in list is the "best"
@@ -1258,8 +1274,8 @@ public class PointSet implements Comparable<PointSet>{
 		setEncoding(encoding);
 	}
 
-	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch, double minCompactness, double minOccurrenceCompactness) throws Exception {
-		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch, minCompactness, minOccurrenceCompactness);
+	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch, double minCompactness, double minOccurrenceCompactness, String groundTruthFileName, boolean midTimePoint, boolean drawBoundingBoxes) throws Exception {
+		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes);
 	}
 	
 	public static PointSet maximalTransformedMatches(
@@ -1272,7 +1288,10 @@ public class PointSet implements Comparable<PointSet>{
 			boolean draw, 
 			boolean pitchSpell,
 			double minCompactness,
-			double minOccurrenceCompactness) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			double minOccurrenceCompactness,
+			String groundTruthFileName,
+			boolean midTimePoint,
+			boolean drawBoundingBoxes) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		return encodePointSet(
 				dataset, 
 				outputFilePath, 
@@ -1284,7 +1303,10 @@ public class PointSet implements Comparable<PointSet>{
 				pitchSpell,
 				pattern,
 				minCompactness,
-				minOccurrenceCompactness
+				minOccurrenceCompactness,
+				groundTruthFileName,
+				midTimePoint,
+				drawBoundingBoxes
 				);
 	}
 	
@@ -1298,7 +1320,10 @@ public class PointSet implements Comparable<PointSet>{
 			boolean draw,
 			boolean diatonicPitch,
 			double minCompactness,
-			double minOccurrenceCompactness) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			double minOccurrenceCompactness,
+			String groundTruthFileName,
+			boolean midTimePoint,
+			boolean drawBoundingBoxes) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		encodePointSet (
 				ps, 
 				outputFilePath, 
@@ -1310,9 +1335,13 @@ public class PointSet implements Comparable<PointSet>{
 				diatonicPitch,
 				null,
 				minCompactness,
-				minOccurrenceCompactness
+				minOccurrenceCompactness,
+				groundTruthFileName,
+				midTimePoint,
+				drawBoundingBoxes
 				);
 	}
+	
 	
 	public static PointSet encodePointSet (
 			PointSet ps, 
@@ -1325,11 +1354,17 @@ public class PointSet implements Comparable<PointSet>{
 			boolean diatonicPitch,
 			PointSet ps2,
 			double minCompactness,
-			double minOccurrenceCompactness) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			double minOccurrenceCompactness,
+			String groundTruthFileName,
+			boolean midTimePoint,
+			boolean drawBoundingBoxes) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
-		if (ps2 != null)
+		if (ps2 != null) {
 			ps.setMTM(true);
+//			if (minSize < 0)
+//				minSize = ps2.size()-minSize;
+		}
 		
 		ps.addTransformationClasses(transformationClasses);		
 
@@ -1420,12 +1455,6 @@ public class PointSet implements Comparable<PointSet>{
 		System.out.println("Encoding:\n" + ps.getEncoding());
 		Utility.println(output, ps.getEncoding());
 		
-		if (draw) {
-			int posOfDot = outputFilePath.lastIndexOf(".");
-			String imageFilePath = outputFilePath.substring(0,posOfDot) + ".png";
-			ps.getEncoding().drawOccurrenceSets(imageFilePath,diatonicPitch,!ps.isMTM());
-		}
-
 		Utility.println(output, "\n\nLog:");
 		for(int i = 0; i < log.size(); i++) {
 			Utility.println(output, log.get(i));
@@ -1435,11 +1464,251 @@ public class PointSet implements Comparable<PointSet>{
 //		Utility.println(output, "Number of MTPs before removal: " + numMTPsBeforeRemoval);
 		Utility.println(output, "Number of OSs after removal: " + ps.sortedOccurrenceSets.size());
 
+		Utility.println(output, MaxTranPats.getParameterSettings());
+		
 		output.close();
+
+////		Output MIREX format file for comparison with ground truth.
+//		int endIndex = outputFilePath.lastIndexOf('.');
+//		outputFilePath = outputFilePath.substring(0, endIndex) + ".mirex";
+//		output = new PrintWriter(outputFilePath);
+//		Utility.println(output, ps.getEncoding().toMIREXString());
+//		output.close();
+		
+//		Compare computed encoding with ground truth file
+		if (groundTruthFileName != null) {
+			ps.compareWithGroundTruthFile(groundTruthFileName, diatonicPitch, outputFilePath, !ps.isMTM(), ps.isMTM(), midTimePoint);
+		}
+		
+		if (draw) {
+			int posOfDot = outputFilePath.lastIndexOf(".");
+			String imageFilePath = outputFilePath.substring(0,posOfDot) + ".png";
+			ps.getEncoding().drawOccurrenceSets(imageFilePath,diatonicPitch,!ps.isMTM(),midTimePoint, drawBoundingBoxes);
+		}
 
 		return ps;
 	}
 
+	public static StringBuilder readGroundTruthFileIntoStringBuilder(String groundTruthFilePath) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(groundTruthFilePath));
+			String line = br.readLine();
+			while (line != null) {
+				if (!line.isEmpty() && !line.startsWith("%") && !line.startsWith("//") && !line.startsWith(";"))
+					sb.append(line.trim());
+				line = br.readLine();
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb;
+
+	}
+
+	/**
+	 * Assumes ground-truth pattern file has following format:
+	 * file := occurrence-set*
+	 * occurrence-set := (pattern*)
+	 * pattern := (point*)
+	 * point := (onset pitch-name duration [voice])
+	 * 
+	 * Empty lines in the file are ignored.
+	 * Lines beginning with % or // are ignored (comments).
+	 * 
+	 * If diatonicPitch is set to true, then it produces PointSets in which the y value is chromatic pitch,
+	 * otherwise the y value is set to morphetic pitch. Chromatic pitch and morphetic pitch are computed
+	 * from the pitch name.
+	 * 
+	 */
+	private static ArrayList<ArrayList<com.chromamorph.points022.PointSet>> readGroundTruthPatternsFromFile(String groundTruthFilePath, boolean diatonicPitch, boolean withMidTimePoints) {
+		StringBuilder sb = readGroundTruthFileIntoStringBuilder(groundTruthFilePath);
+		
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
+		
+		int i = 0;
+		while (i < sb.length()) {
+			while (i < sb.length() && sb.charAt(i) != '(') i++; //Puts i at beginning of encoding of next occurrence set or end of file
+			if (i < sb.length()) {
+				OccurrenceSetEndIndexPair osei = readOccurrenceSet(sb,i, diatonicPitch, withMidTimePoints);
+				i = osei.endIndex; //Should be one character after the end of the occurrence set encoding
+				groundTruthPatterns.add(osei.occurrenceSet);
+			}
+		}
+		
+		return groundTruthPatterns;
+	}
+
+	
+	static class OccurrenceSetEndIndexPair {
+		ArrayList<com.chromamorph.points022.PointSet> occurrenceSet = new ArrayList<com.chromamorph.points022.PointSet>();
+		int endIndex;
+		
+	}
+	
+	/**
+	 * Assumes that character at index i starts an encoding of an occurrence set in sb.
+	 * Parses this encoding of the occurrence set and converts it into an ArrayList of OMNISIA-style PointSets.
+	 * Returns a pair containing the list of point sets and the index of the first character *after* the encoding
+	 * of the occurrence set.
+	 * 
+	 * Occurrence set has the following format:
+	 * occurrence-set := (pattern*)
+	 * pattern := (point*)
+	 * point := (onset pitch-name duration [voice])
+	 * 
+	 * @param sb
+	 * @param startIndex
+	 * @return
+	 */
+	private static OccurrenceSetEndIndexPair readOccurrenceSet(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints) {
+		OccurrenceSetEndIndexPair osei = new OccurrenceSetEndIndexPair();
+		//Find start of first pattern within this occurrence set
+		int i = startIndex + 1;
+		while (sb.charAt(i) != ')') {
+			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next pattern occurrence or end of occurrence set
+			if (sb.charAt(i) != ')') {
+				OccurrenceEndIndexPair occEi = readOccurrence(sb,i, diatonicPitch, withMidTimePoints);
+				i = occEi.endIndex; //Should be one character after the occurrence just read.
+				osei.occurrenceSet.add(occEi.occurrence);
+			}
+		}
+		osei.endIndex = i+1;
+		return osei;
+	}
+	
+	static class OccurrenceEndIndexPair {
+		com.chromamorph.points022.PointSet occurrence = new com.chromamorph.points022.PointSet();
+		int endIndex = 0;
+	}
+	
+	private static OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints) {
+		OccurrenceEndIndexPair occEi = new OccurrenceEndIndexPair();
+		int i = startIndex + 1;
+		while (sb.charAt(i) != ')') {
+			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next point or end of point set
+			if (sb.charAt(i) != ')') {
+				PointEndIndexPair pEi = readPoint(sb,i, diatonicPitch, withMidTimePoints);
+				i = pEi.endIndex;
+				occEi.occurrence.add(pEi.point);
+			}
+		}
+		occEi.endIndex = i + 1;
+		return occEi;
+	}
+	
+	static class PointEndIndexPair {
+		com.chromamorph.points022.Point point;
+		int endIndex;
+	}
+	
+	private static PointEndIndexPair readPoint(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints) {
+		PointEndIndexPair pEi = new PointEndIndexPair();
+		int endIndex = sb.indexOf(")", startIndex);
+		//Assume startIndex is index of opening parenthesis of point encoding.
+		String pointString = sb.substring(startIndex+1, endIndex);
+		String[] a = pointString.split("\s");
+//		pointString has format onset pitch-name duration [voice]
+		long originalOnset = Long.parseLong(a[0]);
+		long duration = Long.parseLong(a[2]);
+		double xdbl = originalOnset;
+		if (withMidTimePoints)
+			xdbl = originalOnset + (duration/2.0);
+		long x = (long)(xdbl * TIME_SCALE_FACTOR);
+		
+		com.chromamorph.pitch.Pitch p = new com.chromamorph.pitch.Pitch();
+		int y;
+		if ("0123456789".contains(a[1].subSequence(0, 1)))
+			y = Integer.parseInt(a[1]);
+		else {
+			p.setPitchName(a[1]);
+			y = diatonicPitch?p.getMorpheticPitch():p.getChromaticPitch();
+		}
+		pEi.point = new com.chromamorph.points022.Point(x,y);
+		pEi.endIndex = endIndex + 1;
+		return pEi;
+	}
+	
+	private void compareWithGroundTruthFile(String groundTruthFilePath, boolean diatonicPitch, String outputFilePath, boolean includePattern, boolean isMTM, boolean withMidTimePoints) {
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, withMidTimePoints);
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> computedPatterns = getEncoding().getOccurrenceSetsAsArrayListsOfPointSets(includePattern);
+		if (isMTM) {
+//			Make computedPatterns a single occurrence set of patterns
+			ArrayList<ArrayList<com.chromamorph.points022.PointSet>> newComputedPatterns = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
+			TreeSet<com.chromamorph.points022.PointSet> newOS = new TreeSet<com.chromamorph.points022.PointSet>();
+			for(ArrayList<com.chromamorph.points022.PointSet> os : computedPatterns) {
+				newOS.addAll(os);
+			}
+			ArrayList<com.chromamorph.points022.PointSet> newOSArray = new ArrayList<com.chromamorph.points022.PointSet>();
+			newOSArray.addAll(newOS);
+			newComputedPatterns.add(newOSArray);
+			computedPatterns = newComputedPatterns;
+			
+//			Make groundTruthPatterns a single occurrence set of patterns
+//			ArrayList<ArrayList<com.chromamorph.points022.PointSet>> newGroundTruthPatterns = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
+//			TreeSet<com.chromamorph.points022.PointSet> newGTOS = new TreeSet<com.chromamorph.points022.PointSet>();
+//			for(ArrayList<com.chromamorph.points022.PointSet> os : groundTruthPatterns) {
+//				newGTOS.addAll(os);
+//			}
+//			ArrayList<com.chromamorph.points022.PointSet> newGTOSArray = new ArrayList<com.chromamorph.points022.PointSet>();
+//			newGTOSArray.addAll(newGTOS);
+//			newGroundTruthPatterns.add(newGTOSArray);
+//			groundTruthPatterns = newGroundTruthPatterns;
+			
+		}
+		
+		System.out.println("Ground truth patterns");
+		for(int i = 0; i < groundTruthPatterns.size(); i++) {
+			ArrayList<com.chromamorph.points022.PointSet> os = groundTruthPatterns.get(i);
+			System.out.println("Occurrence set: "+(i+1));
+			for(int j = 0; j < os.size(); j++) {
+				System.out.println("   Occurrence "+(j+1)+": "+os.get(j));
+			}
+		}		
+		
+		System.out.println("Computed patterns");
+		for(int i = 0; i < computedPatterns.size(); i++) {
+			ArrayList<com.chromamorph.points022.PointSet> os = computedPatterns.get(i);
+			System.out.println("Occurrence set: "+(i+1));
+			for(int j = 0; j < os.size(); j++) {
+				System.out.println("   Occurrence "+(j+1)+": "+os.get(j));
+			}
+		}		
+		
+		double f1, p, r;
+		
+		if (!isMTM) { //Use 3-layer F1, P and R
+			f1 = com.chromamorph.points022.EvaluateMIREX2013.getThreeLayerF1(groundTruthPatterns, computedPatterns);
+			p = com.chromamorph.points022.EvaluateMIREX2013.getP3(groundTruthPatterns, computedPatterns);
+			r = com.chromamorph.points022.EvaluateMIREX2013.getR3(groundTruthPatterns, computedPatterns);
+		} else { //Use 2-layer F1, P and R
+			f1 = com.chromamorph.points022.EvaluateMIREX2013.getF1(groundTruthPatterns.get(0),computedPatterns.get(0));
+			p = com.chromamorph.points022.EvaluateMIREX2013.getPb(groundTruthPatterns.get(0),computedPatterns.get(0));
+			r = com.chromamorph.points022.EvaluateMIREX2013.getRb(groundTruthPatterns.get(0),computedPatterns.get(0));
+		}
+		
+		System.out.println("Ground truth file: " + groundTruthFilePath);
+		System.out.println(diatonicPitch?"Morphetic pitch":"Chromatic pitch");
+		System.out.println((isMTM?"2":"3")+"-layer F1: " + f1);
+		System.out.println((isMTM?"2":"3")+"-layer P: " + p);
+		System.out.println((isMTM?"2":"3")+"-layer R: " + r);
+		
+		int endIndex = outputFilePath.lastIndexOf('.');
+		String evaluationFilePathString = outputFilePath.substring(0,endIndex)+".eval";
+		try {
+			PrintWriter pw = new PrintWriter(evaluationFilePathString);
+			Utility.println(pw, "Ground truth file: " + groundTruthFilePath);
+			Utility.println(pw, diatonicPitch?"Morphetic pitch":"Chromatic pitch");
+			Utility.println(pw, (isMTM?"2":"3")+"-layer F1: " + f1);
+			Utility.println(pw, (isMTM?"2":"3")+"-layer P: " + p);
+			Utility.println(pw, (isMTM?"2":"3")+"-layer R: " + r);
+			pw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public double getMax(int dimension) {
 		double max = getPoints().first().get(dimension);
 		for(Point p : getPoints())
@@ -1461,7 +1730,9 @@ public class PointSet implements Comparable<PointSet>{
 			int count,
 			boolean draw,
 			double minCompactness,
-			double minOccurrenceCompactness) {
+			double minOccurrenceCompactness,
+			String groundTruthFileName,
+			boolean drawBoundingBoxes) {
 		String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 		try {
 			PointSet ps1 = new PointSet(
@@ -1481,7 +1752,7 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1505,7 +1776,9 @@ public class PointSet implements Comparable<PointSet>{
 			String outputDir,
 			boolean draw,
 			double minCompactness,
-			double minOccurrenceCompactness) {
+			double minOccurrenceCompactness, 
+			String groundTruthFileName,
+			boolean drawBoundingBoxes) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -1513,7 +1786,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
+			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -1534,9 +1807,12 @@ public class PointSet implements Comparable<PointSet>{
 			int minSize,
 			boolean draw,
 			double minCompactness,
-			double minOccurrenceCompactness) {
+			double minOccurrenceCompactness,
+			String groundTruthFileName,
+			boolean drawBoundingBoxes) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, patternFileName, datasetFileName, transformationClasses);
+			TIME_SCALE_FACTOR = 1.0;
 			PointSet pattern = new PointSet(
 					new File(patternFileName), 
 					pitchSpell, 
@@ -1547,12 +1823,47 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell,
 					midTimePoint,
 					dimensionMask);
-			return maximalTransformedMatches(pattern, dataset, outputFileName, transformationClasses, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
+			if (minSize < 0)
+				minSize = pattern.size()+minSize;
+			if (minSize < 0) System.out.println(">>>ERROR! minSize is still less than zero: "+minSize+"<<<");
+			int beginIndex = patternFileName.lastIndexOf("/")+1;
+			String patternFileNameOnly = patternFileName.substring(beginIndex);
+			beginIndex = datasetFileName.lastIndexOf("/")+1;
+			String datasetFileNameOnly = datasetFileName.substring(beginIndex);
+			dataset.setTitle(String.format("Matches of %s in %s wrt to %s, with parameters %s%s%s%s%s%s",
+					patternFileNameOnly,
+					datasetFileNameOnly,
+					MaxTranPats.getTransformationClasses(),
+					pitchSpell?"-"+MaxTranPats.DIATONIC_PITCH_SWITCH:"",
+					midTimePoint?" -"+MaxTranPats.MID_TIME_POINT_SWITCH:"",
+					(" -"+MaxTranPats.DIMENSION_MASK_SWITCH +" "+ MaxTranPats.DIMENSION_MASK),
+					minSize != 0?" -"+MaxTranPats.MIN_PATTERN_SIZE_SWITCH+ " " + MaxTranPats.MIN_PATTERN_SIZE:"",
+					minCompactness != 0.0?" -"+MaxTranPats.MIN_COMPACTNESS_SWITCH+" "+MaxTranPats.MIN_COMPACTNESS:"",
+					minOccurrenceCompactness != 0.0?" -"+MaxTranPats.MIN_OCC_COMPACTNESS_SWITCH+" "+MaxTranPats.MIN_OCC_COMPACTNESS:""
+					));
+			return maximalTransformedMatches(
+					pattern, 
+					dataset, 
+					outputFileName, 
+					transformationClasses, 
+					minSize, 
+					HASH_TABLE_SIZE, 
+					draw, 
+					pitchSpell, 
+					minCompactness, 
+					minOccurrenceCompactness,
+					groundTruthFileName,
+					midTimePoint,
+					drawBoundingBoxes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (SuperMTPsNotNullException e) {
+			e.printStackTrace();
+		} catch (NoTransformationClassesDefinedException e) {
+			e.printStackTrace();
+		} catch (TimeOutException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -1569,7 +1880,9 @@ public class PointSet implements Comparable<PointSet>{
 			int minSize,
 			boolean draw,
 			double minCompactness,
-			double minOccurrenceCompactness) {
+			double minOccurrenceCompactness,
+			String groundTruthFileName,
+			boolean drawBoundingBoxes) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -1577,7 +1890,7 @@ public class PointSet implements Comparable<PointSet>{
 					pitchSpell, 
 					midTimePoint,
 					dimensionMask);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness);
+			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes);
 			return ps;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1618,7 +1931,9 @@ public class PointSet implements Comparable<PointSet>{
 						3,
 						false,
 						0.0,
-						0.0);
+						0.0,
+						null,
+						false);
 		}
 	}
 
@@ -1648,7 +1963,9 @@ public class PointSet implements Comparable<PointSet>{
 								count,
 								false,
 								0.0,
-								0.0);		
+								0.0,
+								null,
+								false);		
 					}
 					count++;
 				}
@@ -1732,7 +2049,9 @@ public class PointSet implements Comparable<PointSet>{
 								count,
 								false,
 								0.0,
-								0.0);		
+								0.0,
+								null,
+								false);		
 					}
 					count++;
 				}
@@ -1751,7 +2070,9 @@ public class PointSet implements Comparable<PointSet>{
 				3, //minSize
 				false, // draw
 				0.0, // minCompactness
-				0.0 // minOccurrenceCompactness
+				0.0, // minOccurrenceCompactness
+				null,
+				false
 				);
 	}
 
@@ -1834,119 +2155,58 @@ public class PointSet implements Comparable<PointSet>{
 							3, // minSize
 							false,
 							0.0,
-							0.0
+							0.0,
+							null,
+							false
 							);
 				}
 			}
 		}
 
 	}
-	
-	private static String getStringValue(ArrayList<String> argList, String sw) {
-		String str = null;
-		int i = argList.lastIndexOf(sw);
-		if (i >= 0)
-			str = argList.get(i+1);
-		return str;
-	}
-	
-	private static Integer getIntValue(ArrayList<String> argList, String sw) {
-		Integer val = null;
-		int i = argList.lastIndexOf(sw);
-		if (i >= 0)
-			val = Integer.parseInt(argList.get(i+1));
-		return val;
-	}
-	
-	private static Double getDoubleValue(ArrayList<String> argList, String sw) {
-		Double val = null;
-		int i = argList.lastIndexOf(sw);
-		if (i >= 0)
-			val = Double.parseDouble(argList.get(i+1));
-		return val;
-	}
-	
-	private static TransformationClass[] getTransformationClasses(ArrayList<String> argList) {
-		ArrayList<TransformationClass> transformationClassList = new ArrayList<TransformationClass>();
-		String[] allTransClassStrings = new String[] {
-				"F_2STR_FIXED",
-				"F_2STR_Rational",
-				"F_2STR",
-				"F_2T",
-				"F_2TR"};
-		TransformationClass[] allTransClasses = new TransformationClass[] {
-				new F_2STR_FIXED(),
-				new F_2STR_Rational(),
-				new F_2STR(),
-				new F_2T(),
-				new F_2TR()
-		};
-		for(int j = 0; j < allTransClassStrings.length; j++) {
-			int i = argList.lastIndexOf(allTransClassStrings[j]);
-			if (i >= 0)	{			
-				transformationClassList.add(allTransClasses[j]);
+
+	public static void drawGroundTruthFile(
+			String groundTruthFilePath,
+			String datasetFilePath,
+			boolean diatonicPitch, 
+			boolean midTimePoint,
+			String dimensionMask,
+			boolean drawBoundingBoxes) throws IOException, DimensionalityException {
+		final PointSet dataset = new PointSet(new File(datasetFilePath),diatonicPitch,midTimePoint,dimensionMask);
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint);
+		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
+		final int endIndex = groundTruthFilePath.lastIndexOf(".");
+		final String outputFilePath = groundTruthFilePath.substring(0, endIndex)+".png";
+		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
+		for(com.chromamorph.maxtranpatsjava.Point p : points) {
+			long onset = midTimePoint?(long)Math.floor(p.get(0)):p.getOnset();
+			ps.add(new com.chromamorph.points022.Point(onset,(int)(Math.floor(p.get(1)))));
+		}
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				JFrame frame = new JFrame();
+				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
+				frame.setResizable(false);
+				PApplet embed = new DrawPoints(
+						ps,
+						groundTruthPatterns,
+						true,//drawAllOccurrenceSetsAtOnce
+						diatonicPitch,
+						dataset.getTatumsPerBar(),
+						dataset.getBarOneStartsAt(),
+						dataset.getTitle(),
+						outputFilePath,
+						false, //segmentation
+						true, //writeToImageFile
+						drawBoundingBoxes //drawBoundingBoxes
+						);
+				frame.add(embed);
+				embed.init();
+				frame.pack();
+				frame.setVisible(true);
 			}
-		}
-		TransformationClass[] transformationClasses = new TransformationClass[transformationClassList.size()];
-		transformationClassList.toArray(transformationClasses);
-		return transformationClasses;
+		});
 	}
 	
-	public static void main(String[] args) {
-		ArrayList<String> argArray = new ArrayList<String>();
-		for(String arg: args)
-			argArray.add(arg);
-
-		String fileName = getStringValue(argArray, "-i");
-		if (fileName == null) {
-			System.out.println("Must provide the name of an input file: -i <input-file-name>");
-			return;
-		}
-		String outputDir = getStringValue(argArray, "-o");
-		Integer minSize = getIntValue(argArray, "-minSize");
-		Double minCompactness = getDoubleValue(argArray, "-minComp");
-		if (minCompactness == null)
-			minCompactness = 0.0;
-		Double minOccComp = getDoubleValue(argArray, "-minOccComp");
-		if (minOccComp == null)
-			minOccComp = 0.0;
-		String queryFileName = getStringValue(argArray, "-q");		
-		TransformationClass[] transformationClasses = getTransformationClasses(argArray);
-		boolean pitchSpell = true;
-		boolean midTimePoint = true;
-		String dimensionMask = "1100";
-		boolean useScalexia = false;
-		boolean draw = true;
-		
-		if (queryFileName == null) {
-			encodePointSetFromFile(
-					fileName, 
-					transformationClasses,
-					pitchSpell, //pitchSpell
-					midTimePoint, //midTimePoint
-					dimensionMask, //dimensionMask
-					outputDir, //outputDir
-					useScalexia, //useScalexia
-					minSize, //minSize
-					draw, //draw
-					minCompactness,
-					minOccComp
-					);
-		} else {
-			maximalTransformedMatchesFromFiles(
-					queryFileName,
-					fileName,
-					transformationClasses,
-					pitchSpell, //pitchSpell
-					midTimePoint, //midTimePoint
-					dimensionMask, //dimensionMask
-					outputDir, //outputDir
-					minSize, //minSize
-					draw, //draw
-					minCompactness,
-					minOccComp
-					);
-		}
-	}
-
+	
 }

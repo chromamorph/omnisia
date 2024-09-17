@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.TreeSet;
 import java.util.NavigableSet;
 
@@ -259,7 +258,7 @@ public class Notes {
 		this.play(tatumsPerBeat,beatsPerMinute, 0L);
 	}
 
-	public void play(Long tatumsPerBeat, Float beatsPerMinute, Long segmentStart) throws InvalidMidiDataException, MidiUnavailableException {
+	public void play(long tatumsPerBeat, float beatsPerMinute, long segmentStart) throws InvalidMidiDataException, MidiUnavailableException {
 		this.play(tatumsPerBeat, beatsPerMinute, segmentStart, null, null);
 	}
 
@@ -365,10 +364,11 @@ public class Notes {
 	public void play(Long tatumsPerBeat, Float beatsPerMinute, Long segmentStart, Long segmentEnd, Integer lowestMetricLevel) {
 		Thread playThread = new Thread(new PlayRunnable(this, tatumsPerBeat, beatsPerMinute, segmentStart, segmentEnd, lowestMetricLevel));
 		playThread.start();
-		Scanner sc = new Scanner(System.in);
-		sc.nextLine();
-		sc.close();
-		playThread.interrupt();
+		try {
+			playThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public TimeSignature getTimeSignature(Long timePoint) {
@@ -525,7 +525,7 @@ public class Notes {
 		BufferedReader br = new BufferedReader(new FileReader(new File(opndFileName)));
 		Notes notes = new Notes();
 		String l = br.readLine();
-		while (l == null || l.trim().length()==0 || l.trim().startsWith("%")) l = br.readLine();
+		while (l == null || l.trim().length()==0 || l.trim().startsWith("%") || l.trim().startsWith(";") || l.trim().startsWith("//")) l = br.readLine();
 		String[] sa2 = null;
 		String[] sa = null;
 		//		System.out.println(l);
@@ -534,7 +534,7 @@ public class Notes {
 			StringBuilder sb = new StringBuilder();
 			sb.append(l);
 			while ((l = br.readLine()) != null)
-				if (!l.trim().startsWith("%"))
+				if (!(l.trim().startsWith("%") || l.trim().startsWith(";") || l.trim().startsWith("//")))
 					sb.append(l);
 			String text = sb.toString();
 			sa2 = text.split("[()]");
@@ -1440,4 +1440,111 @@ public class Notes {
 		notes.toOPNDFile("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI-from-notes.opnd");
 	}
 
+	public Notes getSegment(Long startTatum, Long endTatum, boolean zeroOnset) {
+		Notes segment = new Notes();
+		TreeSet<Note> noteSet = getNotes();
+		for(Note note : noteSet) {
+			if ((endTatum == null || note.getOnset() <= endTatum) && (startTatum == null || note.getOnset() >= startTatum))
+				segment.addNote(note);
+		}
+		Long segmentOnset = segment.getNotes().first().getOnset();
+		if (segmentOnset != 0l && zeroOnset) {
+			for(Note note : segment.getNotes())
+				note.setOnset(note.getOnset()-segmentOnset);
+		}
+		return segment;
+	}
+
+	public static StringBuilder readGroundTruthFileIntoStringBuilder(String groundTruthFilePath) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(groundTruthFilePath));
+			String line = br.readLine();
+			while (line != null) {
+				if (!line.isEmpty() && !line.startsWith("%") && !line.startsWith("//") && !line.startsWith(";"))
+					sb.append(line.trim());
+				line = br.readLine();
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb;
+
+	}
+	
+	static class OccurrenceSetEndIndexPair {
+		ArrayList<Notes> occurrenceSet = new ArrayList<Notes>();
+		int endIndex;
+		
+	}
+
+	static class OccurrenceEndIndexPair {
+		Notes occurrence = new Notes();
+		int endIndex = 0;
+	}
+	
+	static class NoteEndIndexPair {
+		Note note;
+		int endIndex;
+	}
+	
+	static public NoteEndIndexPair readNote(StringBuilder sb, int startIndex, Notes notes) {
+		NoteEndIndexPair noteEndIndexPair = new NoteEndIndexPair();
+		int endIndex = sb.indexOf(")", startIndex);
+		Note note = Note.fromOPNDString(sb.substring(startIndex+1, endIndex), notes);
+		noteEndIndexPair.endIndex = endIndex + 1;
+		noteEndIndexPair.note = note;
+		return noteEndIndexPair;
+	}
+
+	public static OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex) {
+		OccurrenceEndIndexPair occEi = new OccurrenceEndIndexPair();
+		int i = startIndex + 1;
+		while (sb.charAt(i) != ')') {
+			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next point or end of point set
+			if (sb.charAt(i) != ')') {
+				NoteEndIndexPair pEi = readNote(sb,i,occEi.occurrence);
+				i = pEi.endIndex;
+				occEi.occurrence.addNote(pEi.note);
+			}
+		}
+		occEi.endIndex = i + 1;
+		return occEi;
+	}
+
+	public static OccurrenceSetEndIndexPair readOccurrenceSet(StringBuilder sb, int startIndex) {
+		OccurrenceSetEndIndexPair osei = new OccurrenceSetEndIndexPair();
+		//Find start of first pattern within this occurrence set
+		int i = startIndex + 1;
+		while (sb.charAt(i) != ')') {
+			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next pattern occurrence or end of occurrence set
+			if (sb.charAt(i) != ')') {
+				OccurrenceEndIndexPair occEi = readOccurrence(sb,i);
+				i = occEi.endIndex; //Should be one character after the occurrence just read.
+				osei.occurrenceSet.add(occEi.occurrence);
+			}
+		}
+		osei.endIndex = i+1;
+		return osei;
+	}
+
+	public static ArrayList<ArrayList<Notes>>readGroundTruthPatternsFromFile(String groundTruthFilePath) {
+		StringBuilder sb = readGroundTruthFileIntoStringBuilder(groundTruthFilePath);
+		
+		ArrayList<ArrayList<Notes>> groundTruthPatterns = new ArrayList<ArrayList<Notes>>();
+		
+		int i = 0;
+		while (i < sb.length()) {
+			while (i < sb.length() && sb.charAt(i) != '(') i++; //Puts i at beginning of encoding of next occurrence set or end of file
+			if (i < sb.length()) {
+				OccurrenceSetEndIndexPair osei = readOccurrenceSet(sb,i);
+				i = osei.endIndex; //Should be one character after the end of the occurrence set encoding
+				groundTruthPatterns.add(osei.occurrenceSet);
+			}
+		}
+		
+		return groundTruthPatterns;
+	}
+	
 }

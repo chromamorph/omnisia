@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
@@ -19,6 +20,9 @@ public class Encoding {
 	private ArrayList<OccurrenceSet> occurrenceSets;
 	private PointSet dataset;
 	private long runningTime;
+	static int mirexPatternNumber = 0;
+	protected int topNPatterns = 0;
+
 	
 //	public Encoding() {}
 	
@@ -94,6 +98,35 @@ public class Encoding {
 		return getCoverage() * getDimensionality();
 	}
 	
+//	public static String getMIREXStringForOccurrenceSet(OccurrenceSet os, PointSet dataset) throws SuperMTPsNotNullException {
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("pattern"+(++mirexPatternNumber)+"\n");
+//		TreeSet<PointSet> occurrences = os.getOccurrences();
+//		int occIndex = 0;
+//		for (PointSet pointSet : occurrences) {
+//			sb.append("occurrence"+ ++occIndex+"\n");
+//			TreeSet<com.chromamorph.maxtranpatsjava.Point> points = pointSet.getPoints();
+//			for(com.chromamorph.maxtranpatsjava.Point thisPoint : points) {
+//				TomDavePoint tomDavePoint = MIREX2013Entries.findTomDavePoint(thisPoint.toOmnisiaPoint());
+//				double outputOnset = (tomDavePoint.tomsNumerator * 1.0)/(tomDavePoint.tomsDenominator);
+//				double outputPitch = tomDavePoint.tomsPitch * 1.0;
+//				String pointString = String.format("%.5f",outputOnset)+", "+String.format("%.5f",outputPitch)+"\n";
+//				sb.append(pointString);
+//			}
+//		}
+//		return sb.toString();
+//	}
+//	
+//	public String toMIREXString() throws SuperMTPsNotNullException {
+//		mirexPatternNumber = 0;
+//		StringBuilder sb = new StringBuilder();
+//		for(int i = 0; i < getOccurrenceSets().size() && (topNPatterns == 0 || i < topNPatterns); i++) {
+//			OccurrenceSet os = getOccurrenceSets().get(i);
+//			sb.append(getMIREXStringForOccurrenceSet(os, dataset));
+//		}
+//		return sb.toString();
+//	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for(OccurrenceSet os : getOccurrenceSets()) {
@@ -142,9 +175,11 @@ public class Encoding {
 	}
 	
 	public OccurrenceSet getResidualPointSetAsOccurrenceSet() {
-		OccurrenceSet lastOS = getOccurrenceSets().get(getNumberOfOccurrenceSets()-1);
-		if (lastOS.getTransformations() == null || lastOS.getTransformations().size() == 0)
-			return lastOS;
+		if (getOccurrenceSets().size() != 0) {
+			OccurrenceSet lastOS = getOccurrenceSets().get(getNumberOfOccurrenceSets()-1);
+			if (lastOS.getTransformations() == null || lastOS.getTransformations().size() == 0)
+				return lastOS;
+		}
 		return null;
 	}
 	
@@ -177,7 +212,11 @@ public class Encoding {
 	}
 	
 	public int getDimensionality() {
-		return getOccurrenceSets().get(0).getPattern().getDimensionality();
+		if (getOccurrenceSets().size() != 0)
+			return getOccurrenceSets().get(0).getPattern().getDimensionality();
+		else if (getDataset().size() != 0)
+			return getDataset().getDimensionality();
+		return 0;
 	}
 	
 	public double getCompressionFactor() throws Exception {
@@ -193,9 +232,9 @@ public class Encoding {
 			
 //			Add pattern for this occurrence set
 			com.chromamorph.points022.PointSet thisOcc = new com.chromamorph.points022.PointSet();
-			TreeSet<Point> points = os.getPattern().getPoints();
+			TreeSet<com.chromamorph.maxtranpatsjava.Point> points = os.getPattern().getPoints();
 			if (includePattern) {
-				for(Point p : points) {
+				for(com.chromamorph.maxtranpatsjava.Point p : points) {
 					thisOcc.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
 				}
 				thisOccSet.add(thisOcc);	
@@ -203,10 +242,10 @@ public class Encoding {
 			
 			for (Transformation tran : os.getTransformations()) {
 				thisOcc = new com.chromamorph.points022.PointSet();
-				PointSet thisPattern = tran.phi(os.getPattern());
+				com.chromamorph.maxtranpatsjava.PointSet thisPattern = tran.phi(os.getPattern());
 				points = thisPattern.getPoints();
-				for(Point p : points) {
-					thisOcc.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+				for(com.chromamorph.maxtranpatsjava.Point p : points) {
+					thisOcc.add(new com.chromamorph.points022.Point((long)Math.floor(p.get(0)),(int)(Math.floor(p.get(1)))));
 				}
 				thisOccSet.add(thisOcc);
 			}
@@ -214,14 +253,16 @@ public class Encoding {
 		return occSets;
 	}
 	
-	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern) {
+	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern, boolean withMidTimePoints, boolean drawBoundingBoxes) {
 		final PointSet dataset = getOccurrenceSets().get(0).getDataset();
-		final TreeSet<Point> points = dataset.getPoints();
+		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
-		for(Point p : points) {
-			ps.add(new com.chromamorph.points022.Point((long)(Math.floor(p.get(0))),(int)(Math.floor(p.get(1)))));
+		for(com.chromamorph.maxtranpatsjava.Point p : points) {
+			long onset = withMidTimePoints?(long)Math.floor(p.get(0)):p.getOnset();
+			ps.add(new com.chromamorph.points022.Point(onset,(int)(Math.floor(p.get(1)))));
 		}
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		
+		final Runnable drawOccurrenceSetsRunnable = new Runnable() {
 			public void run() {
 				JFrame frame = new JFrame();
 				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
@@ -236,14 +277,30 @@ public class Encoding {
 						dataset.getTitle(),
 						outputFilePath,
 						false, //segmentation
-						true //writeToImageFile
+						true, //writeToImageFile
+						drawBoundingBoxes
 						);
 				frame.add(embed);
 				embed.init();
 				frame.pack();
 				frame.setVisible(true);
 			}
-		});
+		};
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					javax.swing.SwingUtilities.invokeAndWait(drawOccurrenceSetsRunnable);
+				} catch (InvocationTargetException | InterruptedException e) {
+					e.printStackTrace();
+				}				
+			}
+		};
+		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	

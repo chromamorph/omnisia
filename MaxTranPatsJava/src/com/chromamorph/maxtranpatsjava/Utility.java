@@ -359,7 +359,7 @@ public class Utility {
 		String inputFileSuffix2 = null;
 		if (inputFilePath2 != null) {
 			int startOfSuffix2 = inputFilePath2.lastIndexOf('.');
-			int startOfName2 = inputFilePath.lastIndexOf('/')+1;
+			int startOfName2 = inputFilePath2.lastIndexOf('/')+1;
 			inputFileName2 = inputFilePath2.substring(startOfName2,startOfSuffix2);
 			inputFileSuffix2 = inputFilePath2.substring(startOfSuffix2+1);
 		}

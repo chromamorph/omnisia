@@ -156,7 +156,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 			}
 		for(Transformation transformation : transformationsArray ) {
 			if (transformation.phi(getPattern()).getCompactness(dataset) < minOccurrenceCompactness) {
-				System.out.println("about to remove a transformation");
+//				System.out.println("about to remove a transformation");
 				removeTransformation(transformation);
 			}
 		}

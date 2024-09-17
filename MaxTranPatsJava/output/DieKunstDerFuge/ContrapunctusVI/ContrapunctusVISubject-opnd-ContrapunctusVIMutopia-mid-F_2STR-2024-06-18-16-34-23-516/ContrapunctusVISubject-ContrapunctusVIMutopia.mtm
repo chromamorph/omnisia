@@ -1,0 +1,52 @@
+OS(P(p(0,17.0),p(16,21.0),p(28,20.0),p(32,19.0),p(44,18.0),p(48,17.0),p(64,16.0),p(80,17.0),p(92,18.0),p(96,19.0),p(118,20.0),p(120,19.0),p(126,18.0),p(128,17.0)),[T(F_2STR,[2.0, 0.0, 0.0, 1.0]), T(F_2STR,[2.0, 1920.0, 0.0, 1.0])],null)
+OS(P(p(0,17.0),p(16,21.0),p(28,20.0),p(32,19.0),p(44,18.0),p(48,17.0),p(64,16.0),p(80,17.0),p(92,18.0),p(96,19.0),p(118,20.0),p(120,19.0),p(126,18.0)),[T(F_2STR,[2.0, 448.0, 11.0, 1.0]), T(F_2STR,[2.0, 960.0, 7.0, 1.0]), T(F_2STR,[2.0, 1248.0, -40.0, -1.0]), T(F_2STR,[2.0, 1536.0, 9.0, 1.0]), T(F_2STR,[2.0, 2176.0, -48.0, -1.0]), T(F_2STR,[2.0, 2944.0, -31.0, -1.0]), T(F_2STR,[2.0, 3648.0, -45.0, -1.0]), T(F_2STR,[2.0, 4064.0, -45.0, -1.0]), T(F_2STR,[2.0, 4768.0, -48.0, -1.0])],null)
+OS(P(p(0,17.0),p(16,21.0),p(28,20.0),p(32,19.0),p(44,18.0),p(48,17.0),p(64,16.0),p(80,17.0),p(92,18.0)),[T(F_2STR,[1.0, 64.0, -52.0, -1.0]), T(F_2STR,[1.0, 160.0, 7.0, 1.0]), T(F_2STR,[1.0, 896.0, -38.0, -1.0]), T(F_2STR,[1.0, 2240.0, -4.0, 1.0]), T(F_2STR,[1.0, 2336.0, -41.0, -1.0]), T(F_2STR,[1.0, 2624.0, -43.0, -1.0]), T(F_2STR,[1.0, 3008.0, 0.0, 1.0]), T(F_2STR,[1.0, 4000.0, 2.0, 1.0])],null)
+
+
+Coverage: 231
+Dataset size: 1665
+Uncompressed length: 462
+Encoding length: 148
+Compression factor: 3.1216216216216215
+Running time in milliseconds: 202411
+Encoding length without residual point set: 148
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 3.1216216216216215
+Number of occurrence sets: 3
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+         191526 ms         191526 ms  computeMaximalTransformablePatterns ends
+         191528 ms              2 ms  computeSizeMTPSetArray ends
+         191532 ms              4 ms  mergeMTPs ends
+         191535 ms              3 ms  computeSuperMTPs ends
+         191535 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+         202404 ms          10869 ms  removeDuplicateOccurrenceSets ends
+         202404 ms              0 ms  removeRedundantTransformations ends
+         202405 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         202407 ms              2 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         202408 ms              1 ms  computeSortedOccurrenceSets ends
+         202411 ms              3 ms  computeEncoding ends
+         202411 ms              0 ms  Program ends
+
+
+Number of points: 1665
+Number of OSs after removal: 3
+Parameter settings:
+Input file path (-i): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVIMutopia.mid
+Query file path (-q): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVISubject.opnd
+Ground-truth file path (-gt): null
+Mid-time point (-mt): true
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/DieKunstDerFuge/ContrapunctusVI
+Minimum pattern size (-min): 9
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+

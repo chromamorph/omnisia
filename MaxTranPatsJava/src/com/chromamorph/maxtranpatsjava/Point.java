@@ -2,10 +2,49 @@ package com.chromamorph.maxtranpatsjava;
 
 import java.util.ArrayList;
 
+import com.chromamorph.pitch.Pitch;
+
 public class Point implements Comparable<Point>{
 	
 	private ArrayList<Double> coords = new ArrayList<Double>();
 	
+	private Long onset = null;
+	private Pitch pitch = null;
+	private Long duration = null;
+	private Integer voice = null;
+	
+	public Long getOnset() {
+		return onset;
+	}
+
+	public void setOnset(Long onset) {
+		this.onset = onset;
+	}
+
+	public Pitch getPitch() {
+		return pitch;
+	}
+
+	public void setPitch(Pitch pitch) {
+		this.pitch = pitch;
+	}
+
+	public Long getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Long duration) {
+		this.duration = duration;
+	}
+
+	public Integer getVoice() {
+		return voice;
+	}
+
+	public void setVoice(Integer voice) {
+		this.voice = voice;
+	}
+
 	public Point() {
 	}
 	
@@ -63,13 +102,25 @@ public class Point implements Comparable<Point>{
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("p(");
-		for(int i = 0; i < size(); i++) {
+		if (getOnset() != null && (double)getOnset() != get(0)) {
+			sb.append(getOnset());
+		} else
+			sb.append(get(0));
+		sb.append(",");
+		for(int i = 1; i < size(); i++) {
 			sb.append(get(i));
 			if (i < size()-1)
 				sb.append(",");
 		}
 		sb.append(")");
 		return sb.toString();
+	}
+	
+	public com.chromamorph.points022.Point toOmnisiaPoint() {
+		long x = (long)Math.floor( get(0));
+		int y = (int)Math.floor(get(1));
+		com.chromamorph.points022.Point omnisiaPoint = new com.chromamorph.points022.Point(x,y);
+		return omnisiaPoint;
 	}
 	
 }
