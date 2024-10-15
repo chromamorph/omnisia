@@ -17,7 +17,7 @@ public class OMNISIA {
 
 	private static PrintWriter LOG = null;
 	private static File LOG_FILE = null;
-	private static String[] ENCODING_FILE_EXTENSIONS = {".cos", ".siateccompress", ".sia", ".siatec", ".alltecs"};
+	private static String[] ENCODING_FILE_EXTENSIONS = {".cos", ".siateccompress", ".sia", ".siatec", ".alltecs", ".mtecs"};
 	
 	public static ArrayList<String> OUTPUT_FILE_PATH_STRINGS = new ArrayList<String>();
 
@@ -895,6 +895,7 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 		case Forth: encoding = runForth(); break;
 		case RecurSIA: encoding = runRecurSIA(); break;
 		case TTWM: encoding = runTTWM(); break;
+		case MTECS: encoding = runMTECS(); break;
 		case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
 		}
 		encoding.setTitle(COMMAND_LINE);
@@ -1087,6 +1088,39 @@ private static TTWMEncoding runTTWM() throws MissingTieStartNoteException, FileN
 			INPUT_FILE.getAbsolutePath(),
 			OUTPUT_DIR.getAbsolutePath(),
 			DIATONIC_PITCH);
+}
+
+private static MTECSEncoding runMTECS() throws MissingTieStartNoteException {
+	try {
+		return new MTECSEncoding(
+				new PointSet(INPUT_FILE.getAbsolutePath(),DIATONIC_PITCH,WITHOUT_CHANNEL_10),
+				INPUT_FILE.getAbsolutePath(), 
+				OUTPUT_DIR.getAbsolutePath(), 
+				MIN_PATTERN_SIZE, 
+				MAX_PATTERN_SIZE,
+				(DIATONIC_PITCH?PitchRepresentation.MORPHETIC_PITCH:PitchRepresentation.CHROMATIC_PITCH), 
+				false, //drawOutput
+				true, //verbose
+				R_SUPERDIAGONALS, R,
+				COMPACTNESS_TRAWLER, CTA, CTB,
+				true, //Indicates that it is being called from OMNISIA
+				MIREX, SEGMENT_MODE, BB_MODE,
+				(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
+				TOP_N_PATTERNS,
+				WITHOUT_CHANNEL_10,
+				RRT
+				);
+	} catch (NoMorpheticPitchException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	} catch (UnimplementedInputFileFormatException e) {
+		e.printStackTrace();
+	} catch (InvalidMidiDataException e) {
+		e.printStackTrace();
+	}
+	return null;
+	
 }
 
 private static SIATECEncoding runSIATEC() throws MissingTieStartNoteException {

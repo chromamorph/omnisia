@@ -29,7 +29,9 @@ public class MaxTranMatchesForMCM2024 {
 //					"data/MCM2024/Bach/ContrapunctusVISubjectEntries.opnds",
 //					"output/MCM2024/Bach",
 //					10,
-//					0.5);
+//					0.5,
+//					false);
+			
 			int bwv = 851;
 			processTask(
 						"data/MCM2024/WTCI/opnd/bwv"+bwv+"/bwv"+bwv+"b.opnd",
@@ -37,7 +39,8 @@ public class MaxTranMatchesForMCM2024 {
 						"data/MCM2024/WTCI/opnd/bwv"+bwv+"/S/",
 						"output/MCM2024/WTCI/bwv"+bwv,
 						0.8,
-						0.5);
+						0.5,
+						false);
 //			processTask(
 //					"data/MCM2024/WTCI/opnd/bwv847/bwv847b.opnd",
 //					"data/MCM2024/WTCI/opnd/bwv847/S/0001.opnd",
@@ -56,7 +59,8 @@ public class MaxTranMatchesForMCM2024 {
 			String groundTruthFileName,
 			String outputDir,
 			double minSizeRatio,
-			double minOccurrenceCompactness) throws MissingTieStartNoteException, FileNotFoundException, SuperMTPsNotNullException {
+			double minOccurrenceCompactness,
+			boolean drawBoundingBoxes) throws MissingTieStartNoteException, FileNotFoundException, SuperMTPsNotNullException {
 		File datasetFile = new File(datasetFileName);
 		File groundTruthFile = new File(groundTruthFileName);
 
@@ -81,7 +85,9 @@ public class MaxTranMatchesForMCM2024 {
 				minSize, 
 				draw, 
 				minCompactness, 
-				minOccurrenceCompactness
+				minOccurrenceCompactness,
+				groundTruthFileName,
+				drawBoundingBoxes
 				);
 		
 //		Evaluate output

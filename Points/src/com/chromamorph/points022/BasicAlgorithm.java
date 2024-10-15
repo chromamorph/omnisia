@@ -7,6 +7,7 @@ public enum BasicAlgorithm {
 	SIATECCompress,
 	Forth,
 	RecurSIA,
-	TTWM, //Implements Laaksonen and Lemström's (2019m DLfM) algorithm and a new version
+	TTWM, //Implements Laaksonen and Lemstrï¿½m's (2019m DLfM) algorithm and a new version
 	NONE,
+	MTECS
 }

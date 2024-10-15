@@ -4,22 +4,53 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 public class TEC implements Comparable<TEC>{
-	private PointSet pattern = null;
-	private ArrayList<Integer> cis = null;
-	private VectorSet translators = new VectorSet();
-	private Double compressionRatio = null;
-	private Integer coverage = null;
-	private PointSet coveredPoints = null;
-	private Double compactness = null;
-	private Integer numPointsInBB = null;
-	private PointSet dataset = null;
-	private boolean isDual = false;
-	private ArrayList<TEC> patternTecs = null;
-	private Double segmentCompactness = null;
+	protected PointSet pattern = null;
+	protected ArrayList<Integer> cis = null;
+	protected VectorSet translators = new VectorSet();
+	protected Double compressionRatio = null;
+	protected Integer coverage = null;
+	protected PointSet coveredPoints = null;
+	protected Double compactness = null;
+	protected Integer numPointsInBB = null;
+	protected PointSet dataset = null;
+	protected boolean isDual = false;
+	protected ArrayList<TEC> patternTecs = null;
+	protected Double segmentCompactness = null;
+	
+//	For MTECs
+	protected VectorSet maxVecs = new VectorSet();
+	protected TreeSet<VectorSet> setOfMaxVecSets = new TreeSet<VectorSet>();
+	
+	public TreeSet<VectorSet> getSetOfMaxVecSets() {
+		return setOfMaxVecSets;
+	}
+	
+	public void addMaxVecSet(VectorSet maxVecSet) {
+		setOfMaxVecSets.add(maxVecSet);
+	}
+	
+	public VectorSet getMaxVecs() {
+		return maxVecs;
+	}
+	
+	public void addMaxVec(Vector... vectors) {
+		for(Vector v : vectors)
+			maxVecs.add(v);
+	}
+	
+	public void addAllMaxVecs(VectorSet vectorSet) {
+		maxVecs.addAll(vectorSet);
+	}
+	
+	public void setMaxVecs(VectorSet vectorSet) {
+		maxVecs = vectorSet.copy();
+	}
 
+//	End for MTECs
+	
 	public TEC() {}
 
-	private void reset() {
+	protected void reset() {
 		compressionRatio = null;
 		coverage = null;
 		coveredPoints = null;
@@ -503,11 +534,43 @@ public class TEC implements Comparable<TEC>{
 	@Override
 	public int compareTo(TEC tec) {
 		if (tec == null) return 1;
-		int d = getPattern().compareTo(tec.getPattern());
+		int d = getPatternSize() - tec.getPatternSize();
 		if (d != 0) return d;
-		return getTranslators().compareTo(tec.getTranslators());
+		d = getTranslatorSetSize()-tec.getTranslatorSetSize();
+		if (d != 0) return getPattern().compareTo(tec.getPattern());
+//		Pattern and translator set are the same size
+		if (getPattern().equals(tec.getPattern()) && getTranslators().equals(tec.getTranslators())) return 0;
+		if (getPattern().translationallyEquivalentTo(tec.getPattern())) {
+//			Need to check that translators in the two TECs give the same TEC
+			TreeSet<PointSet> ps1 = getSetOfPointSets();
+			TreeSet<PointSet> ps2 = tec.getSetOfPointSets();
+			d = ps1.size() - ps2.size();
+			if (d != 0) return d;
+//			Set of point sets is the same size for both TECs
+//			Need to check if set of patterns is the same
+			ArrayList<PointSet> ps1Array = new ArrayList<PointSet>(ps1);
+			ArrayList<PointSet> ps2Array = new ArrayList<PointSet>(ps2);
+			for(int i = 0; i < ps1Array.size(); i++) {
+				d = ps1Array.get(i).compareTo(ps2Array.get(i));
+				if (d != 0) return d;
+			}
+//			They are the same
+			return 0;
+		}
+//		The patterns are not translationally equivalent
+		return getPattern().compareTo(tec.getPattern());
+		
+//		int d = getPattern().compareTo(tec.getPattern());
+//		if (d != 0) return d;
+//		return getTranslators().compareTo(tec.getTranslators());
 	}
 
+	public TreeSet<PointSet> getSetOfPointSets() {
+		TreeSet<PointSet> setOfPointSets = new TreeSet<PointSet>();
+		setOfPointSets.addAll(getPointSets());
+		return setOfPointSets;
+	}
+	
 	public ArrayList<PointSet> getPointSets() {
 		ArrayList<PointSet> pointSets = new ArrayList<PointSet>();
 		TreeSet<Vector> translators = getTranslators().getVectors();

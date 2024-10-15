@@ -17,6 +17,7 @@ public class SIATEC {
 			0,
 			minTranslatorSetSize);
 	}
+	
 	public static ArrayList<TEC> computeMtpTecs(
 			PointSet points, 
 			VectorPointPair[][] vectorTable, 
@@ -24,6 +25,25 @@ public class SIATEC {
 			int minMtpSize,
 			int maxMtpSize,
 			int minTranslatorSetSize) {
+		return computeMtpTecs(
+				points, 
+				vectorTable, 
+				mtpCisPairs, 
+				minMtpSize,
+				maxMtpSize,
+				minTranslatorSetSize,
+				false //not forMTECs
+				);
+	}
+	
+	public static ArrayList<TEC> computeMtpTecs(
+			PointSet points, 
+			VectorPointPair[][] vectorTable, 
+			ArrayList<MtpCisPair> mtpCisPairs, 
+			int minMtpSize,
+			int maxMtpSize,
+			int minTranslatorSetSize,
+			boolean forMTECs) {
 		System.out.println("\ncomputeMtpTecs");
 		if (points.size() < 2) //There are no MTPs 
 			return new ArrayList<TEC>();
@@ -38,6 +58,8 @@ public class SIATEC {
 				System.out.flush();
 			}
 			TEC tec = computeTEC(mtpCisPairs.get(i), points, vectorTable);
+			if (forMTECs)
+				tec.setMaxVecs(mtpCisPairs.get(i).getVectorSet());
 			if (tec.getPatternSize() >= minMtpSize && tec.getTranslatorSetSize() >= minTranslatorSetSize && (maxMtpSize==0 || tec.getPatternSize() <= maxMtpSize))
 				tecs.add(tec);
 		}
