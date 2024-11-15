@@ -490,7 +490,7 @@ public class Utility {
 	 * ordered superset contained within the combination corresponding to the combinatorial number
 	 * N of degree k.
 	 */
-	public static ArrayList<Integer> computeCombinationIndexSequence(long N, int k, int size) {
+	public static ArrayList<Integer> computeCombinationIndexSequence(long N, int k, int size) throws Exception {
 		
 		/*
 		 * We allocate an array of ints of size k to hold the sequence of indices
@@ -532,6 +532,8 @@ public class Utility {
 			int ci = computeNumCombinations(c,i+1);
 			if (ci <= newN) {
 				newN -= ci;
+				if (i < 0)
+					throw new Exception(String.format("Utility.computeCombinationIndexSequence(N=%d,k=%d,size=%d) results in i < 0.", N,k,size));
 				C[i] = c;
 				i--;
 			}
@@ -650,12 +652,23 @@ public class Utility {
 //		for(int N = 0; N < numCombinations; N++)
 //			System.out.println(N+"\t"+computeCombinationIndexSequence(N,k,size));
 
-		int[][] pis = computePermutationIndexSequences(5);
-		for(int[] a : pis) {
-			System.out.println();
-			for (int x : a) {
-				System.out.print(x+" ");
-			}
+//		int[][] pis = computePermutationIndexSequences(5);
+//		for(int[] a : pis) {
+//			System.out.println();
+//			for (int x : a) {
+//				System.out.print(x+" ");
+//			}
+//		}
+
+		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
+		for(int i = 2; i < 13; i++) {
+			//log.add(new LogInfo("Start i = "+i,true));
+			long start = System.currentTimeMillis();
+			computePermutationIndexSequences(i);
+			long end = System.currentTimeMillis();
+			long runningTime = end - start;
+			System.out.println(String.format("%10d%10dms\t%10.5f", i, runningTime, runningTime/(1.0 * factorial(i))));
+			//log.add(new LogInfo("End i = "+i,true));
 		}
 	}
 

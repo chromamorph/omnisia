@@ -1,0 +1,77 @@
+T(P(p(1,1)),V(v(0,0),v(0,2),v(1,3),v(2,1),v(2,3),v(3,4),v(5,2),v(5,4)))
+T(P(p(1,1),p(1,3)),V(v(0,0),v(2,1),v(5,2)))
+T(P(p(1,1),p(3,2)),V(v(0,0),v(0,2),v(1,3)))
+T(P(p(1,1),p(1,3),p(2,4)),V(v(0,0),v(2,1)))
+T(P(p(1,1),p(3,2),p(6,3)),V(v(0,0),v(0,2)))
+T(P(p(1,1),p(1,3),p(2,4),p(3,2),p(3,4),p(4,5),p(6,3),p(6,5)),V(v(0,0)))
+
+numberOfNotes 8
+tatumsPerBar null
+barOneStartsAt null
+compressionRatio 0.25
+runningTime 21
+encodingLength 32
+encodingLengthWithoutResidualPointSet 24
+numberOfResidualPoints 8
+percentageOfResidualPoints 100.0
+compressionRatioWithoutResidualPointSet 0.0
+title simple-mtec-example-1.pts
+numberOfTECs 6
+inputFilePath /Users/susanne/Repos/omnisia/Points/data/mtecs/simple-mtec-example-1.pts
+outputFilePath /Users/susanne/Repos/omnisia/Points/output/mtecs/simple-mtec-example-1-pts-2024-10-01-11-37-14-156/simple-mtec-example-1-chrom.SIATEC
+logFilePath /Users/susanne/Repos/omnisia/Points/output/mtecs/simple-mtec-example-1-pts-2024-10-01-11-37-14-156/simple-mtec-example-1-chrom.log
+outputFileExtension SIATEC
+isDiatonic false
+withoutChannel10 false
+encoderName com.chromamorph.points022.MTECSEncoding
+forMirex false
+mode Raw
+topNPatterns 0
+
+Parameter values
+================
+Basic algorithm: (-a): MTECS
+Input file (-i): /Users/susanne/Repos/omnisia/Points/data/mtecs/simple-mtec-example-1.pts
+Output directory (-o): /Users/susanne/Repos/omnisia/Points/output/mtecs/simple-mtec-example-1-pts-2024-10-01-11-37-14-156
+Morphetic (diatonic) pitch (-d): false
+MIREX (-m): false
+Compactness trawler (-ct): false
+Minimum compactness of trawled patterns (-cta): 0.67
+Minimum size of trawled patterns (-ctb): 3
+For r superdiagonals (-rsd): false
+r (-r): 1
+Remove redundant translators (-rrt): false
+Minimum TEC compactness (-minc): 0.0
+Minimum pattern size (-min): 0
+Maximum pattern size (-max): Unlimited
+Merge TECS (-merge): false
+Minimum match size if TECs are merged (-minm): 5
+Number of iterations if TECs are merged (-spins): 10
+Remove channel 10 (drum channel) in MIDI (-no10): false
+Help requested (-h): false
+Draw analysis (-draw): false
+Minimum compression ratio in Forth's algorithm (-crlow): 0.2
+Maximum compression ratio in Forth's algorithm (-crhi): 1.0
+Minimum compactness threshold in Forth's algorithm (-comlow): 0.2
+Maximum compactness threshold in Forth's algorithm (-comhi): 1.0
+c_min threshold in Forth's algorithm (-cmin): 15
+sigma_min threshold in Forth's algorithm (-sigmin): 0.5
+Using bounding-box compactness in Forth's algorithm (-bbcomp): false
+Appending date to output directories (-nodate) (N.B.: if true, then NO DATE APPENDED): false
+Using BB mode in MIREX output (-bbmode): false
+Using Segment mode in MIREX output (-segmode): false
+Output file (-out): null
+Top N Patterns (-top): 0
+Basic algorithm used by RecurSIA (-recalg): COSIATEC
+Sort TECs by decreasing pattern size (-sortpat): false
+Use GPU acceleration (-gpu): false
+Draw input point set (-drawps): false
+Rhythm only (-rhythm): false
+TEC quality priority string (-tecqual): cmvswa
+Dual TEC quality priority string (-dualtecqual): cmvswa
+Return number of MTPs only (-nummtpsonly): false
+Compactness type (-comptype): BOUNDING_BOX
+Input file directory (-id): null
+Occurrence set file (-occsets): null
+
+

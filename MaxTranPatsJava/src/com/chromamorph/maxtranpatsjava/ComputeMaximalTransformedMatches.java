@@ -15,7 +15,7 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 	PointSet pattern;
 	PointSet dataset;
 	TransformationClass tc;
-	
+
 	public ComputeMaximalTransformedMatches(
 			PointSet pattern,
 			PointSet dataset, 
@@ -34,7 +34,7 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 		this.numImageBases = numImageBases;
 		this.numObjectBases = numObjectBases;
 	}
-	
+
 	@Override
 	protected void compute() {
 		if (endIndex - startIndex == 1)
@@ -46,7 +46,7 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 					new ComputeMaximalTransformedMatches(pattern, dataset, tc, mtmArray, split, endIndex, numObjectBases, numImageBases));
 		}
 	}
-	
+
 	protected void computeDirectly() {
 		long C = startIndex;
 		int N = numObjectBases, p = tc.getPerms().length;
@@ -55,27 +55,32 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 		if (!dataset.isMTM() && imgIndex < objIndex)
 			return;
 		int[] perm = tc.getPerm(C % p);
-		PointSequence objectBasis = pattern.computeBasis(tc.getBasisSize(), objIndex);
-		PointSequence imageBasis = dataset.computeBasis(tc.getBasisSize(), imgIndex);
-		PointSequence imgBasisPerm = new PointSequence();
-		for(int i = 0; i < tc.getBasisSize(); i++)
-			imgBasisPerm.add(imageBasis.get(perm[i]));
-		ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
-		for(Transformation transformation : transformations) {
+		PointSequence objectBasis, imageBasis;
+		try {
+			objectBasis = pattern.computeBasis(tc.getBasisSize(), objIndex);
+			imageBasis = dataset.computeBasis(tc.getBasisSize(), imgIndex);
+			PointSequence imgBasisPerm = new PointSequence();
+			for(int i = 0; i < tc.getBasisSize(); i++)
+				imgBasisPerm.add(imageBasis.get(perm[i]));
+			ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
+			for(Transformation transformation : transformations) {
 
-			int i = transformation.hash(PointSet.HASH_TABLE_SIZE);
-			synchronized (mtmArray[i]) {
-				mtmArray[i].add(transformation,objectBasis);
+				int i = transformation.hash(PointSet.HASH_TABLE_SIZE);
+				synchronized (mtmArray[i]) {
+					mtmArray[i].add(transformation,objectBasis);
+				}
+
+				//			i = transformation.getInverse().hash(PointSet.HASH_TABLE_SIZE);
+				//			synchronized (mtmArray[i]) {
+				//				mtmArray[i].add(transformation.getInverse(),imageBasis);
+				//			}
+				synchronized (tc) {
+					tc.addTransformationInstance(transformation);
+					//				tc.addTransformationInstance(transformation.getInverse());
+				}
 			}
-			
-//			i = transformation.getInverse().hash(PointSet.HASH_TABLE_SIZE);
-//			synchronized (mtmArray[i]) {
-//				mtmArray[i].add(transformation.getInverse(),imageBasis);
-//			}
-			synchronized (tc) {
-				tc.addTransformationInstance(transformation);
-//				tc.addTransformationInstance(transformation.getInverse());
-			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
 
 	}

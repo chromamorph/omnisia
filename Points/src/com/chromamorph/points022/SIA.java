@@ -135,7 +135,33 @@ public class SIA {
 			boolean removeTranslationallyEquivalentMtps,
 			boolean mergeVectors,
 			int minPatternSize,
-			int maxPatternSize) throws IllegalArgumentException {
+			int maxPatternSize
+			) {
+		return run(			
+				points,
+				vectorTable,
+				forRSuperdiagonals, r,
+				withCompactnessTrawler, a, b,
+				logPrintStream,
+				removeTranslationallyEquivalentMtps,
+				mergeVectors,
+				minPatternSize,
+				maxPatternSize,
+				false
+				);
+	}
+	
+	public static ArrayList<MtpCisPair> run(
+			PointSet points,
+			VectorPointPair[][] vectorTable,
+			boolean forRSuperdiagonals, int r,
+			boolean withCompactnessTrawler, double a, int b,
+			PrintStream logPrintStream,
+			boolean removeTranslationallyEquivalentMtps,
+			boolean mergeVectors,
+			int minPatternSize,
+			int maxPatternSize,
+			boolean includeNegVectorMTPs) throws IllegalArgumentException {
 		if (points.size() < 2) //There are no MTPs
 			return new ArrayList<MtpCisPair>();
 		if (mergeVectors && removeTranslationallyEquivalentMtps)
@@ -145,7 +171,7 @@ public class SIA {
 			mtpCisPairs = SIAR.run(points, r);
 		else {
 			LogPrintStream.print(logPrintStream,"computeMtpCisPairs...");
-			mtpCisPairs = computeMtpCisPairs(vectorTable,0);
+			mtpCisPairs = computeMtpCisPairs(vectorTable,0,includeNegVectorMTPs);
 			TOTAL_NUMBER_OF_MTPs = mtpCisPairs.size();
 			LogPrintStream.println(logPrintStream,"completed: "+mtpCisPairs.size()+" MTPs found");
 		}
@@ -202,6 +228,10 @@ public class SIA {
 	}
 
 	public static ArrayList<MtpCisPair> computeMtpCisPairs(VectorPointPair[][] vectorTable, int minMtpSize) {
+		return computeMtpCisPairs(vectorTable, minMtpSize, false);
+	}
+	
+	public static ArrayList<MtpCisPair> computeMtpCisPairs(VectorPointPair[][] vectorTable, int minMtpSize, boolean includeNegativeVectorMTPs) {
 
 		//Using a direct address table (array) to store MTPs
 
@@ -272,7 +302,7 @@ public class SIA {
 //		Following uses comparison sort to partition vectors
 				TreeSet<VectorPointPair> sortedSIAVectorTable = new TreeSet<VectorPointPair>();
 				for(int i = 0; i < vectorTable.length; i++)
-					for(int j = i+1; j < vectorTable.length; j++)
+					for(int j = includeNegativeVectorMTPs?0:i+1; j < vectorTable.length; j++)
 						sortedSIAVectorTable.add(vectorTable[i][j]);
 		
 				ArrayList<PointSet> MTPs = new ArrayList<PointSet>();
@@ -320,12 +350,15 @@ public class SIA {
 	}
 
 	public static void main(String[] args) {
+//		PointSet dataset = new PointSet(
+//				new Point(0,0), new Point(1,1), new Point(1,0), new Point(0,1), 
+//				new Point(3,3), new Point(3,4), new Point(4,3), new Point(4,4),
+//				new Point(6,0), new Point(6,1), new Point(7,0), new Point(7,1));
 		PointSet dataset = new PointSet(
-				new Point(0,0), new Point(1,1), new Point(1,0), new Point(0,1), 
-				new Point(3,3), new Point(3,4), new Point(4,3), new Point(4,4),
-				new Point(6,0), new Point(6,1), new Point(7,0), new Point(7,1));
+				new Point(0,0), new Point(0,2), new Point(1,0), new Point(1,1), new Point(1,2), new Point(2,1)
+				);
 		VectorPointPair[][] vectorTable = computeVectorTable(dataset,false);
-		ArrayList<MtpCisPair> mtpCisPairs = computeMtpCisPairs(vectorTable,0);
+		ArrayList<MtpCisPair> mtpCisPairs = computeMtpCisPairs(vectorTable,0,true);
 		System.out.println(dataset);
 		for(MtpCisPair mtpCisPair : mtpCisPairs)
 			System.out.println(mtpCisPair);

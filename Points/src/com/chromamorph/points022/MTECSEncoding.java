@@ -2,17 +2,18 @@ package com.chromamorph.points022;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import javax.sound.midi.InvalidMidiDataException;
 
 import com.chromamorph.notes.Notes.MissingTieStartNoteException;
 
 
-public class SIATECEncoding extends Encoding {
+public class MTECSEncoding extends Encoding {
 
 //	private int minMtpSize = 0;
 
-	public SIATECEncoding(
+	public MTECSEncoding(
 			String inputFilePath,
 			String outputDirectoryPath,
 			boolean forRSuperdiagonals, int r,
@@ -28,7 +29,7 @@ public class SIATECEncoding extends Encoding {
 				withCompactnessTrawler, a, b);
 	}
 
-	public SIATECEncoding(String inputFilePathName, String outputDirectoryPathName, Integer minPatternSize, PitchRepresentation pitchRepresentation, boolean drawOutput) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
+	public MTECSEncoding(String inputFilePathName, String outputDirectoryPathName, Integer minPatternSize, PitchRepresentation pitchRepresentation, boolean drawOutput) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException, MissingTieStartNoteException {
 		this(null, 
 				inputFilePathName, 
 				outputDirectoryPathName, 
@@ -40,7 +41,7 @@ public class SIATECEncoding extends Encoding {
 				false, 0.0, 0);
 	}
 
-	public SIATECEncoding(PointSet pointSet, 
+	public MTECSEncoding(PointSet pointSet, 
 			String inputFilePathNameOrOutputFileName, 
 			String outputDirectoryPathName, 
 			Integer minPatternSize,
@@ -61,7 +62,7 @@ public class SIATECEncoding extends Encoding {
 				withCompactnessTrawler, a, b);
 	}
 
-	public SIATECEncoding(PointSet pointSet, 
+	public MTECSEncoding(PointSet pointSet, 
 			String inputFilePathNameOrOutputFileName, 
 			String outputDirectoryPathName, 
 			Integer minPatternSize,
@@ -91,7 +92,7 @@ public class SIATECEncoding extends Encoding {
 
 	}
 
-	public SIATECEncoding(PointSet pointSet, 
+	public MTECSEncoding(PointSet pointSet, 
 			String inputFilePathNameOrOutputFileName, 
 			String outputDirectoryPathName, 
 			Integer minPatternSize,
@@ -127,7 +128,7 @@ public class SIATECEncoding extends Encoding {
 				);
 	}
 	
-	public SIATECEncoding(PointSet pointSet, 
+	public MTECSEncoding(PointSet pointSet, 
 			String inputFilePathNameOrOutputFileName, 
 			String outputDirectoryPathName, 
 			Integer minPatternSize,
@@ -158,30 +159,95 @@ public class SIATECEncoding extends Encoding {
 				omnisiaOutputFilePath
 				);
 		if (pointSet.isEmpty())
-			System.out.println(">>>>>pointSet is empty in SIATECEncoding constructor<<<<<");
+			System.out.println(">>>>>pointSet is empty in MTECSEncoding constructor<<<<<");
 		if (pointSet.size()==1)
-			System.out.println(">>>> pointSet has size 1 in SIATECEncoding constructor <<<<<<");
+			System.out.println(">>>> pointSet has size 1 in MTECSEncoding constructor <<<<<<");
 		long startTime = System.currentTimeMillis();
 		VectorPointPair[][] vectorTable = SIA.computeVectorTable(dataset, false);
+		
+//		System.out.println("vectorTable");
+//		for(int i = 0; i < vectorTable.length; i++) {
+//			System.out.println(" ");
+//			for(int j = 0; j < vectorTable[0].length; j++) {
+//				System.out.print(String.format("%30s", vectorTable[i][j]));
+//			}
+//			System.out.println();
+//		}
+//		System.out.println();
+		
 		ArrayList<MtpCisPair> mtpCisPairs = SIA.run(
 				dataset,
 				vectorTable,
 				forRSuperdiagonals, r,
 				withCompactnessTrawler, a, b,
 				null, //logPrintStream
-				true, //remove tran equiv mtps
+				false, //remove tran equiv mtps
 				false, //merge vectors
 				minPatternSize, //
-				maxPatternSize
-				);
-		setTECs(SIATEC.computeMtpTecs(
-				dataset, 
-				vectorTable, 
-				mtpCisPairs, 
-				minPatternSize,
 				maxPatternSize,
-				1
-				));
+				true // Includes negative vector MTPs
+				);
+		
+//		System.out.println("mtpCisPairs");
+//		for(MtpCisPair mcp : mtpCisPairs) {
+//			System.out.println(" "+mcp);
+//		}
+//		
+		ArrayList<TEC> mtpTecs = new ArrayList<TEC>();
+		for(MtpCisPair mcp : mtpCisPairs) {
+			mtpTecs.add(new TEC(mcp.getMtp(),mcp.getVectorSet(),dataset));
+		}
+		ArrayList<ArrayList<TEC>> mtecs = new ArrayList<ArrayList<TEC>>();
+		mtecs.add(mtpTecs);
+		ArrayList<TEC> prevMtecs = mtpTecs;
+		for(int numVecs = 2; numVecs <= mtpTecs.size(); numVecs++) {
+			ArrayList<TEC> nextMtecs = new ArrayList<TEC>();
+			for (int i = 0; i < mtpTecs.size(); i++) {
+				for (int j = 0; j < prevMtecs.size(); j++) {
+					PointSet newPattern = mtpTecs.get(i).getPattern().intersection(prevMtecs.get(j).getPattern());
+					VectorSet newTranslators = mtpTecs.get(i).getTranslators().copy();
+					newTranslators.addAll(prevMtecs.get(j).getTranslators());
+					if (newPattern.size() <= maxPatternSize && newPattern.size() >= minPatternSize) {
+						nextMtecs.add(new TEC(newPattern,newTranslators,dataset));
+					}
+				}
+			}
+			if (nextMtecs.isEmpty())
+				break;
+			mtecs.add(nextMtecs);
+			prevMtecs = nextMtecs;
+		}
+
+		for(int nv = 0; nv < mtecs.size(); nv++) {
+			System.out.println(mtecs.get(nv).size()+" mtecs for nv = "+(nv+1));
+			for(TEC mtec : mtecs.get(nv)) {
+				System.out.println("  "+mtec+" "+mtec.getMaxVecs());
+			}
+		}
+		
+		
+//		What are the distinct MTECs and for which maxVec sets are they maximal?
+//		TreeSet<TEC> distinctMtecs = new TreeSet<TEC>();
+//		for(ArrayList<TEC> mtecsForThisNv : mtecs) {
+//			for(TEC mtec : mtecsForThisNv) {
+//				TEC foundTec = null;
+//				if (distinctMtecs.contains(mtec)) 
+//					foundTec = distinctMtecs.floor(mtec);
+//				if (foundTec == null) {
+//					distinctMtecs.add(mtec);
+//				} else { // Found the same TEC already in distinctMtecs, so add this one's maxVecSet to the one already in distinctMtecs
+//					foundTec.addMaxVecSet(mtec.getMaxVecs());
+//				}
+//			}
+//		}
+		
+		
+		
+		ArrayList<TEC> mtecList = new ArrayList<TEC>();
+		for(ArrayList<TEC> mtecsForThisNumVecs : mtecs) {
+			mtecList.addAll(mtecsForThisNumVecs);
+		}
+		setTECs(mtecList);
 //		PointSet coveredSet = new PointSet();
 //		for(TEC tec : getTECs())
 //			coveredSet.addAll(tec.getCoveredPoints());
