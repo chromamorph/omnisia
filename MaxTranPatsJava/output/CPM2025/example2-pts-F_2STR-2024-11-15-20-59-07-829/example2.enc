@@ -1,0 +1,55 @@
+OS(P(p(3.0,5.0),p(3.0,6.0),p(4.0,4.0),p(6.0,5.0),p(6.0,6.0)),[T(F_2STR,[-2.0, 17.0, -7.0, -1.0]), T(F_2STR,[-1.0, 13.0, 2.0, 1.0]), T(F_2STR,[-1.0, 14.0, -10.0, -1.0]), T(F_2STR,[1.0, -2.0, -7.0, -1.0]), T(F_2STR,[2.0, -5.0, -1.0, 1.0])],null)
+
+
+Coverage: 30
+Dataset size: 30
+Uncompressed length: 60
+Encoding length: 30
+Compression factor: 2.0
+Running time in milliseconds: 2260
+Encoding length without residual point set: 30
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 2.0
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            842 ms            842 ms  computeMaximalTransformablePatterns ends
+            902 ms             60 ms  computeSizeMTPSetArray ends
+            926 ms             24 ms  mergeMTPs ends
+           1188 ms            262 ms  computeSuperMTPs ends
+           1230 ms             42 ms  computeHeterogeneousOccurrenceSets ends
+           2019 ms            789 ms  removeDuplicateOccurrenceSets ends
+           2232 ms            213 ms  removeRedundantTransformations ends
+           2233 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           2233 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           2252 ms             19 ms  computeSortedOccurrenceSets ends
+           2260 ms              8 ms  computeEncoding ends
+           2260 ms              0 ms  Program ends
+
+
+Number of points: 30
+Number of OSs after removal: 1193
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/HCII2023/example2.pts
+Query file path (-q): null
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): //Users/susanne/Repos/omnisia/MaxTranPatsJava/output/CPM2025
+Minimum pattern size (-min): 0
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): true
+

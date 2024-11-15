@@ -258,7 +258,7 @@ public class Encoding {
 		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
 		for(com.chromamorph.maxtranpatsjava.Point p : points) {
-			long onset = withMidTimePoints?(long)Math.floor(p.get(0)):p.getOnset();
+			long onset = (withMidTimePoints || p.getOnset() == null)?(long)Math.floor(p.get(0)):p.getOnset();
 			ps.add(new com.chromamorph.points022.Point(onset,(int)(Math.floor(p.get(1)))));
 		}
 		
