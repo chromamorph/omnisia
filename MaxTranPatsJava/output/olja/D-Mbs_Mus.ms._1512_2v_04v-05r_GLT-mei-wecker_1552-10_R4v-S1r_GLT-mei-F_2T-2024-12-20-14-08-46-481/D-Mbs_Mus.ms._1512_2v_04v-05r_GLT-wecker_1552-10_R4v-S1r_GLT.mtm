@@ -1,0 +1,57 @@
+OS(P(p(76.0,46.0),p(110.0,38.0),p(120.0,39.0),p(120.0,48.0),p(128.0,32.0),p(128.0,44.0),p(144.0,39.0),p(144.0,43.0),p(148.0,32.0),p(156.0,34.0),p(160.0,27.0),p(160.0,39.0),p(160.0,43.0),p(170.0,34.0),p(174.0,38.0),p(188.0,39.0),p(192.0,39.0),p(192.0,43.0),p(194.0,36.0),p(196.0,39.0),p(212.0,34.0),p(224.0,41.0),p(236.0,41.0),p(256.0,43.0),p(276.0,39.0),p(280.0,39.0),p(288.0,36.0),p(296.0,34.0),p(300.0,34.0),p(300.0,50.0),p(308.0,39.0),p(312.0,51.0),p(320.0,46.0),p(328.0,41.0),p(332.0,46.0),p(336.0,34.0),p(336.0,46.0),p(344.0,46.0)),[T(F_2T,[-64.0, -2.0])],null)
+OS(P(p(44.0,39.0),p(52.0,46.0),p(56.0,46.0),p(76.0,46.0),p(88.0,46.0),p(96.0,43.0),p(104.0,39.0),p(104.0,43.0),p(114.0,34.0),p(116.0,36.0),p(128.0,32.0),p(140.0,39.0),p(144.0,43.0),p(152.0,34.0),p(152.0,41.0),p(156.0,41.0),p(168.0,39.0),p(176.0,39.0),p(188.0,39.0),p(198.0,43.0),p(208.0,41.0),p(212.0,34.0),p(216.0,41.0),p(240.0,41.0),p(240.0,44.0),p(246.0,46.0),p(256.0,43.0),p(260.0,36.0),p(278.0,38.0),p(288.0,48.0),p(292.0,51.0),p(294.0,48.0),p(310.0,41.0),p(320.0,46.0),p(324.0,39.0)),[T(F_2T,[-44.0, -2.0])],null)
+OS(P(p(64.0,46.0),p(68.0,43.0),p(80.0,34.0),p(80.0,46.0),p(100.0,43.0),p(104.0,39.0),p(104.0,43.0),p(108.0,39.0),p(112.0,48.0),p(116.0,36.0),p(132.0,43.0),p(140.0,39.0),p(144.0,43.0),p(152.0,34.0),p(156.0,41.0),p(176.0,39.0),p(184.0,43.0),p(192.0,39.0),p(196.0,39.0),p(200.0,46.0),p(212.0,34.0),p(216.0,41.0),p(224.0,41.0),p(246.0,46.0),p(248.0,44.0),p(264.0,43.0),p(268.0,39.0),p(284.0,38.0),p(294.0,48.0),p(312.0,43.0),p(320.0,46.0),p(328.0,41.0),p(332.0,46.0)),[T(F_2T,[-52.0, -2.0])],null)
+
+
+Coverage: 160
+Dataset size: 328
+Uncompressed length: 320
+Encoding length: 218
+Compression factor: 1.4678899082568808
+Running time in milliseconds: 820
+Encoding length without residual point set: 218
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.4678899082568808
+Number of occurrence sets: 3
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            700 ms            700 ms  computeMaximalTransformablePatterns ends
+            702 ms              2 ms  computeSizeMTPSetArray ends
+            704 ms              2 ms  mergeMTPs ends
+            705 ms              1 ms  computeSuperMTPs ends
+            706 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+            815 ms            109 ms  removeDuplicateOccurrenceSets ends
+            816 ms              1 ms  removeRedundantTransformations ends
+            816 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            817 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            817 ms              0 ms  computeSortedOccurrenceSets ends
+            819 ms              2 ms  computeEncoding ends
+            820 ms              1 ms  Program ends
+
+
+Number of points: 328
+Number of OSs after removal: 3
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/wecker_1552-10_R4v-S1r_GLT.mei
+Query file path (-q): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/D-Mbs_Mus.ms._1512_2v_04v-05r_GLT.mei
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/olja
+Minimum pattern size (-min): 33
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(4,F_2T)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+

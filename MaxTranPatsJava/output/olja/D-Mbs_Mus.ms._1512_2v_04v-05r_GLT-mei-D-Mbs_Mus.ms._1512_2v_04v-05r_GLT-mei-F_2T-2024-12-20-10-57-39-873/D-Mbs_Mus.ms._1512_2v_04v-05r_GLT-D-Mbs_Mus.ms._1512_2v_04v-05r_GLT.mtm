@@ -1,0 +1,55 @@
+OS(P(p(0.0,27.0),p(0.0,39.0),p(4.0,39.0),p(5.0,38.0),p(6.0,39.0),p(7.0,41.0),p(8.0,36.0),p(8.0,39.0),p(12.0,39.0),p(16.0,39.0),p(16.0,46.0),p(20.0,38.0),p(22.0,36.0),p(24.0,34.0),p(24.0,46.0),p(28.0,34.0),p(32.0,36.0),p(32.0,43.0),p(36.0,36.0),p(40.0,36.0),p(42.0,38.0),p(44.0,39.0),p(44.0,51.0),p(46.0,41.0),p(48.0,43.0),p(48.0,50.0),p(50.0,44.0),p(52.0,46.0),p(56.0,46.0),p(56.0,50.0),p(60.0,44.0),p(60.0,51.0),p(64.0,43.0),p(64.0,46.0),p(68.0,43.0),p(68.0,46.0),p(72.0,41.0),p(72.0,48.0),p(73.0,46.0),p(74.0,45.0),p(75.0,43.0),p(76.0,46.0),p(78.0,45.0),p(80.0,34.0),p(80.0,46.0),p(88.0,46.0),p(92.0,38.0),p(96.0,43.0),p(100.0,43.0),p(102.0,41.0),p(104.0,39.0),p(104.0,43.0),p(106.0,41.0),p(108.0,39.0),p(110.0,38.0),p(112.0,36.0),p(112.0,48.0),p(114.0,34.0),p(116.0,36.0),p(118.0,38.0),p(120.0,39.0),p(120.0,48.0),p(122.0,46.0),p(124.0,44.0),p(126.0,43.0),p(128.0,32.0),p(128.0,44.0),p(132.0,36.0),p(132.0,43.0),p(136.0,37.0),p(136.0,41.0),p(140.0,39.0),p(144.0,39.0),p(144.0,43.0),p(148.0,32.0),p(148.0,44.0),p(152.0,34.0),p(152.0,41.0),p(156.0,34.0),p(156.0,41.0),p(160.0,27.0),p(160.0,39.0),p(160.0,43.0),p(164.0,32.0),p(168.0,32.0),p(168.0,39.0),p(170.0,34.0),p(172.0,36.0),p(174.0,38.0),p(176.0,39.0),p(184.0,43.0),p(188.0,39.0),p(192.0,39.0),p(192.0,43.0),p(194.0,36.0),p(195.0,38.0),p(196.0,39.0),p(197.0,41.0),p(198.0,43.0),p(199.0,45.0)),[T(F_2T,[0.0, 0.0])],null)
+
+
+Coverage: 100
+Dataset size: 253
+Uncompressed length: 200
+Encoding length: 202
+Compression factor: 0.9900990099009901
+Running time in milliseconds: 626
+Encoding length without residual point set: 202
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 0.9900990099009901
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            542 ms            542 ms  computeMaximalTransformablePatterns ends
+            543 ms              1 ms  computeSizeMTPSetArray ends
+            546 ms              3 ms  mergeMTPs ends
+            546 ms              0 ms  computeSuperMTPs ends
+            547 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+            622 ms             75 ms  removeDuplicateOccurrenceSets ends
+            623 ms              1 ms  removeRedundantTransformations ends
+            623 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            623 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            624 ms              1 ms  computeSortedOccurrenceSets ends
+            625 ms              1 ms  computeEncoding ends
+            626 ms              1 ms  Program ends
+
+
+Number of points: 253
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/D-Mbs_Mus.ms._1512_2v_04v-05r_GLT.mei
+Query file path (-q): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/D-Mbs_Mus.ms._1512_2v_04v-05r_GLT.mei
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/olja
+Minimum pattern size (-min): 80
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(4,F_2T)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+

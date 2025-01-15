@@ -1,0 +1,55 @@
+OS(P(p(128.0,30.0),p(128.0,42.0),p(132.0,34.0),p(132.0,41.0),p(136.0,35.0),p(136.0,39.0),p(140.0,37.0),p(144.0,41.0),p(148.0,30.0),p(148.0,42.0),p(152.0,32.0),p(160.0,25.0),p(160.0,37.0),p(160.0,41.0),p(164.0,30.0),p(168.0,30.0),p(168.0,37.0),p(170.0,32.0),p(172.0,34.0),p(174.0,36.0),p(176.0,37.0),p(184.0,41.0),p(192.0,37.0),p(192.0,41.0),p(200.0,41.0),p(208.0,39.0),p(212.0,32.0),p(216.0,32.0),p(216.0,39.0),p(218.0,34.0),p(220.0,36.0),p(224.0,39.0),p(232.0,42.0),p(236.0,39.0),p(240.0,39.0),p(240.0,42.0)),[T(F_2STR,[1.0, 0.0, 2.0, 1.0])],null)
+
+
+Coverage: 72
+Dataset size: 253
+Uncompressed length: 144
+Encoding length: 76
+Compression factor: 1.894736842105263
+Running time in milliseconds: 61951
+Encoding length without residual point set: 76
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.894736842105263
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+          60101 ms          60101 ms  computeMaximalTransformablePatterns ends
+          60103 ms              2 ms  computeSizeMTPSetArray ends
+          60105 ms              2 ms  mergeMTPs ends
+          60106 ms              1 ms  computeSuperMTPs ends
+          60106 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+          61948 ms           1842 ms  removeDuplicateOccurrenceSets ends
+          61948 ms              0 ms  removeRedundantTransformations ends
+          61949 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          61949 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          61949 ms              0 ms  computeSortedOccurrenceSets ends
+          61950 ms              1 ms  computeEncoding ends
+          61951 ms              1 ms  Program ends
+
+
+Number of points: 253
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/D-Mbs_Mus.ms._1512_2v_04v-05r_GLT.mei
+Query file path (-q): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/heckel_1556-5-T_GLT.mei
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/olja
+Minimum pattern size (-min): 20
+Minimum occurrence set compactness (-minc): 0.3
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+

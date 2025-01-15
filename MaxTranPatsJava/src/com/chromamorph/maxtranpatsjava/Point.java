@@ -12,6 +12,24 @@ public class Point implements Comparable<Point>{
 	private Pitch pitch = null;
 	private Long duration = null;
 	private Integer voice = null;
+	private Integer course = null;
+	private Integer fret = null;
+	
+	public Integer getCourse() {
+		return course;
+	}
+	
+	public void setCourse(int course) {
+		this.course = course;
+	}
+
+	public Integer getFret() {
+		return fret;
+	}
+
+	public void setFret(int fret) {
+		this.fret = fret;
+	}
 	
 	public Long getOnset() {
 		return onset;

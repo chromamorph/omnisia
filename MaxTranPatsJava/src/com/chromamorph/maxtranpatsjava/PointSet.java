@@ -36,6 +36,7 @@ public class PointSet implements Comparable<PointSet>{
 	public static long TIME_LIMIT = 1000 * 60 * 30; // 30 minutes
 	public static boolean NO_TIME_LIMIT = true;
 	public static int HASH_TABLE_SIZE = 10000001;
+	private static boolean ENCODE_COURSE_FRET_MISMATCHES = false;
 
 	private Long ticksPerSecond = null;
 
@@ -131,29 +132,34 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public PointSet(File file) throws IOException, DimensionalityException {
-		this(file, false, false, null);
+		this(file, false, false, null, 0, -1);
 	}
 
 	public PointSet(File file, boolean pitchSpell) throws IOException, DimensionalityException {
-		this(file, pitchSpell, false, null);
+		this(file, pitchSpell, false, null, 0, -1);
 	}
 
 	public PointSet(
 			File file, 
 			boolean pitchSpell, 
 			boolean midTimePoint, 
-			String dimensionMask) throws IOException, DimensionalityException {
+			String dimensionMask,
+			int startIndex,
+			int endIndex) throws IOException, DimensionalityException {
 		if (file.getName().toLowerCase().endsWith(".pts")) {
-			makePointSetFromPTSFile(file);
+			makePointSetFromPTSFile(file, startIndex, endIndex);
 			return;
 		}
 		if (file.getName().toLowerCase().endsWith(".mid")) {
-			makePointSetFromMIDIFile(file, pitchSpell, midTimePoint, dimensionMask);
+			makePointSetFromMIDIFile(file, pitchSpell, midTimePoint, dimensionMask, startIndex, endIndex);
 			return;
 		}
 		System.out.println(file.getName().toLowerCase());
 		if (file.getName().toLowerCase().endsWith(".opnd")) {
-			makePointSetFromOPNDFile(file, pitchSpell, midTimePoint, dimensionMask);
+			makePointSetFromOPNDFile(file, pitchSpell, midTimePoint, dimensionMask, startIndex, endIndex);
+		}
+		if (file.getName().toLowerCase().endsWith(".mei")) {
+			makePointSetFromMEITabEncodingFile(file.getAbsolutePath(), startIndex, endIndex);
 		}
 		setTitle(Paths.get(file.getAbsolutePath()).getFileName().toString());
 		StringBuilder sb = new StringBuilder();
@@ -172,7 +178,9 @@ public class PointSet implements Comparable<PointSet>{
 			Notes notes, 
 			boolean diatonicPitch,
 			boolean midTimePoint,
-			String dimensionMask) throws NoMorpheticPitchException {
+			String dimensionMask, 
+			int startIndex,
+			int endIndex) throws NoMorpheticPitchException {
 		setTicksPerSecond(notes.getTicksPerSecond());
 		//		System.out.println("in PointSet, ticksPerSecond == "+ticksPerSecond);
 		for(Note note : notes.getNotes()) {
@@ -232,13 +240,20 @@ public class PointSet implements Comparable<PointSet>{
 			for (Point p : points)
 				p.set(0, 2 * p.get(0));
 		}
+		if (startIndex < endIndex) {
+			ArrayList<Point> pointArray = new ArrayList<Point>(points);
+			points = new TreeSet<Point>();
+			for(int i = startIndex; i < endIndex; i++) {
+				points.add(pointArray.get(i));
+			}
+		}
 	}
 
-	private void makePointSetFromMIDIFile(File file, boolean pitchSpell, boolean midTimePoint, String dimensionMask) {
+	private void makePointSetFromMIDIFile(File file, boolean pitchSpell, boolean midTimePoint, String dimensionMask, int startIndex, int endIndex) {
 		Notes notes;
 		try {
 			notes = Notes.fromMIDI(file.getAbsolutePath(), pitchSpell);
-			getPointSetFromNotes(notes, pitchSpell, midTimePoint, dimensionMask);
+			getPointSetFromNotes(notes, pitchSpell, midTimePoint, dimensionMask, startIndex, endIndex);
 		} catch (InvalidMidiDataException | IOException | NoMorpheticPitchException e) {
 			e.printStackTrace();
 		}
@@ -277,12 +292,17 @@ public class PointSet implements Comparable<PointSet>{
 		}
 	}
 
-	private void makePointSetFromOPNDFile(File file, boolean pitchSpell, boolean midTimePoint, String dimensionMask) {
+	private void makePointSetFromOPNDFile(File file, 
+			boolean pitchSpell, 
+			boolean midTimePoint, 
+			String dimensionMask,
+			int startIndex,
+			int endIndex) {
 		Notes notes;
 		setTatumsPerBarAndBarOneStartsAt(file);
 		try {
 			notes = Notes.fromOPND(file.getAbsolutePath());
-			getPointSetFromNotes(notes, pitchSpell, midTimePoint, dimensionMask);
+			getPointSetFromNotes(notes, pitchSpell, midTimePoint, dimensionMask, startIndex, endIndex);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -294,7 +314,30 @@ public class PointSet implements Comparable<PointSet>{
 		pointComplexity = -1;
 	}
 
-	private void makePointSetFromPTSFile(File file) {
+	private void makePointSetFromMEITabEncodingFile(String fileName, int startIndex, int endIndex) {
+		try {
+			MEITabEncoding tab = new MEITabEncoding(fileName);
+			for(TabNote note : tab.getTabNotes()) {
+				Point p = new Point((double)note.getOnset(),(double)note.getChromaticPitch());
+				p.setCourse(note.getCourse());
+				p.setFret(note.getFret());
+				points.add(p);
+			}
+			if (startIndex < endIndex) {
+				ArrayList<Point> pointArray = new ArrayList<Point>(points);
+				points = new TreeSet<Point>();
+				for(int i = startIndex; i < endIndex; i++) {
+					points.add(pointArray.get(i));
+				}
+			}
+			resetPointsArray();
+			pointComplexity = -1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void makePointSetFromPTSFile(File file, int startIndex, int endIndex) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String l = br.readLine();
@@ -303,6 +346,13 @@ public class PointSet implements Comparable<PointSet>{
 				l = br.readLine();
 			}
 			br.close();
+			if (startIndex < endIndex) {
+				ArrayList<Point> pointArray = new ArrayList<Point>(points);
+				points = new TreeSet<Point>();
+				for(int i = startIndex; i < endIndex; i++) {
+					points.add(pointArray.get(i));
+				}
+			}
 			resetPointsArray();
 			pointComplexity = -1;
 		} catch (FileNotFoundException e) {
@@ -1450,6 +1500,10 @@ public class PointSet implements Comparable<PointSet>{
 		log.add(new LogInfo("Program ends\n\n", true));
 		ps.getEncoding().setRunningTimeInMillis(log.get(log.size()-1).getAccumulatedTime());
 
+		if (ENCODE_COURSE_FRET_MISMATCHES) {
+			
+		}
+		
 		PrintWriter output = new PrintWriter(outputFilePath);
 		System.out.println("Output file: "+ outputFilePath);
 		System.out.println("Encoding:\n" + ps.getEncoding());
@@ -1732,19 +1786,27 @@ public class PointSet implements Comparable<PointSet>{
 			double minCompactness,
 			double minOccurrenceCompactness,
 			String groundTruthFileName,
-			boolean drawBoundingBoxes) {
+			boolean drawBoundingBoxes,
+			int patternStartIndex,
+			int patternEndIndex,
+			int datasetStartIndex,
+			int datasetEndIndex) {
 		String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 		try {
 			PointSet ps1 = new PointSet(
 					new File(filePath1), 
 					pitchSpell, 
 					midTimePoint,
-					dimensionMask);
+					dimensionMask,
+					patternStartIndex,
+					patternEndIndex);
 			PointSet ps2 = new PointSet(
 					new File(filePath2), 
 					pitchSpell, 
 					midTimePoint,
-					dimensionMask);
+					dimensionMask,
+					datasetStartIndex,
+					datasetEndIndex);
 
 			//			We're going to form the union of ps1 with ps2 translated by twice the maximum x-value of ps1
 			Transformation tran = new Transformation(new F_2T(), Utility.makeSigma(ps1.getMax(0) * 2, 0));
@@ -1778,14 +1840,18 @@ public class PointSet implements Comparable<PointSet>{
 			double minCompactness,
 			double minOccurrenceCompactness, 
 			String groundTruthFileName,
-			boolean drawBoundingBoxes) {
+			boolean drawBoundingBoxes,
+			int startIndex,
+			int endIndex) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
 					new File(fileName), 
 					pitchSpell, 
 					midTimePoint,
-					dimensionMask);
+					dimensionMask,
+					startIndex,
+					endIndex);
 			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1809,7 +1875,11 @@ public class PointSet implements Comparable<PointSet>{
 			double minCompactness,
 			double minOccurrenceCompactness,
 			String groundTruthFileName,
-			boolean drawBoundingBoxes) {
+			boolean drawBoundingBoxes,
+			int patternStartIndex,
+			int patternEndIndex,
+			int datasetStartIndex,
+			int datasetEndIndex) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, patternFileName, datasetFileName, transformationClasses);
 			TIME_SCALE_FACTOR = 1.0;
@@ -1817,12 +1887,16 @@ public class PointSet implements Comparable<PointSet>{
 					new File(patternFileName), 
 					pitchSpell, 
 					midTimePoint,
-					dimensionMask);
+					dimensionMask,
+					patternStartIndex,
+					patternEndIndex);
 			PointSet dataset = new PointSet(
 					new File(datasetFileName),
 					pitchSpell,
 					midTimePoint,
-					dimensionMask);
+					dimensionMask,
+					datasetStartIndex,
+					datasetEndIndex);
 			if (minSize < 0)
 				minSize = pattern.size()+minSize;
 			if (minSize < 0) System.out.println(">>>ERROR! minSize is still less than zero: "+minSize+"<<<");
@@ -1882,14 +1956,18 @@ public class PointSet implements Comparable<PointSet>{
 			double minCompactness,
 			double minOccurrenceCompactness,
 			String groundTruthFileName,
-			boolean drawBoundingBoxes) {
+			boolean drawBoundingBoxes,
+			int startIndex,
+			int endIndex) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
 					new File(fileName), 
 					pitchSpell, 
 					midTimePoint,
-					dimensionMask);
+					dimensionMask,
+					startIndex,
+					endIndex);
 			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes);
 			return ps;
 		} catch (IOException e) {
@@ -1933,7 +2011,8 @@ public class PointSet implements Comparable<PointSet>{
 						0.0,
 						0.0,
 						null,
-						false);
+						false,
+						0,-1);
 		}
 	}
 
@@ -1965,7 +2044,9 @@ public class PointSet implements Comparable<PointSet>{
 								0.0,
 								0.0,
 								null,
-								false);		
+								false,
+								0,-1,
+								0,-1);		
 					}
 					count++;
 				}
@@ -2051,7 +2132,9 @@ public class PointSet implements Comparable<PointSet>{
 								0.0,
 								0.0,
 								null,
-								false);		
+								false,
+								0,-1,
+								0,-1);		
 					}
 					count++;
 				}
@@ -2072,7 +2155,8 @@ public class PointSet implements Comparable<PointSet>{
 				0.0, // minCompactness
 				0.0, // minOccurrenceCompactness
 				null,
-				false
+				false,
+				0,-1
 				);
 	}
 
@@ -2157,7 +2241,8 @@ public class PointSet implements Comparable<PointSet>{
 							0.0,
 							0.0,
 							null,
-							false
+							false,
+							0,-1
 							);
 				}
 			}
@@ -2172,7 +2257,7 @@ public class PointSet implements Comparable<PointSet>{
 			boolean midTimePoint,
 			String dimensionMask,
 			boolean drawBoundingBoxes) throws IOException, DimensionalityException {
-		final PointSet dataset = new PointSet(new File(datasetFilePath),diatonicPitch,midTimePoint,dimensionMask);
+		final PointSet dataset = new PointSet(new File(datasetFilePath),diatonicPitch,midTimePoint,dimensionMask,0,-1);
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint);
 		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		final int endIndex = groundTruthFilePath.lastIndexOf(".");

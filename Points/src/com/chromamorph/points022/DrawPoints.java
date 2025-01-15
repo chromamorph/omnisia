@@ -68,6 +68,7 @@ public class DrawPoints extends PApplet {
 	private int outputFileIndex = 0;
 	private boolean firstTime = true;
 	private boolean drawBoundingBoxes = false;
+	private boolean doNotDrawSingletonTEC = false;
 
 	public DrawPoints() {
 		super();
@@ -445,6 +446,7 @@ public class DrawPoints extends PApplet {
 		outputFileIndex++;
 		if (firstTime)
 			firstTime = false;
+
 		if (!points.isEmpty()) {
 			background(255);
 
@@ -454,6 +456,7 @@ public class DrawPoints extends PApplet {
 				drawPoint(n);
 			}
 		}
+		
 		if (structuralSegmentation != null) {
 			drawStructuralSegmentation();
 		} else if (segmentation) {
@@ -479,6 +482,7 @@ public class DrawPoints extends PApplet {
 			drawPatternVectorSetPair();
 		else if (patterns != null)
 			drawPatterns();
+		
 		String outputImageFile = "outputFile.png";
 		if (outputFilePath != null) {
 			int folderEnd = outputFilePath.lastIndexOf("/")+1;
@@ -631,7 +635,7 @@ public class DrawPoints extends PApplet {
 
 
 		for(int i = numberOfTecs-1; i >= 0; i--) {
-			if (i==numberOfTecs-1 && occurrenceSets.get(i).size()==1)
+			if (i==numberOfTecs-1 && occurrenceSets.get(i).size()==1 && doNotDrawSingletonTEC)
 				continue;
 			ArrayList<PointSet> occurrenceSet = occurrenceSets.get(i);
 			int col = color(colours[i][0],colours[i][1],colours[i][2],colours[i][3]);

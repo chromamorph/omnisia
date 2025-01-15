@@ -1,0 +1,54 @@
+
+
+Coverage: 0
+Dataset size: 354
+Uncompressed length: 0
+Encoding length: 0
+Compression factor: NaN
+Running time in milliseconds: 691
+Encoding length without residual point set: 0
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: NaN
+Number of occurrence sets: 0
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            684 ms            684 ms  computeMaximalTransformablePatterns ends
+            685 ms              1 ms  computeSizeMTPSetArray ends
+            685 ms              0 ms  mergeMTPs ends
+            686 ms              1 ms  computeSuperMTPs ends
+            686 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+            686 ms              0 ms  removeDuplicateOccurrenceSets ends
+            686 ms              0 ms  removeRedundantTransformations ends
+            687 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            687 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            690 ms              3 ms  computeSortedOccurrenceSets ends
+            691 ms              1 ms  computeEncoding ends
+            691 ms              0 ms  Program ends
+
+
+Number of points: 354
+Number of OSs after removal: 0
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/heckel_1556-5-T_GLT.mei
+Query file path (-q): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/wecker_1552-10_R4v-S1r_GLT.mei
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/olja
+Minimum pattern size (-min): 50
+Minimum occurrence set compactness (-minc): 0.3
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(4,F_2T)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+

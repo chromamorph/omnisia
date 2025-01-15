@@ -1,0 +1,55 @@
+OS(P(p(0.0,27.0),p(0.0,39.0),p(4.0,39.0),p(5.0,38.0),p(6.0,39.0),p(7.0,41.0),p(8.0,36.0),p(8.0,39.0),p(12.0,39.0),p(16.0,39.0),p(16.0,46.0),p(20.0,38.0),p(22.0,36.0),p(24.0,34.0),p(24.0,46.0),p(28.0,34.0),p(32.0,36.0),p(32.0,43.0),p(36.0,36.0),p(40.0,36.0),p(42.0,38.0),p(44.0,39.0),p(44.0,51.0),p(46.0,41.0),p(48.0,43.0),p(48.0,50.0),p(50.0,44.0),p(52.0,46.0),p(56.0,46.0),p(56.0,50.0),p(60.0,44.0),p(60.0,51.0),p(64.0,43.0),p(64.0,46.0),p(68.0,43.0),p(68.0,46.0),p(72.0,41.0),p(72.0,48.0),p(73.0,46.0),p(74.0,45.0),p(75.0,43.0),p(76.0,46.0),p(78.0,45.0),p(80.0,34.0),p(80.0,46.0),p(88.0,46.0),p(92.0,38.0),p(96.0,43.0),p(100.0,43.0),p(102.0,41.0)),[T(F_2STR,[1.0, 0.0, 0.0, 1.0])],null)
+
+
+Coverage: 50
+Dataset size: 253
+Uncompressed length: 100
+Encoding length: 104
+Compression factor: 0.9615384615384616
+Running time in milliseconds: 35431
+Encoding length without residual point set: 104
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 0.9615384615384616
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+          34195 ms          34195 ms  computeMaximalTransformablePatterns ends
+          34196 ms              1 ms  computeSizeMTPSetArray ends
+          34200 ms              4 ms  mergeMTPs ends
+          34200 ms              0 ms  computeSuperMTPs ends
+          34200 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+          35416 ms           1216 ms  removeDuplicateOccurrenceSets ends
+          35416 ms              0 ms  removeRedundantTransformations ends
+          35416 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          35417 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          35417 ms              0 ms  computeSortedOccurrenceSets ends
+          35430 ms             13 ms  computeEncoding ends
+          35431 ms              1 ms  Program ends
+
+
+Number of points: 253
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/D-Mbs_Mus.ms._1512_2v_04v-05r_GLT.mei
+Query file path (-q): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/D-Mbs_Mus.ms._1512_2v_04v-05r_GLT.mei
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/olja
+Minimum pattern size (-min): -10
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+

@@ -1,0 +1,56 @@
+OS(P(p(244.0,30.0),p(246.0,32.0),p(248.0,34.0),p(264.0,22.0),p(266.0,24.0),p(268.0,25.0),p(270.0,27.0),p(272.0,29.0),p(280.0,25.0),p(284.0,24.0),p(288.0,22.0),p(292.0,37.0),p(304.0,25.0),p(308.0,25.0),p(310.0,27.0),p(312.0,29.0),p(316.0,30.0),p(320.0,32.0),p(324.0,25.0),p(328.0,27.0),p(336.0,32.0),p(352.0,32.0)),[T(F_2T,[0.0, 14.0])],null)
+OS(P(p(248.0,42.0),p(256.0,41.0),p(260.0,34.0),p(264.0,41.0),p(280.0,37.0),p(280.0,44.0),p(284.0,36.0),p(288.0,46.0),p(296.0,32.0),p(296.0,48.0),p(304.0,49.0),p(312.0,49.0),p(316.0,51.0),p(324.0,49.0),p(326.0,48.0),p(328.0,39.0),p(328.0,46.0),p(336.0,32.0),p(336.0,44.0),p(344.0,44.0),p(348.0,32.0)),[T(F_2T,[0.0, 2.0])],null)
+
+
+Coverage: 81
+Dataset size: 253
+Uncompressed length: 162
+Encoding length: 90
+Compression factor: 1.8
+Running time in milliseconds: 553
+Encoding length without residual point set: 90
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.8
+Number of occurrence sets: 2
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            455 ms            455 ms  computeMaximalTransformablePatterns ends
+            456 ms              1 ms  computeSizeMTPSetArray ends
+            458 ms              2 ms  mergeMTPs ends
+            459 ms              1 ms  computeSuperMTPs ends
+            460 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+            550 ms             90 ms  removeDuplicateOccurrenceSets ends
+            550 ms              0 ms  removeRedundantTransformations ends
+            551 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            551 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            551 ms              0 ms  computeSortedOccurrenceSets ends
+            553 ms              2 ms  computeEncoding ends
+            553 ms              0 ms  Program ends
+
+
+Number of points: 253
+Number of OSs after removal: 2
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/D-Mbs_Mus.ms._1512_2v_04v-05r_GLT.mei
+Query file path (-q): /Users/susanne/Repos/olja/thesis/approaches/2_practices_of_pre-existing_templates/data/senfl_S329/2v/heckel_1556-5-T_GLT.mei
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/olja
+Minimum pattern size (-min): 20
+Minimum occurrence set compactness (-minc): 0.3
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(4,F_2T)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+

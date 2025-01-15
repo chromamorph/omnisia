@@ -21,6 +21,10 @@ public class MaxTranPats {
 	public static boolean HELP								= false;
 	public static boolean DRAW_GROUND_TRUTH					= false;
 	public static boolean DRAW_BOUNDING_BOXES				= false;
+	public static int PATTERN_START_INDEX					= 0;
+	public static int DATASET_START_INDEX					= 0;
+	public static int PATTERN_END_INDEX						= -1;
+	public static int DATASET_END_INDEX						= -1;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
@@ -38,6 +42,10 @@ public class MaxTranPats {
 	public static String HELP_SWITCH						= "h";
 	public static String DRAW_GROUND_TRUTH_SWITCH			= "drawgt";
 	public static String DRAW_BOUNDING_BOXES_SWITCH			= "drawbb";
+	public static String PATTERN_START_INDEX_SWITCH			= "psi";
+	public static String DATASET_START_INDEX_SWITCH			= "dsi";
+	public static String PATTERN_END_INDEX_SWITCH			= "pei";
+	public static String DATASET_END_INDEX_SWITCH			= "dei";
 	
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
@@ -194,6 +202,10 @@ public class MaxTranPats {
 		HELP = getBooleanValue(argArray,HELP_SWITCH);
 		DRAW_GROUND_TRUTH = getBooleanValue(argArray,DRAW_GROUND_TRUTH_SWITCH);
 		DRAW_BOUNDING_BOXES = getBooleanValue(argArray,DRAW_BOUNDING_BOXES_SWITCH);
+		PATTERN_START_INDEX = getIntValue(argArray, PATTERN_START_INDEX_SWITCH, 0);
+		PATTERN_END_INDEX = getIntValue(argArray, PATTERN_END_INDEX_SWITCH, -1);
+		DATASET_START_INDEX = getIntValue(argArray, DATASET_START_INDEX_SWITCH, 0);
+		DATASET_END_INDEX = getIntValue(argArray, DATASET_END_INDEX_SWITCH, -1);
 
 		if (OUTPUT_DIR_PATH == null) {
 			int end = INPUT_FILE_PATH.lastIndexOf("/");
@@ -229,7 +241,9 @@ public class MaxTranPats {
 					MIN_COMPACTNESS,
 					MIN_OCC_COMPACTNESS,
 					GROUND_TRUTH_FILE_PATH,
-					DRAW_BOUNDING_BOXES
+					DRAW_BOUNDING_BOXES,
+					DATASET_START_INDEX,
+					DATASET_END_INDEX
 					);
 		} else {
 			PointSet.maximalTransformedMatchesFromFiles(
@@ -245,7 +259,11 @@ public class MaxTranPats {
 					MIN_COMPACTNESS,
 					MIN_OCC_COMPACTNESS,
 					GROUND_TRUTH_FILE_PATH,
-					DRAW_BOUNDING_BOXES
+					DRAW_BOUNDING_BOXES,
+					PATTERN_START_INDEX,
+					PATTERN_END_INDEX,
+					DATASET_START_INDEX,
+					DATASET_END_INDEX
 					);
 		}
 	}
