@@ -28,6 +28,7 @@ public class Encoding {
 
 	private String title = "";
 	protected PointSet dataset = null;
+	protected PointSet queryPattern = null;
 	protected ArrayList<ArrayList<PointSet>> occurrenceSets = null;
 
 	private ArrayList<TEC> tecs = new ArrayList<TEC>();
@@ -98,7 +99,8 @@ public class Encoding {
 			boolean forMirex,
 			boolean segmentMode,
 			boolean bbMode,
-			String omnisiaOutputFilePathString) throws MissingTieStartNoteException, FileNotFoundException {
+			String omnisiaOutputFilePathString,
+			String queryFilePathString) throws MissingTieStartNoteException, FileNotFoundException {
 
 
 		//		protected String omnisiaOutputFilePathString = null;
@@ -169,6 +171,9 @@ public class Encoding {
 		if (dataset == null && this.inputFilePathString != null)
 			dataset = new PointSet(this.inputFilePathString, isDiatonic, withoutChannel10);
 
+		if (queryPattern == null & queryFilePathString != null)
+			queryPattern = new PointSet(queryFilePathString, isDiatonic, withoutChannel10);
+		
 		if (OMNISIA.RHYTHM_ONLY) {
 			PointSet newDataset = new PointSet();
 			for (Point p : dataset.getPoints())
@@ -185,6 +190,33 @@ public class Encoding {
 
 		this.encoderName = this.getClass().getName();
 	}
+
+	public Encoding(
+			PointSet dataset,
+			String inputFilePathString,
+			String outputDirectoryPathString,
+			boolean isDiatonic,
+			boolean withoutChannel10,
+			String outputFileExtension,
+			int topNPatterns,
+			boolean forMirex,
+			boolean segmentMode,
+			boolean bbMode,
+			String omnisiaOutputFilePathString) throws MissingTieStartNoteException, FileNotFoundException {
+		this(dataset,
+			inputFilePathString,
+			outputDirectoryPathString,
+			isDiatonic,
+			withoutChannel10,
+			outputFileExtension,
+			topNPatterns,
+			forMirex,
+			segmentMode,
+			bbMode,
+			omnisiaOutputFilePathString,
+			null);
+	}
+	
 
 	public PointSet getDataset() {
 		return dataset;

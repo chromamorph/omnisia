@@ -9,5 +9,6 @@ public enum BasicAlgorithm {
 	RecurSIA,
 	TTWM, //Implements Laaksonen and Lemstr�m's (2019m DLfM) algorithm and a new version
 	NONE,
-	MTECS
+	MTECS,
+	ComputeTranslators
 }

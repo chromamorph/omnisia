@@ -142,7 +142,7 @@ public class SIAEncoding extends Encoding {
 	}	
 
 
-	public static void main(String[] args) throws NoMorpheticPitchException, IOException, UnimplementedInputFileFormatException, InvalidMidiDataException {
+	public static void main(String[] args) {
 		//		String inputFilePath = "/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/Lartillot/ClosedSubstrings001.opnd";
 		//		String outputFileDirectoryPath = "/Users/dave/Documents/Work/Research/workspace-to-2014-01-17/Points/data/Lartillot";
 		String inputFilePath = "/Users/dave/Documents/Work/Research/2014-09-15-workspace/Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv847b-done.opnd";
@@ -164,6 +164,18 @@ public class SIAEncoding extends Encoding {
 					b);
 			encoding.draw();
 		} catch (MissingTieStartNoteException e) {
+			e.printStackTrace();
+		} catch (NoMorpheticPitchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnimplementedInputFileFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

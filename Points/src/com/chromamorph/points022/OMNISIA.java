@@ -108,6 +108,7 @@ public class OMNISIA {
 	public static boolean NUM_MTPS_ONLY				= false;
 	public static CompactnessType COMPACTNESS_TYPE	= CompactnessType.BOUNDING_BOX;
 	private static File OCCURRENCE_SETS_FILE		= null;
+	private static File QUERY_FILE					= null;
 
 	////////////////////
 	//	Switches
@@ -154,7 +155,8 @@ public class OMNISIA {
 	private static String DUAL_TEC_PRIORITY_SWITCH	= "dualtecqual";
 	private static String NUM_MTPS_ONLY_SWITCH		= "nummtpsonly";
 	private static String COMPACTNESS_TYPE_SWITCH	= "comptype";
-	private static String OCCURRENCE_SETS_FILE_SWITCH= "occsets";
+	private static String OCCURRENCE_SETS_FILE_SWITCH = "occsets";
+	private static String QUERY_FILE_SWITCH			= "q";
 
 
 	////////////////////
@@ -193,6 +195,13 @@ public class OMNISIA {
 		String filePathStr = getValue(OCCURRENCE_SETS_FILE_SWITCH, args);
 		if (filePathStr != null && new File(filePathStr).exists()) {
 			OCCURRENCE_SETS_FILE = new File(new File(filePathStr).getAbsolutePath());
+		}
+	}
+	
+	private static void getQueryFile(String[] args) {
+		String filePathStr = getValue(QUERY_FILE_SWITCH, args);
+		if (filePathStr != null && new File(filePathStr).exists()) {
+			QUERY_FILE = new File(new File(filePathStr).getAbsolutePath());
 		}
 	}
 	
@@ -684,6 +693,7 @@ public static String getParameterValuesString() {
 			"Compactness type (-"+COMPACTNESS_TYPE_SWITCH+"): " + COMPACTNESS_TYPE,
 			"Input file directory (-"+INPUT_DIR_SWITCH+"): " + INPUT_DIR,
 			"Occurrence set file (-"+OCCURRENCE_SETS_FILE_SWITCH+"): " + ((OCCURRENCE_SETS_FILE==null)?null:OCCURRENCE_SETS_FILE.getAbsolutePath()),
+			"Query file (-"+QUERY_FILE_SWITCH+"): " + ((QUERY_FILE==null)?null:QUERY_FILE.getAbsolutePath()),
 			""
 	};
 	StringBuilder sb = new StringBuilder();
@@ -844,6 +854,8 @@ private static void showHelp() {
 			"\tby parentheses. Each of these lists should contain a list of notes, where each note is a Lisp",
 			"\tlist with the format (onset pitch-name duration [voice]). In addition to the occurrence set",
 			"\tfile, the user must supply an input dataset file using the -"+INPUT_FILE_SWITCH+" switch.",
+			"",
+			"-"+QUERY_FILE_SWITCH+"\t Path to a file to use as a query file if doing pattern matching.",
 			""
 			);
 }
@@ -896,6 +908,7 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 		case RecurSIA: encoding = runRecurSIA(); break;
 		case TTWM: encoding = runTTWM(); break;
 		case MTECS: encoding = runMTECS(); break;
+		case ComputeTranslators: encoding = runComputeTranslators(); break;
 		case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
 		}
 		encoding.setTitle(COMMAND_LINE);
@@ -1053,6 +1066,17 @@ private static SIATECCompressEncoding runSIATECCompress() {
 		e.printStackTrace();
 	}
 	return null;
+}
+
+private static ComputeTranslatorsEncoding runComputeTranslators() throws MissingTieStartNoteException, FileNotFoundException {
+	return new ComputeTranslatorsEncoding(
+				INPUT_FILE.getAbsolutePath(),
+				OUTPUT_DIR.getAbsolutePath(),
+				(DIATONIC_PITCH?PitchRepresentation.MORPHETIC_PITCH:PitchRepresentation.CHROMATIC_PITCH),
+				(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
+				QUERY_FILE.getAbsolutePath(),
+				WITHOUT_CHANNEL_10
+			);
 }
 
 private static SIAEncoding runSIA() throws MissingTieStartNoteException {
@@ -1250,6 +1274,7 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 		return;
 	}
 	getInputFile(args);
+	getQueryFile(args);
 	getOccurrenceSetFile(args);
 //	if (INPUT_FILE == null) {
 //		showHelp();
