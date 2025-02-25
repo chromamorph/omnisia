@@ -16,6 +16,7 @@ public class TEC implements Comparable<TEC>{
 	protected boolean isDual = false;
 	protected ArrayList<TEC> patternTecs = null;
 	protected Double segmentCompactness = null;
+	protected boolean doNotNormalize = false;
 	
 //	For MTECs
 	protected VectorSet maxVecs = new VectorSet();
@@ -97,6 +98,11 @@ public class TEC implements Comparable<TEC>{
 		setTranslators(translators);
 		setDataset(dataset);
 	}
+	
+	public TEC(PointSet pattern, VectorSet translators, PointSet dataset, boolean doNotNormalize) {
+		this(pattern, translators, dataset);
+		setDoNotNormalize(doNotNormalize);
+	}
 
 	public TEC(ArrayList<TEC> patternTecs, VectorSet translators, PointSet dataset) {
 		setPatternTecs(patternTecs);
@@ -127,6 +133,14 @@ public class TEC implements Comparable<TEC>{
 		setTranslators(vectorSet);
 	}
 
+	public void setDoNotNormalize(boolean doNotNormalize) {
+		this.doNotNormalize = doNotNormalize;
+	}
+	
+	public boolean getDoNotNormalize() {
+		return doNotNormalize;
+	}
+	
 	public void setPattern(PointSet pattern) {
 		this.pattern = pattern;
 		this.patternTecs = null;
@@ -163,12 +177,14 @@ public class TEC implements Comparable<TEC>{
 
 	public String toString() {
 		String outString = null;
-		if (pattern != null) { // In this TEC, the pattern is just a point set
+		if (doNotNormalize) 
+			outString = "T("+pattern+","+translators+")";
+		else if (pattern != null) { // In this TEC, the pattern is just a point set
 			PointSet normalizedPattern = pattern.translate(translators.get(0));
 			VectorSet normalizedTranslators = translators.translate(translators.get(0).inverse());
 			outString = "T("+normalizedPattern+","+normalizedTranslators+")";
 		}
-		if (patternTecs != null) { // In this TEC, the pattern is represented by a set of TECs
+		else if (patternTecs != null) { // In this TEC, the pattern is represented by a set of TECs
 			outString = "T(P("+patternTecs.get(0);
 			for(int i = 1; i < patternTecs.size(); i++) {
 				outString += ","+patternTecs.get(i);
