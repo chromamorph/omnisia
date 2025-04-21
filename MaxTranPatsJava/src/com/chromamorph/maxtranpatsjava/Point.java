@@ -99,16 +99,24 @@ public class Point implements Comparable<Point>{
 		return compareTo((Point)obj) == 0;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("p(");
+		boolean onsetPresent = false;
 		if (getOnset() != null && (double)getOnset() != get(0)) {
 			sb.append(getOnset());
-		} else
-			sb.append(get(0));
-		sb.append(",");
-		for(int i = 1; i < size(); i++) {
-			sb.append(get(i));
+			onsetPresent = true;
+			if (size() > 1) sb.append(",");
+		}
+		for(int i = onsetPresent?1:0; i < size(); i++) {
+			double l = Math.floor(get(i));
+			String numString = "";
+			if (Utility.equalWithTolerance(l, get(i)))
+				numString = String.format("%d", (long)l);
+			else
+				numString = new Double(get(i)).toString();
+			sb.append(numString);
 			if (i < size()-1)
 				sb.append(",");
 		}
@@ -121,6 +129,12 @@ public class Point implements Comparable<Point>{
 		int y = (int)Math.floor(get(1));
 		com.chromamorph.points022.Point omnisiaPoint = new com.chromamorph.points022.Point(x,y);
 		return omnisiaPoint;
+	}
+	
+	public static void main(String[] args) {
+		Point p = new Point(3.0, 2.1, 4.0, 5.0);
+		p.setOnset(3l);
+		System.out.println(p);
 	}
 	
 }

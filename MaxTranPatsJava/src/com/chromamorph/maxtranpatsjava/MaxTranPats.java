@@ -21,6 +21,8 @@ public class MaxTranPats {
 	public static boolean HELP								= false;
 	public static boolean DRAW_GROUND_TRUTH					= false;
 	public static boolean DRAW_BOUNDING_BOXES				= false;
+	public static boolean CHROMA							= false;
+	public static boolean MORPH								= false;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
@@ -38,19 +40,25 @@ public class MaxTranPats {
 	public static String HELP_SWITCH						= "h";
 	public static String DRAW_GROUND_TRUTH_SWITCH			= "drawgt";
 	public static String DRAW_BOUNDING_BOXES_SWITCH			= "drawbb";
+	public static String CHROMA_SWITCH						= "c";
+	public static String MORPH_SWITCH						= "m";
 	
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
 			"F_2STR_Rational",
 			"F_2STR",
 			"F_2T",
-			"F_2TR"};
+			"F_2TR",
+			"F_2STR_Mod7",
+			"F_2STR_Mod12"};
 	public static TransformationClass[] ALL_TRANS_CLASSES = new TransformationClass[] {
 			new F_2STR_FIXED(),
 			new F_2STR_Rational(),
 			new F_2STR(),
 			new F_2T(),
-			new F_2TR()
+			new F_2TR(),
+			new F_2STR_Mod(7),
+			new F_2STR_Mod(12)
 	};
 	
 	public static String getTransformationClasses() {
@@ -80,7 +88,9 @@ public class MaxTranPats {
 		sb.append(String.format("%s (-%s): %s\n", "Draw patterns", DRAW_SWITCH, DRAW));
 		sb.append(String.format("%s (-%s): %s\n", "Draw ground truth", DRAW_GROUND_TRUTH_SWITCH, DRAW_GROUND_TRUTH));
 		sb.append(String.format("%s (-%s): %s\n", "Draw bounding boxes around patterns", DRAW_BOUNDING_BOXES_SWITCH, DRAW_BOUNDING_BOXES));
-		
+		sb.append(String.format("%s (-%s): %s\n", "Use chroma", CHROMA_SWITCH, CHROMA));
+		sb.append(String.format("%s (-%s): %s\n", "Use morph", MORPH_SWITCH, MORPH));
+
 		return sb.toString();
 	}
 
@@ -165,7 +175,9 @@ public class MaxTranPats {
 				"-"+DRAW_SWITCH+"\tDraw results in a graph.",
 				"-"+HELP_SWITCH+"\tDisplay this help.",
 				"-"+DRAW_GROUND_TRUTH_SWITCH+"\tDraw ground truth file (.gt file).",
-				"-"+DRAW_BOUNDING_BOXES_SWITCH+"\tDraw bounding boxes around patterns."
+				"-"+DRAW_BOUNDING_BOXES_SWITCH+"\tDraw bounding boxes around patterns.",
+				"-"+CHROMA_SWITCH+"\tUse chroma.",
+				"-"+MORPH_SWITCH+"\tUse morph."
 		);
 	}
 	
@@ -194,6 +206,8 @@ public class MaxTranPats {
 		HELP = getBooleanValue(argArray,HELP_SWITCH);
 		DRAW_GROUND_TRUTH = getBooleanValue(argArray,DRAW_GROUND_TRUTH_SWITCH);
 		DRAW_BOUNDING_BOXES = getBooleanValue(argArray,DRAW_BOUNDING_BOXES_SWITCH);
+		CHROMA = getBooleanValue(argArray,CHROMA_SWITCH);
+		MORPH = getBooleanValue(argArray,MORPH_SWITCH);
 
 		if (OUTPUT_DIR_PATH == null) {
 			int end = INPUT_FILE_PATH.lastIndexOf("/");
@@ -211,7 +225,9 @@ public class MaxTranPats {
 						DIATONIC_PITCH, 
 						MID_TIME_POINT,
 						DIMENSION_MASK,
-						DRAW_BOUNDING_BOXES);
+						DRAW_BOUNDING_BOXES,
+						CHROMA,
+						MORPH);
 			} catch (IOException | DimensionalityException e) {
 				e.printStackTrace();
 			}
@@ -229,7 +245,9 @@ public class MaxTranPats {
 					MIN_COMPACTNESS,
 					MIN_OCC_COMPACTNESS,
 					GROUND_TRUTH_FILE_PATH,
-					DRAW_BOUNDING_BOXES
+					DRAW_BOUNDING_BOXES,
+					CHROMA,
+					MORPH
 					);
 		} else {
 			PointSet.maximalTransformedMatchesFromFiles(
@@ -245,7 +263,9 @@ public class MaxTranPats {
 					MIN_COMPACTNESS,
 					MIN_OCC_COMPACTNESS,
 					GROUND_TRUTH_FILE_PATH,
-					DRAW_BOUNDING_BOXES
+					DRAW_BOUNDING_BOXES,
+					CHROMA,
+					MORPH
 					);
 		}
 	}

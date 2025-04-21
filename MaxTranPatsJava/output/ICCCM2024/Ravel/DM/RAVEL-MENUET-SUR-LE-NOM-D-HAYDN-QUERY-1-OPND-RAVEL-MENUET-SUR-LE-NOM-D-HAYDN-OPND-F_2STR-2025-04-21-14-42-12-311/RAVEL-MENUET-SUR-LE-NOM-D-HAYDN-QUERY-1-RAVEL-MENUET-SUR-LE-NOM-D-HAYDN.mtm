@@ -1,0 +1,56 @@
+
+
+Coverage: 0
+Dataset size: 574
+Uncompressed length: 0
+Encoding length: 0
+Compression factor: NaN
+Running time in milliseconds: 1837
+Encoding length without residual point set: 0
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: NaN
+Number of occurrence sets: 0
+
+
+
+Log:
+              4 ms              4 ms  computeMaximalTransformablePatterns starts
+           1696 ms           1692 ms  computeMaximalTransformablePatterns ends
+           1696 ms              0 ms  computeSizeMTPSetArray ends
+           1696 ms              0 ms  mergeMTPs ends
+           1696 ms              0 ms  computeSuperMTPs ends
+           1696 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+           1836 ms            140 ms  removeDuplicateOccurrenceSets ends
+           1836 ms              0 ms  removeRedundantTransformations ends
+           1837 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           1837 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           1837 ms              0 ms  computeSortedOccurrenceSets ends
+           1837 ms              0 ms  computeEncoding ends
+           1837 ms              0 ms  Program ends
+
+
+Number of points: 574
+Number of OSs after removal: 0
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND
+Query file path (-q): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN-QUERY-1.OPND
+Ground-truth file path (-gt): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/Ground-truth-files/RAVEL-HAYDN-GROUND-TRUTH-DM-one-os.gt
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/ICCCM2024/Ravel/DM
+Minimum pattern size (-min): 5
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 1.0
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(1,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): true
+Use chroma (-c): false
+Use morph (-m): false
+

@@ -7,7 +7,7 @@ public class TransformationPointSetPair implements Comparable<TransformationPoin
 	
 	
 	public TransformationPointSetPair(Transformation transformation, PointSet pointSet) {
-		Transformation inverseTransformation = transformation.getInverse();
+//		Transformation inverseTransformation = transformation.getInverse();
 //		if (inverseTransformation.compareTo(transformation) > 0) {
 ////			Store inverse transformation and its maximal transformable pattern instead
 //			setTransformation(inverseTransformation);

@@ -157,24 +157,24 @@ public class F_2STR_FIXED extends TransformationClass {
 		return sigmas;
 	}
 
-	@Override
-	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
-		if (sigma == null)
-			return null;
-		if (sigma.get(3) != -1 && sigma.get(3) != 1)
-			return null;
-		if (sigma.get(0) == 0.0 || sigma.get(0) == -0.0)
-			return null;
-		ArrayList<Double> inverseSigma = new ArrayList<Double>();
-		inverseSigma.add(1/sigma.get(0));
-		inverseSigma.add(-sigma.get(1)/sigma.get(0));
-		inverseSigma.add(-sigma.get(2)*sigma.get(3));
-		inverseSigma.add(sigma.get(3));
-		for(int i = 0; i < inverseSigma.size(); i++)
-			if (Utility.equalWithTolerance(inverseSigma.get(i)%0.5,0.0))
-				inverseSigma.set(i, Utility.roundToNearestHalf(inverseSigma.get(i)));
-		return inverseSigma;
-	}
+//	@Override
+//	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
+//		if (sigma == null)
+//			return null;
+//		if (sigma.get(3) != -1 && sigma.get(3) != 1)
+//			return null;
+//		if (sigma.get(0) == 0.0 || sigma.get(0) == -0.0)
+//			return null;
+//		ArrayList<Double> inverseSigma = new ArrayList<Double>();
+//		inverseSigma.add(1/sigma.get(0));
+//		inverseSigma.add(-sigma.get(1)/sigma.get(0));
+//		inverseSigma.add(-sigma.get(2)*sigma.get(3));
+//		inverseSigma.add(sigma.get(3));
+//		for(int i = 0; i < inverseSigma.size(); i++)
+//			if (Utility.equalWithTolerance(inverseSigma.get(i)%0.5,0.0))
+//				inverseSigma.set(i, Utility.roundToNearestHalf(inverseSigma.get(i)));
+//		return inverseSigma;
+//	}
 	
 	public static void main(String[] args) {
 		System.out.println(-3.00000001 % 0.5);

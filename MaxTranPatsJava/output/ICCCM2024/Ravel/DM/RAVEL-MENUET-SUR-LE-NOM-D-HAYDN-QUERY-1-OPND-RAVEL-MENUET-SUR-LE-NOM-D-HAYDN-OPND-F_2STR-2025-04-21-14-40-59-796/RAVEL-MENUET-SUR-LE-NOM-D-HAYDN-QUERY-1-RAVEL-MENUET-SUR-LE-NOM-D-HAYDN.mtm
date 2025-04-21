@@ -1,0 +1,61 @@
+OS(P(p(0,29),p(4,28),p(6,31),p(8,31),p(10,34)),[T(F_2STR,[1.0, 0.0, 0.0, 1.0]), T(F_2STR,[1.0, 48.0, 0.0, 1.0]), T(F_2STR,[1.0, 190.0, -51.0, -1.0])],null)
+OS(P(p(0,29),p(4,28),p(6,31),p(8,31)),[T(F_2STR,[-1.0, 140.0, -54.0, -1.0]), T(F_2STR,[-1.0, 154.0, -58.0, -1.0]), T(F_2STR,[-1.0, 250.0, -6.0, 1.0]), T(F_2STR,[-0.5, 166.0, 0.0, 1.0]), T(F_2STR,[-0.5, 190.0, -7.0, 1.0]), T(F_2STR,[1.0, 140.0, -4.0, 1.0]), T(F_2STR,[1.0, 246.0, -2.0, 1.0]), T(F_2STR,[1.0, 252.0, -62.0, -1.0])],null)
+OS(P(p(0,29),p(4,28),p(8,31),p(10,34)),[T(F_2STR,[-0.5, 126.0, -5.0, 1.0])],null)
+OS(P(p(0,29),p(6,31),p(8,31),p(10,34)),[T(F_2STR,[1.0, 178.0, -7.0, 1.0])],null)
+OS(P(p(4,28),p(6,31),p(8,31),p(10,34)),[T(F_2STR,[-3.0, 300.0, -44.0, -1.0]), T(F_2STR,[-1.0, 120.0, -7.0, 1.0]), T(F_2STR,[-1.0, 168.0, 0.0, 1.0]), T(F_2STR,[-1.0, 180.0, -7.0, 1.0]), T(F_2STR,[-1.0, 192.0, -7.0, 1.0]), T(F_2STR,[1.0, 106.0, -55.0, -1.0]), T(F_2STR,[1.0, 154.0, -62.0, -1.0]), T(F_2STR,[1.0, 166.0, -55.0, -1.0]), T(F_2STR,[1.0, 178.0, -55.0, -1.0]), T(F_2STR,[3.0, 258.0, -18.0, 1.0])],null)
+
+
+Coverage: 65
+Dataset size: 574
+Uncompressed length: 130
+Encoding length: 134
+Compression factor: 0.9701492537313433
+Running time in milliseconds: 1949
+Encoding length without residual point set: 134
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 0.9701492537313433
+Number of occurrence sets: 5
+
+
+
+Log:
+              5 ms              5 ms  computeMaximalTransformablePatterns starts
+           1679 ms           1674 ms  computeMaximalTransformablePatterns ends
+           1681 ms              2 ms  computeSizeMTPSetArray ends
+           1681 ms              0 ms  mergeMTPs ends
+           1681 ms              0 ms  computeSuperMTPs ends
+           1681 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+           1916 ms            235 ms  removeDuplicateOccurrenceSets ends
+           1916 ms              0 ms  removeRedundantTransformations ends
+           1949 ms             33 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           1949 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+           1949 ms              0 ms  computeSortedOccurrenceSets ends
+           1949 ms              0 ms  computeEncoding ends
+           1949 ms              0 ms  Program ends
+
+
+Number of points: 574
+Number of OSs after removal: 5
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN.OPND
+Query file path (-q): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/RAVEL-MENUET-SUR-LE-NOM-D-HAYDN-QUERY-1.OPND
+Ground-truth file path (-gt): /Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/05-Ravel-Menuet-sur-le-nom-d-Haydn/Ground-truth-files/RAVEL-HAYDN-GROUND-TRUTH-DM-one-os.gt
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/ICCCM2024/Ravel/DM
+Minimum pattern size (-min): 4
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.5
+Morphetic pitch (-d): true
+Transformation classes (-tc): {TC(1,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): true
+Use chroma (-c): false
+Use morph (-m): false
+

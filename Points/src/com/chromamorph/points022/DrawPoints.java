@@ -68,6 +68,9 @@ public class DrawPoints extends PApplet {
 	private int outputFileIndex = 0;
 	private boolean firstTime = true;
 	private boolean drawBoundingBoxes = false;
+	
+	private boolean useMorph = false;
+	private boolean useChroma = false;
 
 	public DrawPoints() {
 		super();
@@ -309,7 +312,9 @@ public class DrawPoints extends PApplet {
 			String outputFilePath,
 			boolean segmentation,
 			boolean writeToImageFile,
-			boolean drawBoundingBoxes) {
+			boolean drawBoundingBoxes,
+			boolean useChroma,
+			boolean useMorph) {
 		super();
 		this.points = dataset;
 		this.occurrenceSets = occurrenceSets;
@@ -323,6 +328,8 @@ public class DrawPoints extends PApplet {
 		this.outputFilePath = outputFilePath;
 		this.writeToImageFile = writeToImageFile;
 		this.drawBoundingBoxes = drawBoundingBoxes;
+		this.useChroma = useChroma;
+		this.useMorph = useMorph;
 		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
 	}
 
@@ -871,9 +878,10 @@ public class DrawPoints extends PApplet {
 		line(minScreenX,zeroY,maxScreenX,zeroY);
 		line(zeroX,maxScreenY,zeroX,minScreenY);
 		textAlign(RIGHT,CENTER);
-		int dataYSep = maxDataY>20?10:1;
-		if (diatonicPitch == false) dataYSep = 12;
-		if (diatonicPitch == true) dataYSep = 7;
+		int dataYSep = 1;
+		if (diatonicPitch == false && maxDataY - minDataY > 24) dataYSep = 12;
+		if (diatonicPitch == true && maxDataY - minDataY > 14) dataYSep = 7;
+		if (useChroma || useMorph) dataYSep = 1;
 
 		for(float dataY = minDataY;dataY <= maxDataY; dataY += dataYSep) {
 			stroke(0);
@@ -912,7 +920,11 @@ public class DrawPoints extends PApplet {
 			i++;
 		}
 		//		System.out.println("Got here in drawAxes method - after loop");
-		String pitchString = OMNISIA.RHYTHM_ONLY?"TEC number":(diatonicPitch==true?"morphetic pitch":"chromatic pitch");
+		String pitchString = "Chromatic pitch";
+		if (diatonicPitch) pitchString = "Morphetic pitch";
+		if (useChroma) pitchString = "Chroma";
+		if (useMorph) pitchString = "Morph";
+		if (OMNISIA.RHYTHM_ONLY) pitchString = "TEC number";
 		pushMatrix();
 		translate(zeroX-40,minScreenY+(maxScreenY-minScreenY)/2);
 		rotate(-PI/2);

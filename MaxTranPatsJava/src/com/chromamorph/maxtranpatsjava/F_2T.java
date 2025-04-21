@@ -35,11 +35,11 @@ public class F_2T extends TransformationClass {
 		return sigmas;
 	}
 
-	@Override
-	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
-		ArrayList<Double> inverseSigma = new ArrayList<Double>();
-		inverseSigma.add(-sigma.get(0));
-		inverseSigma.add(-sigma.get(1));
-		return inverseSigma;
-	}
+//	@Override
+//	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
+//		ArrayList<Double> inverseSigma = new ArrayList<Double>();
+//		inverseSigma.add(-sigma.get(0));
+//		inverseSigma.add(-sigma.get(1));
+//		return inverseSigma;
+//	}
 }
