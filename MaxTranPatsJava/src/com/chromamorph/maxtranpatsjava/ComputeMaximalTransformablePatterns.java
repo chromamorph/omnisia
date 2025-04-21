@@ -64,13 +64,13 @@ public class ComputeMaximalTransformablePatterns extends RecursiveAction {
 					mtpArray[i].add(transformation,objectBasis);
 				}
 
-				i = transformation.getInverse().hash(PointSet.HASH_TABLE_SIZE);
-				synchronized (mtpArray[i]) {
-					mtpArray[i].add(transformation.getInverse(),imageBasis);
-				}
+//				i = transformation.getInverse().hash(PointSet.HASH_TABLE_SIZE);
+//				synchronized (mtpArray[i]) {
+//					mtpArray[i].add(transformation.getInverse(),imageBasis);
+//				}
 				synchronized (tc) {
 					tc.addTransformationInstance(transformation);
-					tc.addTransformationInstance(transformation.getInverse());
+//					tc.addTransformationInstance(transformation.getInverse());
 				}
 			}
 		} catch (Exception e) {

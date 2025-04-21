@@ -81,7 +81,7 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 	
 	abstract Point phi(ArrayList<Double> sigma, Point p);
 	abstract ArrayList<ArrayList<Double>> getSigmas(PointSequence objectBasis, PointSequence imageBasis);
-	abstract ArrayList<Double> getInverseSigma(ArrayList<Double> sigma);
+//	abstract ArrayList<Double> getInverseSigma(ArrayList<Double> sigma);
 	
 	public ArrayList<Double> getIdentitySigma() {
 		return identitySigma;

@@ -46,14 +46,14 @@ public class F_2TR extends TransformationClass {
 		return sigmas;
 	}
 
-	@Override
-	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
-		if (sigma.get(2) != 1 && sigma.get(2) != -1) return null;
-		ArrayList<Double> inverseSigma = new ArrayList<Double>();
-		inverseSigma.add(-sigma.get(0));
-		inverseSigma.add(-sigma.get(2) * sigma.get(1));
-		inverseSigma.add(sigma.get(2));
-		return inverseSigma;
-	}
+//	@Override
+//	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
+//		if (sigma.get(2) != 1 && sigma.get(2) != -1) return null;
+//		ArrayList<Double> inverseSigma = new ArrayList<Double>();
+//		inverseSigma.add(-sigma.get(0));
+//		inverseSigma.add(-sigma.get(2) * sigma.get(1));
+//		inverseSigma.add(sigma.get(2));
+//		return inverseSigma;
+//	}
 
 }

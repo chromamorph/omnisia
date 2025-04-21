@@ -21,13 +21,60 @@ public class MML2024Results {
 		@Override
 		public int compareTo(Datum o) {
 			if (o == null) return -1;
-			double d = o.f1 - f1;
+			double d = 0;
+			if (Double.isNaN(f1) && Double.isNaN(o.f1))
+				d = 0;
+			if (Double.isNaN(f1))
+				return 1;
+			if (Double.isNaN(o.f1))
+				return -1;
+			d = o.f1 - f1;
 			if (d != 0.0)
 				return (int)Math.signum(d);
+			
+			if (Double.isNaN(p) && Double.isNaN(o.p))
+				d = 0;
+			if (Double.isNaN(p))
+				return 1;
+			if (Double.isNaN(o.p))
+				return -1;
 			d = o.p - p;
 			if (d != 0.0)
 				return (int)Math.signum(d);
-			return (int)Math.signum(o.r - r);
+			
+			if (Double.isNaN(r) && Double.isNaN(o.r))
+				d = 0;
+			if (Double.isNaN(r))
+				return 1;
+			if (Double.isNaN(o.r))
+				return -1;
+			d = o.r - r;
+			if (d != 0.0)
+				return (int)Math.signum(d);
+			
+			d = o.minoc - minoc;
+			if (d != 0.0) 
+				return (int)Math.signum(d);
+			
+			int dint = o.minPatternSize - minPatternSize;
+			if (dint != 0) return dint;
+			
+			long dl = o.runningTime - runningTime;
+			if (dl != 0l) return (dl > 0l?1:-1);
+			
+			dint = o.inputFilePath.compareTo(inputFilePath);
+			if (dint != 0) return dint;
+			
+			dint = o.queryFilePath.compareTo(queryFilePath);
+			if (dint != 0) return dint;
+			
+			dint = o.groundTruthFilePath.compareTo(groundTruthFilePath);
+			if (dint != 0) return dint;
+			
+			dint = o.outputDir.compareTo(outputDir);
+			if (dint != 0) return dint;
+			
+			return 0;
 		}
 		
 		@Override
@@ -118,7 +165,8 @@ public class MML2024Results {
 	public static void main(String[] args) {
 //		Find best result on Contrapunctus
 //		String rootDir = "output/MML2024/ContrapunctusVI";
-		String rootDir = "output/MML2024/Ravel/Soucy";
+//		String rootDir = "output/MML2024/Ravel/Soucy";
+		String rootDir = "output/ICCCM2024/Ravel/DM";
 		TreeSet<Datum> data = new TreeSet<Datum>();
 		ArrayList<File> evalFiles =  makeListOfFiles(rootDir, "eval");
 		ArrayList<File> mtmFiles = makeListOfFiles(rootDir, "mtm");

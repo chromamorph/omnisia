@@ -12,9 +12,9 @@ public class Transformation implements Comparable<Transformation>{
 		setSigma(sigma);
 	}
 	
-	public Transformation getInverse() {
-		return new Transformation(transformationClass, transformationClass.getInverseSigma(sigma));
-	}
+//	public Transformation getInverse() {
+//		return new Transformation(transformationClass, transformationClass.getInverseSigma(sigma));
+//	}
 	
 	public static ArrayList<Transformation> getTransformations(TransformationClass transformationClass, PointSequence objectBasis, PointSequence imageBasis) {
 		ArrayList<ArrayList<Double>> sigmas = transformationClass.getSigmas(objectBasis,imageBasis);

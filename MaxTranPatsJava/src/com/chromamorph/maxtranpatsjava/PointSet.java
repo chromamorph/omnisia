@@ -680,7 +680,7 @@ public class PointSet implements Comparable<PointSet>{
 			int[][] perms = Utility.computePermutationIndexSequences(basisSize);
 			for(int objIndex = 0; objIndex < objectBases.size(); objIndex++) {
 				PointSequence objectBasis = objectBases.get(objIndex);
-				for(int imgIndex = objIndex; imgIndex < objectBases.size(); imgIndex++) {
+				for(int imgIndex = 0; imgIndex < objectBases.size(); imgIndex++) {
 					PointSequence imageBasis = objectBases.get(imgIndex);
 					for(int[] perm : perms) {
 						PointSequence imgBasisPerm = new PointSequence();
@@ -689,9 +689,9 @@ public class PointSet implements Comparable<PointSet>{
 						ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
 						for(Transformation transformation : transformations) {
 							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation,objectBasis));
-							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation.getInverse(),imageBasis));
+//							transformationObjectBasisPairs.add(new TransformationPointSequencePair(transformation.getInverse(),imageBasis));
 							tc.addTransformationInstance(transformation);
-							tc.addTransformationInstance(transformation.getInverse());
+//							tc.addTransformationInstance(transformation.getInverse());
 						}
 					}
 				}
@@ -745,7 +745,7 @@ public class PointSet implements Comparable<PointSet>{
 			//			}
 			for(int objIndex = 0; objIndex < numObjectBases; objIndex++) {
 				PointSequence objectBasis = computeBasis(basisSize, objIndex);
-				for(int imgIndex = objIndex; imgIndex < numObjectBases; imgIndex++) {
+				for(int imgIndex = 0; imgIndex < numObjectBases; imgIndex++) {
 					PointSequence imageBasis = computeBasis(basisSize, imgIndex);
 					for(int[] perm : perms) {
 						PointSequence imgBasisPerm = new PointSequence();
@@ -760,14 +760,14 @@ public class PointSet implements Comparable<PointSet>{
 							mtpArray[i].add(transformation,objectBasis);
 							//							System.out.println(String.format("%5d: %8d %5d", hashValues.size(),i,mtpArray[i].size()));
 
-							i = transformation.getInverse().hash(HASH_TABLE_SIZE);
-							hashValues.add(i);
-							if (mtpArray[i] == null)
-								mtpArray[i] = new ListOfTransformationPointSetPairs();
-							mtpArray[i].add(transformation.getInverse(),imageBasis);
+//							i = transformation.getInverse().hash(HASH_TABLE_SIZE);
+//							hashValues.add(i);
+//							if (mtpArray[i] == null)
+//								mtpArray[i] = new ListOfTransformationPointSetPairs();
+//							mtpArray[i].add(transformation.getInverse(),imageBasis);
 							//							System.out.println(String.format("%5d: %8d %5d", hashValues.size(),i,mtpArray[i].size()));
 							tc.addTransformationInstance(transformation);
-							tc.addTransformationInstance(transformation.getInverse());
+//							tc.addTransformationInstance(transformation.getInverse());
 						}
 					}
 				}
@@ -852,21 +852,21 @@ public class PointSet implements Comparable<PointSet>{
 		return interSet;
 	}
 
-	public boolean checkMaximalTransformablePatterns() throws Exception {
-		if (pointsArrayNeedsResetting) resetPointsArray();
-		if (mtps == null)
-			throw new Exception("checkMaximalTransformablePatterns() called before MTPs have been computed!");
-		for(TransformationPointSetPair mtp : mtps) {
-			PointSet mtp2 = mtp.getTransformation().getInverse().phi(this).intersection(this);
-			if (!mtp2.equals(mtp.getPointSet())) {
-				System.out.println("Incorrectly computed MTP.\n Computed MTP: "+mtp+"\nCorrect MTP: "+mtp2);
-				return false;
-			} 
-			//			else
-			//				System.out.println(mtp.getPointSet()+"\n"+mtp2+"\n");
-		}
-		return true;
-	}
+//	public boolean checkMaximalTransformablePatterns() throws Exception {
+//		if (pointsArrayNeedsResetting) resetPointsArray();
+//		if (mtps == null)
+//			throw new Exception("checkMaximalTransformablePatterns() called before MTPs have been computed!");
+//		for(TransformationPointSetPair mtp : mtps) {
+//			PointSet mtp2 = mtp.getTransformation().getInverse().phi(this).intersection(this);
+//			if (!mtp2.equals(mtp.getPointSet())) {
+//				System.out.println("Incorrectly computed MTP.\n Computed MTP: "+mtp+"\nCorrect MTP: "+mtp2);
+//				return false;
+//			} 
+//			//			else
+//			//				System.out.println(mtp.getPointSet()+"\n"+mtp2+"\n");
+//		}
+//		return true;
+//	}
 
 	public TreeSet<TransformationPointSetPair> getMTPs() {
 		return mtps;
@@ -1410,6 +1410,8 @@ public class PointSet implements Comparable<PointSet>{
 			boolean drawBoundingBoxes,
 			boolean useChroma,
 			boolean useMorph) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+		
+		LogInfo.ACCUMULATED_TIME = 0l;
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
 
 		if (ps2 != null) {

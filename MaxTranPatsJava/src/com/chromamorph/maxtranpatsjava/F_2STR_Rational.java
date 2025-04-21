@@ -152,10 +152,10 @@ public class F_2STR_Rational extends TransformationClass {
 		return sigmas;
 	}
 
-	@Override
-	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }
