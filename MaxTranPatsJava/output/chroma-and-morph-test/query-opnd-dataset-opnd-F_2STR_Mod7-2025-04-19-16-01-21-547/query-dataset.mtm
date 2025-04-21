@@ -1,0 +1,57 @@
+OS(P(p(0,2),p(1,6),p(2,4)),[T(F_2STR_Mod7,[-2.0, 332.0, 3.0, -1.0]), T(F_2STR_Mod7,[-2.0, 352.0, 5.0, -1.0]), T(F_2STR_Mod7,[-2.0, 376.0, 0.0, -1.0]), T(F_2STR_Mod7,[-2.0, 406.0, 3.0, -1.0]), T(F_2STR_Mod7,[-1.0, 66.0, 1.0, 1.0]), T(F_2STR_Mod7,[-1.0, 126.0, 2.0, 1.0]), T(F_2STR_Mod7,[-1.0, 212.0, 3.0, 1.0]), T(F_2STR_Mod7,[1.0, 0.0, 4.0, 1.0]), T(F_2STR_Mod7,[1.0, 20.0, 5.0, -1.0]), T(F_2STR_Mod7,[1.0, 80.0, 6.0, 1.0]), T(F_2STR_Mod7,[1.0, 102.0, 6.0, -1.0]), T(F_2STR_Mod7,[1.0, 160.0, 0.0, 1.0]), T(F_2STR_Mod7,[1.0, 180.0, 2.0, -1.0]), T(F_2STR_Mod7,[1.0, 242.0, 2.0, 1.0]), T(F_2STR_Mod7,[1.0, 260.0, 0.0, -1.0]), T(F_2STR_Mod7,[1.0, 281.0, 6.0, 1.0]), T(F_2STR_Mod7,[2.0, 38.0, 5.0, 1.0]), T(F_2STR_Mod7,[2.0, 140.0, 2.0, 1.0]), T(F_2STR_Mod7,[2.0, 222.0, 2.0, 1.0]), T(F_2STR_Mod7,[2.0, 302.0, 0.0, -1.0])],null)
+
+
+Coverage: 63
+Dataset size: 60
+Uncompressed length: 126
+Encoding length: 86
+Compression factor: 1.4651162790697674
+Running time in milliseconds: 570
+Encoding length without residual point set: 86
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.4651162790697674
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            491 ms            491 ms  computeMaximalTransformablePatterns ends
+            492 ms              1 ms  computeSizeMTPSetArray ends
+            497 ms              5 ms  mergeMTPs ends
+            497 ms              0 ms  computeSuperMTPs ends
+            498 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+            568 ms             70 ms  removeDuplicateOccurrenceSets ends
+            568 ms              0 ms  removeRedundantTransformations ends
+            568 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            568 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            569 ms              1 ms  computeSortedOccurrenceSets ends
+            570 ms              1 ms  computeEncoding ends
+            570 ms              0 ms  Program ends
+
+
+Number of points: 60
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): data/chroma-and-morph-test/dataset.opnd
+Query file path (-q): data/chroma-and-morph-test/query.opnd
+Ground-truth file path (-gt): null
+Mid-time point (-mt): true
+Output directory (-o): output/chroma-and-morph-test
+Minimum pattern size (-min): 3
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(6,F_2STR_Mod7)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+Use chroma (-c): false
+Use morph (-m): true
+

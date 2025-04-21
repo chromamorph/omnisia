@@ -87,7 +87,9 @@ public class MaxTranMatchesForMCM2024 {
 				minCompactness, 
 				minOccurrenceCompactness,
 				groundTruthFileName,
-				drawBoundingBoxes
+				drawBoundingBoxes,
+				false,
+				false
 				);
 		
 //		Evaluate output

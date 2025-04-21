@@ -253,7 +253,7 @@ public class Encoding {
 		return occSets;
 	}
 	
-	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern, boolean withMidTimePoints, boolean drawBoundingBoxes) {
+	public void drawOccurrenceSets(String outputFilePath, boolean diatonicPitch, boolean includePattern, boolean withMidTimePoints, boolean drawBoundingBoxes, boolean useChroma, boolean useMorph) {
 		final PointSet dataset = getOccurrenceSets().get(0).getDataset();
 		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
@@ -278,7 +278,9 @@ public class Encoding {
 						outputFilePath,
 						false, //segmentation
 						true, //writeToImageFile
-						drawBoundingBoxes
+						drawBoundingBoxes,
+						useChroma,
+						useMorph
 						);
 				frame.add(embed);
 				embed.init();

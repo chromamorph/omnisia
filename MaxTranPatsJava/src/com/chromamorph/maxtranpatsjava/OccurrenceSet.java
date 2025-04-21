@@ -155,6 +155,10 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 				e.printStackTrace();
 			}
 		for(Transformation transformation : transformationsArray ) {
+			System.out.println(transformation);
+			if (transformation.getSigma().get(0) == 0.0) {
+				int x = 1;
+			}
 			if (transformation.phi(getPattern()).getCompactness(dataset) < minOccurrenceCompactness) {
 //				System.out.println("about to remove a transformation");
 				removeTransformation(transformation);
@@ -549,8 +553,9 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		if (getSuperMTPs() != null)
 			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute covered set. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		TreeSet<PointSet> occurrences = new TreeSet<PointSet>();
-		for(Transformation transformation : getTransformations())
+		for(Transformation transformation : getTransformations()) {
 			occurrences.add(transformation.phi(getPattern()));
+		}
 		return occurrences;
 	}
 	
@@ -592,4 +597,5 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		if (!(obj instanceof OccurrenceSet)) return false;
 		return compareTo((OccurrenceSet)obj)==0;
 	}
+	
 }

@@ -34,7 +34,9 @@ public class MML2024 {
 								MaxTranPats.MIN_COMPACTNESS,
 								MaxTranPats.MIN_OCC_COMPACTNESS,
 								MaxTranPats.GROUND_TRUTH_FILE_PATH,
-								MaxTranPats.DRAW_BOUNDING_BOXES
+								MaxTranPats.DRAW_BOUNDING_BOXES,
+								MaxTranPats.CHROMA,
+								MaxTranPats.MORPH
 								);
 						if (piece.equals("Ravel")) {
 							String oldOutputDir = MaxTranPats.OUTPUT_DIR_PATH;
@@ -55,8 +57,10 @@ public class MML2024 {
 									MaxTranPats.MIN_COMPACTNESS,
 									MaxTranPats.MIN_OCC_COMPACTNESS,
 									MaxTranPats.GROUND_TRUTH_FILE_PATH,
-									MaxTranPats.DRAW_BOUNDING_BOXES
-									);
+									MaxTranPats.DRAW_BOUNDING_BOXES,
+									MaxTranPats.CHROMA,
+									MaxTranPats.MORPH
+								);
 							MaxTranPats.OUTPUT_DIR_PATH = oldOutputDir;
 							MaxTranPats.GROUND_TRUTH_FILE_PATH = oldGroundTruthFile;
 						}

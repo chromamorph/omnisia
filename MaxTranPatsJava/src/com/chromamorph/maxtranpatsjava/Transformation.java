@@ -106,12 +106,20 @@ public class Transformation implements Comparable<Transformation>{
 			throw new InvalidArgumentException("Transformation(String) constructor called with invalid argument String: "+transformationString);
 		
 		TransformationClass tc = null;
-		if (transformationString.contains("F_2STR"))
-			tc = new F_2STR();
-		else if (transformationString.contains("F_2TR"))
-			tc = new F_2TR();
-		else if (transformationString.contains("F_2T"))
-			tc = new F_2T();
+		Integer index = null;
+		int classStart = 2;
+		int classEnd = transformationString.indexOf(',');
+		String transformationClassString = transformationString.substring(classStart,classEnd);
+		for(int i = 0; i < MaxTranPats.ALL_TRANS_CLASS_STRINGS.length; i++) {
+			if (transformationClassString.equals(MaxTranPats.ALL_TRANS_CLASS_STRINGS[i])) {
+				index = i;
+				break;
+				
+			}
+		}
+		if (index == null)
+			throw new InvalidArgumentException("Transformation(String) constructor called with invalid argument String: "+transformationString);
+		tc = MaxTranPats.ALL_TRANS_CLASSES[index];
 		setTransformationClass(tc);
 		
 		ArrayList<Double> sigma = new ArrayList<Double>();

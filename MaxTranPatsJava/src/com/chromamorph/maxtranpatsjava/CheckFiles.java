@@ -56,12 +56,16 @@ public class CheckFiles {
 					new File(inputFilePath1), 
 					true, 
 					true,
-					"1100");
+					"1100",
+					false,
+					false);
 			PointSet ps2 = new PointSet(
 					new File(inputFilePath2), 
 					true, 
 					true,
-					"1100");
+					"1100",
+					false,
+					false);
 
 			//			We're going to form the union of ps1 with ps2 translated by twice the maximum x-value of ps1
 			Transformation tran = new Transformation(new F_2T(), Utility.makeSigma(ps1.getMax(0) * 2, 0));
@@ -97,7 +101,7 @@ public class CheckFiles {
 		String inputFilePath = datasetFileDirectory+"/"+outputFile.getName().substring(0,suffixStart)+".mid";
 		//		System.out.println("  Input file path: "+inputFilePath);
 		try {
-			PointSet dataset = new PointSet(new File(inputFilePath),true,true,"1100");
+			PointSet dataset = new PointSet(new File(inputFilePath),true,true,"1100",false, false);
 			Encoding encoding = new Encoding(outputFile, dataset);
 			PointSet EMinusD = encoding.getCoveredSet().setMinus(dataset);
 			PointSet DMinusE = dataset.setMinus(encoding.getCoveredSet());
@@ -124,7 +128,7 @@ public class CheckFiles {
 		String inputFilePath = datasetFileDirectory+"/"+outputFile.getName().substring(0,suffixStart)+".mid";
 		System.out.println("  Input file path: "+inputFilePath);
 		try {
-			PointSet dataset = new PointSet(new File(inputFilePath),true,true,"1100");
+			PointSet dataset = new PointSet(new File(inputFilePath),true,true,"1100",false,false);
 			System.out.println("\nDataset:\n" + dataset);
 			Encoding encoding = new Encoding(outputFile, dataset);
 			PointSet diffSet = encoding.getCoveredSet().setMinus(dataset);

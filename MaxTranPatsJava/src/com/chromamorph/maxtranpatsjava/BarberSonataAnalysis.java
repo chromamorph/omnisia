@@ -58,7 +58,9 @@ public class BarberSonataAnalysis {
 								MaxTranPats.MIN_COMPACTNESS,
 								MaxTranPats.MIN_OCC_COMPACTNESS,
 								MaxTranPats.GROUND_TRUTH_FILE_PATH,
-								MaxTranPats.DRAW_BOUNDING_BOXES
+								MaxTranPats.DRAW_BOUNDING_BOXES,
+								MaxTranPats.CHROMA,
+								MaxTranPats.MORPH
 								);
 					}
 				}				
