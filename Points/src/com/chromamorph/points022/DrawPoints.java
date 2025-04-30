@@ -903,6 +903,7 @@ public class DrawPoints extends PApplet {
 				dataXSep = tatumsPerBar;
 				storedTatumsPerBar = tatumsPerBar;
 				zeroY += 14;
+				textAlign(RIGHT,TOP);
 			}
 			//		System.out.println("Got here in drawAxes method: minDataX="+minDataX+", maxDataX="+maxDataX+", dataXSep="+dataXSep);
 			int i = 0, k = 1, pixelsPerBar;
@@ -916,7 +917,7 @@ public class DrawPoints extends PApplet {
 			for(float dataX = minDataX+(barOneStartsAt==null?0l:barOneStartsAt); dataX <= maxDataX; dataX += dataXSep) {
 				stroke(0);
 				float screenX = map(dataX,minDataX,maxDataX,minScreenX,maxScreenX);
-				String xTickMarkLabel = String.format("%.0f",tatumsPerBar==null?dataX:(dataX-barOneStartsAt)/tatumsPerBar);
+				String xTickMarkLabel = String.format("%.0f",tatumsPerBar==null?dataX:((dataX-barOneStartsAt)/tatumsPerBar));
 				if (i%k == 0) { 
 					text(xTickMarkLabel,screenX,zeroY+10);
 					if (k != 1) strokeWeight(1.5f);
@@ -933,6 +934,7 @@ public class DrawPoints extends PApplet {
 				tatumsPerBar = null;
 				zeroY -= 14;
 				repeat = true;
+				textAlign(CENTER,TOP);
 			}
 		} while (repeat);
 		tatumsPerBar = storedTatumsPerBar;

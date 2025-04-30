@@ -229,7 +229,7 @@ public class PointSet implements Comparable<PointSet>{
 			else {
 				p = new Point(
 						dimensionMask.charAt(0) == '1'?onset:null,
-								dimensionMask.charAt(1) == '1'?(double)note.getMidiNoteNumber():null,
+								dimensionMask.charAt(1) == '1'?(double)note.getPitch().getChromaticPitch():null,
 										dimensionMask.charAt(2) == '1'?(double)voice:null,
 												dimensionMask.charAt(3) == '1'?(double)duration:null);
 			}
