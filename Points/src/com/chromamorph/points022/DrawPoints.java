@@ -894,31 +894,49 @@ public class DrawPoints extends PApplet {
 		textAlign(CENTER,TOP);
 		long dataXSep = maxDataX/maxNumberOfIntervals;
 		if (dataXSep == 0l) dataXSep = 1l;
-		if (tatumsPerBar != null) dataXSep = tatumsPerBar;
-		//		System.out.println("Got here in drawAxes method: minDataX="+minDataX+", maxDataX="+maxDataX+", dataXSep="+dataXSep);
-		int i = 0, k = 1, pixelsPerBar;
-		if (tatumsPerBar != null) {
-			int minLabelSep = 40;
-			pixelsPerBar = (int)(maxScreenX*tatumsPerBar/maxDataX);
-			k = (int)(1+ minLabelSep/pixelsPerBar);
-		}
-		if (barOneStartsAt == null)
-			System.out.println("barOneStartsAt is null");
-		for(float dataX = minDataX+(barOneStartsAt==null?0l:barOneStartsAt); dataX <= maxDataX; dataX += dataXSep) {
-			stroke(0);
-			float screenX = map(dataX,minDataX,maxDataX,minScreenX,maxScreenX);
-			String xTickMarkLabel = String.format("%.0f",tatumsPerBar==null?dataX:(dataX-barOneStartsAt)/tatumsPerBar);
-			if (i%k == 0) { 
-				text(xTickMarkLabel,screenX,zeroY+10);
-				if (k != 1) strokeWeight(1.5f);
-				line(screenX,zeroY,screenX,zeroY+10);
-				strokeWeight(1);
-			} else
-				line(screenX,zeroY,screenX,zeroY+10);
-			stroke(200);
-			line(screenX,zeroY,screenX,minScreenY);
-			i++;
-		}
+		
+		boolean repeat;
+		Long storedTatumsPerBar = null;
+		do {
+			repeat = false;
+			if (tatumsPerBar != null) {
+				dataXSep = tatumsPerBar;
+				storedTatumsPerBar = tatumsPerBar;
+				zeroY += 14;
+			}
+			//		System.out.println("Got here in drawAxes method: minDataX="+minDataX+", maxDataX="+maxDataX+", dataXSep="+dataXSep);
+			int i = 0, k = 1, pixelsPerBar;
+			if (tatumsPerBar != null) {
+				int minLabelSep = 40;
+				pixelsPerBar = (int)(maxScreenX*tatumsPerBar/maxDataX);
+				k = (int)(1+ minLabelSep/pixelsPerBar);
+			}
+			if (barOneStartsAt == null)
+				System.out.println("barOneStartsAt is null");
+			for(float dataX = minDataX+(barOneStartsAt==null?0l:barOneStartsAt); dataX <= maxDataX; dataX += dataXSep) {
+				stroke(0);
+				float screenX = map(dataX,minDataX,maxDataX,minScreenX,maxScreenX);
+				String xTickMarkLabel = String.format("%.0f",tatumsPerBar==null?dataX:(dataX-barOneStartsAt)/tatumsPerBar);
+				if (i%k == 0) { 
+					text(xTickMarkLabel,screenX,zeroY+10);
+					if (k != 1) strokeWeight(1.5f);
+					if (tatumsPerBar == null)
+						line(screenX,zeroY,screenX,zeroY+10);
+					strokeWeight(1);
+				} else if (tatumsPerBar == null)
+					line(screenX,zeroY,screenX,zeroY+10);
+				stroke(200);
+				line(screenX,zeroY,screenX,minScreenY);
+				i++;
+			}
+			if (tatumsPerBar != null) {
+				tatumsPerBar = null;
+				zeroY -= 14;
+				repeat = true;
+			}
+		} while (repeat);
+		tatumsPerBar = storedTatumsPerBar;
+		
 		//		System.out.println("Got here in drawAxes method - after loop");
 		String pitchString = "Chromatic pitch";
 		if (diatonicPitch) pitchString = "Morphetic pitch";
@@ -931,12 +949,14 @@ public class DrawPoints extends PApplet {
 		textAlign(CENTER,CENTER);
 		text(pitchString,0,0);
 		popMatrix();
+		
 		pushMatrix();
 		textAlign(CENTER,CENTER);
-		String timeString = tatumsPerBar==null?"time/tatums":"time/bars";
-		translate(minScreenX+(maxScreenX-minScreenX)/2,zeroY+35);
+		String timeString = tatumsPerBar==null?"time/tatums":"time (upper row, tatums; lower row, bars)";
+		translate(minScreenX+(maxScreenX-minScreenX)/2,zeroY+42);
 		text(timeString,0,0);
 		popMatrix();
+		
 		//		Draw axis lines
 		stroke(0);
 		line(minScreenX,zeroY,maxScreenX,zeroY);
