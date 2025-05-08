@@ -1640,12 +1640,41 @@ public class PointSet implements Comparable<PointSet>{
 	private static OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints) {
 		OccurrenceEndIndexPair occEi = new OccurrenceEndIndexPair();
 		int i = startIndex + 1;
+		int[] colArray = null;
+		int[] colArray2 = null;
+		
+//		Read colArrays
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(col")) {
+			colArray = new int[4];
+			int colEndIndex = sb.indexOf(")", i);
+			String colStr = sb.substring(i+4, colEndIndex);
+			String[] colStrArr = colStr.trim().split(" ");
+			for(int k = 0; k < 4; k++)
+				colArray[k] = Integer.parseInt(colStrArr[k]);
+			i = colEndIndex+1;
+		}
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(col2")) {
+			colArray2 = new int[4];
+			int colEndIndex = sb.indexOf(")", i);
+			String colStr = sb.substring(i+4, colEndIndex);
+			String[] colStrArr = colStr.trim().split(" ");
+			for(int k = 0; k < 4; k++)
+				colArray2[k] = Integer.parseInt(colStrArr[k]);
+			i = colEndIndex+1;
+		}
+
+//*********************************
+		
 		while (sb.charAt(i) != ')') {
 			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next point or end of point set
 			if (sb.charAt(i) != ')') {
 				PointEndIndexPair pEi = readPoint(sb,i, diatonicPitch, withMidTimePoints);
 				i = pEi.endIndex;
 				occEi.occurrence.add(pEi.point);
+				occEi.occurrence.setColArray(colArray);
+				occEi.occurrence.setColArray2(colArray2);
 			}
 		}
 		occEi.endIndex = i + 1;

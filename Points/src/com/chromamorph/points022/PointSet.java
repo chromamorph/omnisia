@@ -39,6 +39,8 @@ public class PointSet implements Comparable<PointSet>{
 	protected Double temporalDensity = null;
 	private Long ticksPerSecond = null;
 	static public JFrame frame = null;
+	protected int[] colArray = null;
+	protected int[] colArray2 = null;
 
 	public PointSet() {}
 
@@ -1226,6 +1228,30 @@ public class PointSet implements Comparable<PointSet>{
 	public float getSegmentCompactness(PointSet dataset) {
 		PointSet segment = dataset.getSegment(getMinX(), getMaxX(), true);
 		return size()*1.0f/segment.size();
+	}
+
+	public int[] getColArray() {
+		return colArray;
+	}
+
+	public int[] getColArray2() {
+		return colArray2;
+	}
+	
+	public void setColArray(int[] newColArray) {
+		if (newColArray != null) {
+			colArray = new int[4];
+			for (int k = 0; k < 4; k++)
+				colArray[k] = newColArray[k];
+		}
+	}
+
+	public void setColArray2(int[] newColArray) {
+		if (newColArray != null) {
+			colArray2 = new int[4];
+			for (int k = 0; k < 4; k++)
+				colArray2[k] = newColArray[k];
+		}
 	}
 
 }
