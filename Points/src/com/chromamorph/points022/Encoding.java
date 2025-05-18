@@ -370,6 +370,15 @@ public class Encoding {
 					frame.add(embed);
 					embed.init();
 					frame.pack();
+					do {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					} while (!DrawPoints.FINISHED);
+					embed.exit();
+					return;
 				}
 				//			});
 			};
@@ -379,6 +388,7 @@ public class Encoding {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Finished on " + Thread.currentThread());
 	}
 
 	public void drawRecursiveTecsToFile(final String outputFilePath, final boolean diatonicPitch) {

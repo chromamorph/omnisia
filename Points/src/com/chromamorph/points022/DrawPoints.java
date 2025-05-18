@@ -71,6 +71,7 @@ public class DrawPoints extends PApplet {
 	
 	private boolean useMorph = false;
 	private boolean useChroma = false;
+	public static boolean FINISHED = false;
 
 	public DrawPoints() {
 		super();
@@ -503,6 +504,7 @@ public class DrawPoints extends PApplet {
 			noLoop();
 			//exit();
 		}
+		FINISHED = true;
 //		if (outputFilePathStrings == null || outputFileIndex >= outputFilePathStrings.size()) {
 //			noLoop();
 //			exit();

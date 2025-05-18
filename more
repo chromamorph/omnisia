@@ -1,0 +1,48 @@
+diff --git a/Points/src/com/chromamorph/points022/DrawPoints.java b/Points/src/com/chromamorph/points022/DrawPoints.java
+index 7e0ab60118..f0532d584b 100644
+--- a/Points/src/com/chromamorph/points022/DrawPoints.java
++++ b/Points/src/com/chromamorph/points022/DrawPoints.java
+@@ -71,6 +71,7 @@ public class DrawPoints extends PApplet {
+ 	
+ 	private boolean useMorph = false;
+ 	private boolean useChroma = false;
++	public static boolean FINISHED = false;
+ 
+ 	public DrawPoints() {
+ 		super();
+@@ -503,6 +504,7 @@ public class DrawPoints extends PApplet {
+ 			noLoop();
+ 			//exit();
+ 		}
++		FINISHED = true;
+ //		if (outputFilePathStrings == null || outputFileIndex >= outputFilePathStrings.size()) {
+ //			noLoop();
+ //			exit();
+diff --git a/Points/src/com/chromamorph/points022/Encoding.java b/Points/src/com/chromamorph/points022/Encoding.java
+index d0ac47664f..b1186a53f6 100644
+--- a/Points/src/com/chromamorph/points022/Encoding.java
++++ b/Points/src/com/chromamorph/points022/Encoding.java
+@@ -370,6 +370,15 @@ public class Encoding {
+ 					frame.add(embed);
+ 					embed.init();
+ 					frame.pack();
++					do {
++						try {
++							Thread.sleep(1000);
++						} catch (InterruptedException e) {
++							e.printStackTrace();
++						}
++					} while (!DrawPoints.FINISHED);
++					embed.exit();
++					return;
+ 				}
+ 				//			});
+ 			};
+@@ -379,6 +388,7 @@ public class Encoding {
+ 		} catch (InterruptedException e) {
+ 			e.printStackTrace();
+ 		}
++		System.out.println("Finished on " + Thread.currentThread());
+ 	}
+ 
+ 	public void drawRecursiveTecsToFile(final String outputFilePath, final boolean diatonicPitch) {

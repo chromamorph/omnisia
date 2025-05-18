@@ -1468,9 +1468,9 @@ public class PointSet implements Comparable<PointSet>{
 			ps.removeContainedOccurrences();			
 		}
 
-		ps.removeOccurrenceSetsWithNoTransformations();
-		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
-
+//		ps.removeOccurrenceSetsWithNoTransformations();
+//		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
+//
 		ps.computeSortedOccurrenceSets(ps.isMTM()?OccurrenceSet.DECREASING_PATTERN_SIZE:OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
 		log.add(new LogInfo("computeSortedOccurrenceSets ends", true));
 
