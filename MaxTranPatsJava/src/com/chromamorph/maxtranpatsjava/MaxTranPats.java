@@ -23,6 +23,7 @@ public class MaxTranPats {
 	public static boolean DRAW_BOUNDING_BOXES				= false;
 	public static boolean CHROMA							= false;
 	public static boolean MORPH								= false;
+	public static int X_SCALE_FACTOR						= 1;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
@@ -42,7 +43,8 @@ public class MaxTranPats {
 	public static String DRAW_BOUNDING_BOXES_SWITCH			= "drawbb";
 	public static String CHROMA_SWITCH						= "c";
 	public static String MORPH_SWITCH						= "m";
-	
+	public static String X_SCALE_FACTOR_SWITCH				= "xsf";
+		
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
 			"F_2STR_Rational",
@@ -90,6 +92,7 @@ public class MaxTranPats {
 		sb.append(String.format("%s (-%s): %s\n", "Draw bounding boxes around patterns", DRAW_BOUNDING_BOXES_SWITCH, DRAW_BOUNDING_BOXES));
 		sb.append(String.format("%s (-%s): %s\n", "Use chroma", CHROMA_SWITCH, CHROMA));
 		sb.append(String.format("%s (-%s): %s\n", "Use morph", MORPH_SWITCH, MORPH));
+		sb.append(String.format("%s (-%s): %s\n", "x-axis scale factor", X_SCALE_FACTOR_SWITCH, X_SCALE_FACTOR));
 
 		return sb.toString();
 	}
@@ -134,6 +137,8 @@ public class MaxTranPats {
 				transformationClassList.add(ALL_TRANS_CLASSES[j]);
 			}
 		}
+		if (transformationClassList.size() == 0)
+			return null;
 		TransformationClass[] transformationClasses = new TransformationClass[transformationClassList.size()];
 		transformationClassList.toArray(transformationClasses);
 		return transformationClasses;
@@ -177,7 +182,8 @@ public class MaxTranPats {
 				"-"+DRAW_GROUND_TRUTH_SWITCH+"\tDraw ground truth file (.gt file).",
 				"-"+DRAW_BOUNDING_BOXES_SWITCH+"\tDraw bounding boxes around patterns.",
 				"-"+CHROMA_SWITCH+"\tUse chroma.",
-				"-"+MORPH_SWITCH+"\tUse morph."
+				"-"+MORPH_SWITCH+"\tUse morph.",
+				"-"+X_SCALE_FACTOR+"\tMultiply the x-values of the points by this factor (needs to be an int)"
 		);
 	}
 	
@@ -186,18 +192,24 @@ public class MaxTranPats {
 		for(String arg: args)
 			argArray.add(arg);
 
+		TRANSFORMATION_CLASSES = getTransformationClasses(argArray);
+		if (TRANSFORMATION_CLASSES == null) {
+			System.out.println("ERROR! Need to provide at least one transformation class - see help below!");
+			showHelp();
+			return;			
+		}
 		INPUT_FILE_PATH = getStringValue(argArray, INPUT_FILE_PATH_SWITCH);
-		if (INPUT_FILE_PATH == null || HELP) {
+		GROUND_TRUTH_FILE_PATH = getStringValue(argArray, GROUND_TRUTH_FILE_PATH_SWITCH);
+		if ((INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH == null) || HELP) {
+			System.out.println("ERROR! Need to provide an input file and/or a ground-truth file - see help below!");
 			showHelp();
 			return;
 		} 
 		OUTPUT_DIR_PATH = getStringValue(argArray, OUTPUT_DIR_PATH_SWITCH);
-		GROUND_TRUTH_FILE_PATH = getStringValue(argArray, GROUND_TRUTH_FILE_PATH_SWITCH);
 		MIN_PATTERN_SIZE = getIntValue(argArray, MIN_PATTERN_SIZE_SWITCH,0);
 		MIN_COMPACTNESS = getDoubleValue(argArray, MIN_COMPACTNESS_SWITCH, 0.0);
 		MIN_OCC_COMPACTNESS = getDoubleValue(argArray, MIN_OCC_COMPACTNESS_SWITCH, 0.0);
 		QUERY_FILE_PATH = getStringValue(argArray, QUERY_FILE_PATH_SWITCH);		
-		TRANSFORMATION_CLASSES = getTransformationClasses(argArray);
 		DIATONIC_PITCH = getBooleanValue(argArray, DIATONIC_PITCH_SWITCH);
 		MID_TIME_POINT = getBooleanValue(argArray,MID_TIME_POINT_SWITCH);
 		DIMENSION_MASK = getStringValue(argArray,DIMENSION_MASK_SWITCH);
@@ -208,7 +220,13 @@ public class MaxTranPats {
 		DRAW_BOUNDING_BOXES = getBooleanValue(argArray,DRAW_BOUNDING_BOXES_SWITCH);
 		CHROMA = getBooleanValue(argArray,CHROMA_SWITCH);
 		MORPH = getBooleanValue(argArray,MORPH_SWITCH);
+		X_SCALE_FACTOR = getIntValue(argArray,X_SCALE_FACTOR_SWITCH,1);
 
+		if (OUTPUT_DIR_PATH == null && INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH != null) {
+			int end = GROUND_TRUTH_FILE_PATH.lastIndexOf("/");
+			OUTPUT_DIR_PATH = GROUND_TRUTH_FILE_PATH.substring(0, end);
+		}
+		
 		if (OUTPUT_DIR_PATH == null) {
 			int end = INPUT_FILE_PATH.lastIndexOf("/");
 			OUTPUT_DIR_PATH = INPUT_FILE_PATH.substring(0, end);
@@ -217,6 +235,21 @@ public class MaxTranPats {
 		if (DIMENSION_MASK == null)
 			DIMENSION_MASK = "1100";
 		
+		if (GROUND_TRUTH_FILE_PATH != null && INPUT_FILE_PATH == null) {
+			System.out.println(getParameterSettings());
+			PointSet.computeOccurrenceSetTransformationGraph(
+						GROUND_TRUTH_FILE_PATH,
+						TRANSFORMATION_CLASSES,
+						OUTPUT_DIR_PATH,
+						DIATONIC_PITCH,
+						MID_TIME_POINT,
+						DIMENSION_MASK,
+						CHROMA,
+						MORPH,
+						X_SCALE_FACTOR
+					);
+		}
+		else
 		if (DRAW_GROUND_TRUTH)
 			try {
 				PointSet.drawGroundTruthFile(
