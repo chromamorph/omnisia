@@ -41,6 +41,7 @@ public class PointSet implements Comparable<PointSet>{
 	static public JFrame frame = null;
 	protected int[] colArray = null;
 	protected int[] colArray2 = null;
+	protected String label = null;
 
 	public PointSet() {}
 
@@ -1238,6 +1239,10 @@ public class PointSet implements Comparable<PointSet>{
 		return colArray2;
 	}
 	
+	public String getLabel() {
+		return label;
+	}
+	
 	public void setColArray(int[] newColArray) {
 		if (newColArray != null) {
 			colArray = new int[4];
@@ -1252,6 +1257,10 @@ public class PointSet implements Comparable<PointSet>{
 			for (int k = 0; k < 4; k++)
 				colArray2[k] = newColArray[k];
 		}
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 }

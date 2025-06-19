@@ -55,7 +55,7 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 		if (!dataset.isMTM() && imgIndex < objIndex)
 			return;
 		int[] perm = tc.getPerm(C % p);
-		PointSequence objectBasis, imageBasis;
+		PointSequence objectBasis = null, imageBasis = null;
 		try {
 			objectBasis = pattern.computeBasis(tc.getBasisSize(), objIndex);
 			imageBasis = dataset.computeBasis(tc.getBasisSize(), imgIndex);
@@ -66,6 +66,8 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 			for(Transformation transformation : transformations) {
 
 				int i = transformation.hash(PointSet.HASH_TABLE_SIZE);
+				if (i >= mtmArray.length)
+					System.out.println("i is greater than or equal to length of mtmArray");
 				synchronized (mtmArray[i]) {
 					mtmArray[i].add(transformation,objectBasis);
 				}
@@ -80,7 +82,13 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.out.println("Exception thrown in computeDirectly");
+			System.out.println("imageBasis = " + imageBasis);
+			System.out.println("dataset = " + dataset);
+			System.out.println("tc.getBasisSize() = "+ tc.getBasisSize());
+			System.out.println("imgIndex = "+imgIndex);
+			e.printStackTrace();
+			System.exit(1);
 		}
 
 	}

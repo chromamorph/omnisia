@@ -1,6 +1,7 @@
 package com.chromamorph.maxtranpatsjava;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  * 
@@ -83,7 +84,8 @@ public class F_2STR extends TransformationClass {
 		 * 0		1		1		1		7		does not occur because p' always different from q'
 		 * 1		0		0		0		8		not valid because if p0 = q0 then pd0 = qd0 as sigma0 != 0
 		 * 1		0		0		1		9		not valid for same reason as case 8
-		 * 1		0		1		0		10		not valid because implies sigma0 can take any value
+		 * 1		0		1		0		10		a requires that pd1 - qd1 = q1 - p1, in this case, we set sigma0 to 1 and sigma3 to -1
+		 * 											b requires that pd1 - qd1 = p1 - q1 in this case, we set sigma0 to 1 and sigma3 to 1
 		 * 1		0		1		1		11		does not occur because p' always different from q'
 		 * 1		1		0		0		12		does not occur because p always different from q
 		 * 1		1		0		1		13		does not occur because p always different from q
@@ -92,6 +94,26 @@ public class F_2STR extends TransformationClass {
 		 * 
 		 */
 
+//		case 10b: pd0 = qd0 and p0 = q0 and pd1-qd1=p1-q1
+		if (pd0==qd0 && p0 == q0 && pd1-qd1==p1-q1) {
+			double sigma0 = 1;
+			double sigma1 = pd0 - p0;
+			double sigma2 = pd1 - p1;
+			double sigma3 = 1;
+			sigmas.add(Utility.makeSigma(sigma0, sigma1, sigma2, sigma3));
+			return sigmas;
+		}
+		
+//		case 10a: pd0 = qd0 and p0 = q0 and pd1-qd1=q1-p1
+		if (pd0==qd0 && p0==q0 && pd1-qd1==q1-p1) {
+			double sigma0 = 1;
+			double sigma1 = pd0 - p0;
+			double sigma2 = -q1 - qd1;
+			double sigma3 = -1;
+			sigmas.add(Utility.makeSigma(sigma0, sigma1, sigma2, sigma3));
+			return sigmas;
+		}
+		
 		//		First handle case 5 where there are two sigmas:
 		if (pd1 == qd1 && p1 == q1) {
 			//			=> p0 != q0 and pd0 != qd0 because p != q and p' != q' 
@@ -169,6 +191,35 @@ public class F_2STR extends TransformationClass {
 		System.out.println(-3.00000001 % 0.5);
 		System.out.println(-4.50000001 %0.5);
 		System.out.println(5.3%0.5);
+	}
+	
+	public static String getIntString(double x) {
+		if (Math.floor(x) == x)
+			return String.format("%.0f",x);
+		else
+			return String.format("%f", x);
+	}
+	
+	public static String getOSTGString(TreeSet<Transformation> transformations) {
+		if (transformations == null || transformations.size() == 0) return "";
+		StringBuffer sb = new StringBuffer();
+		boolean first = true;
+		for(Transformation tran : transformations) {
+			if (Utility.equalsArrayListOfDoubles(tran.getSigma(), new F_2STR().identitySigma)) {
+				sb.append("$I$");
+				return sb.toString();
+			}
+			if (!first) sb.append("\\newline");
+			if (first) first = false;
+			sb.append("$");
+			if (tran.getSigma().get(0) != 1.0)
+				sb.append("S_{"+getIntString(tran.getSigma().get(0))+"}");
+			sb.append("T_{\\langle"+getIntString(tran.getSigma().get(1))+","+getIntString(tran.getSigma().get(2))+"\\rangle}");
+			if (tran.getSigma().get(3) == -1)
+				sb.append("R_x");
+			sb.append("$");
+		}
+		return sb.toString();
 	}
 
 }
