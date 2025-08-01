@@ -73,6 +73,38 @@ public class F_2STR_Mod extends TransformationClass {
 		double 	p1x = p1.get(0), p1y = p1.get(1), p2x = p2.get(0), p2y = p2.get(1),
 				q1x = q1.get(0), q1y = q1.get(1), q2x = q2.get(0), q2y = q2.get(1);
 
+		if (Utility.equalWithTolerance(q2x, q1x) && Utility.equalWithTolerance(p2x, p1x)) {
+//			Then each basis consists of two points, one vertically above the other.
+//			There is no vertical scaling, so |q2y - q1y| = |p2y - p1y| if there is going to be any transformation
+			
+			/*
+			 * This only matters when the entire transformed pattern consists of points with the same x value.
+			 * If the pattern contains at least one point with a different pattern, then all of the points that
+			 * have the same x value will be "captured" by that point into different bases in which the two points
+			 * are not vertically co-aligned. So we only need to find the transformation that we would want to 
+			 * map an entire pattern consisting of vertically aligned points onto another pattern of vertically 
+			 * aligned points.
+			 * 
+			 * So we don't, for example, need to consider the situation where sigma0=-1. In fact we assume that
+			 * the x scale factor is 1
+			 */
+			if (Utility.equalWithTolerance(Math.abs(Maths.mod((int)(q2y-q1y),modulus)), Math.abs(Maths.mod((int)(p2y-p1y),modulus)))) {
+				double sigma0 = 1;
+				double sigma1 = q1x - p1x;
+				double sigma2, sigma3; 
+				if ((q2y > q1y && p1y > p2y) || (q2y < q1y && p1y < p2y)) {
+//					Needs a reflection in the x-axis
+					sigma3 = -1;
+					sigma2 = Maths.mod( (int)(q1y + p1y), modulus);
+				} else {
+					sigma3 = 1;
+					sigma2 = Maths.mod( (int)(q1y - p1y), modulus) ;
+				}
+				sigmas.add(Utility.makeSigma(sigma0,sigma1,sigma2,sigma3));
+			}
+			return sigmas;
+		}
+		
 		if (Utility.equalWithTolerance(p2x, p1x)) // because denominator of expressions for sigma0 and sigma1 must not be 0
 			return sigmas;
 		
@@ -111,9 +143,10 @@ public class F_2STR_Mod extends TransformationClass {
 //	}
 	
 	public static void main(String[] args) {
-		System.out.println(-3.00000001 % 0.5);
-		System.out.println(-4.50000001 %0.5);
-		System.out.println(5.3%0.5);
+		F_2STR_Mod F = new F_2STR_Mod(12);
+		int[] occ1 = new int[] {0,2,5,10};
+		int[] occ3 = new int[] {2,4,5,9};
+		int[] occ5 = new int[] {0,2,7,10};
+		
 	}
-
 }

@@ -672,8 +672,17 @@ public class PointSet implements Comparable<PointSet>{
 			int[][] perms = tc.getPerms();
 			int numComputations = numObjectBases * numObjectBases *perms.length;
 			System.out.println("numComptutations = "+numComputations);
-			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases);
-			ForkJoinPool.commonPool().invoke(action);
+			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases,0);
+//			System.out.println(ForkJoinPool.commonPool().toString());
+//			ForkJoinPool.commonPool().invoke(action);
+			ForkJoinPool pool = new ForkJoinPool(
+					Runtime.getRuntime().availableProcessors(),
+					ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+					null,
+					true
+					);
+			ComputeMaximalTransformablePatterns.FORK_JOIN_POOL = pool;
+			pool.invoke(action);
 		}
 
 		TreeSet<Integer> hashValues = new TreeSet<Integer>();
@@ -1589,7 +1598,7 @@ public class PointSet implements Comparable<PointSet>{
 
 		//		Compare computed encoding with ground truth file
 		if (groundTruthFileName != null) {
-			ps.compareWithGroundTruthFile(groundTruthFileName, diatonicPitch, outputFilePath, !ps.isMTM(), ps.isMTM(), midTimePoint);
+			ps.compareWithGroundTruthFile(groundTruthFileName, diatonicPitch, outputFilePath, !ps.isMTM(), ps.isMTM(), midTimePoint, useMorph, useChroma);
 		}
 
 		if (draw) {
@@ -1634,7 +1643,7 @@ public class PointSet implements Comparable<PointSet>{
 	 * from the pitch name.
 	 * 
 	 */
-	private static ArrayList<ArrayList<com.chromamorph.points022.PointSet>> readGroundTruthPatternsFromFile(String groundTruthFilePath, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor) {
+	private static ArrayList<ArrayList<com.chromamorph.points022.PointSet>> readGroundTruthPatternsFromFile(String groundTruthFilePath, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor, boolean useMorph, boolean useChroma) {
 		StringBuilder sb = readGroundTruthFileIntoStringBuilder(groundTruthFilePath);
 
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = new ArrayList<ArrayList<com.chromamorph.points022.PointSet>>();
@@ -1643,7 +1652,7 @@ public class PointSet implements Comparable<PointSet>{
 		while (i < sb.length()) {
 			while (i < sb.length() && sb.charAt(i) != '(') i++; //Puts i at beginning of encoding of next occurrence set or end of file
 			if (i < sb.length()) {
-				OccurrenceSetEndIndexPair osei = readOccurrenceSet(sb,i, diatonicPitch, withMidTimePoints, xScaleFactor);
+				OccurrenceSetEndIndexPair osei = readOccurrenceSet(sb,i, diatonicPitch, withMidTimePoints, xScaleFactor, useMorph, useChroma);
 				i = osei.endIndex; //Should be one character after the end of the occurrence set encoding
 				groundTruthPatterns.add(osei.occurrenceSet);
 			}
@@ -1673,14 +1682,14 @@ public class PointSet implements Comparable<PointSet>{
 	 * @param startIndex
 	 * @return
 	 */
-	private static OccurrenceSetEndIndexPair readOccurrenceSet(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor) {
+	private static OccurrenceSetEndIndexPair readOccurrenceSet(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor, boolean useMorph, boolean useChroma) {
 		OccurrenceSetEndIndexPair osei = new OccurrenceSetEndIndexPair();
 		//Find start of first pattern within this occurrence set
 		int i = startIndex + 1;
 		while (sb.charAt(i) != ')') {
 			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next pattern occurrence or end of occurrence set
 			if (sb.charAt(i) != ')') {
-				OccurrenceEndIndexPair occEi = readOccurrence(sb,i, diatonicPitch, withMidTimePoints, xScaleFactor);
+				OccurrenceEndIndexPair occEi = readOccurrence(sb,i, diatonicPitch, withMidTimePoints, xScaleFactor, useMorph, useChroma);
 				i = occEi.endIndex; //Should be one character after the occurrence just read.
 				osei.occurrenceSet.add(occEi.occurrence);
 			}
@@ -1694,12 +1703,15 @@ public class PointSet implements Comparable<PointSet>{
 		int endIndex = 0;
 	}
 
-	private static OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor) {
+	private static OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor, boolean useMorph, boolean useChroma) {
 		OccurrenceEndIndexPair occEi = new OccurrenceEndIndexPair();
 		int i = startIndex + 1;
 		int[] colArray = null;
 		int[] colArray2 = null;
 		String label = null;
+		Float strokeWidth = null;
+		Float pointWidth = null;
+		Float pointHeight = null;
 
 		//		Read colArrays
 		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
@@ -1729,19 +1741,44 @@ public class PointSet implements Comparable<PointSet>{
 		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
 		if (sb.substring(i).startsWith("(label")) {
 			int labelEndIndex = sb.indexOf(")", i);
-			label = sb.substring(i + 6, labelEndIndex).trim();
+			label = sb.substring(i + "(label".length(), labelEndIndex).trim();
 			i = labelEndIndex + 1;
+		}
+//		Read stroke-width
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(stroke-width")) {
+			int strokeWidthEndIndex = sb.indexOf(")", i);
+			strokeWidth = Float.parseFloat(sb.substring(i + "(stroke-width".length(), strokeWidthEndIndex).trim());
+			i = strokeWidthEndIndex + 1;
+		}
+//		Read point-width
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(point-width")) {
+			int pointWidthEndIndex = sb.indexOf(")", i);
+			pointWidth = Float.parseFloat(sb.substring(i + "(point-width".length(), pointWidthEndIndex).trim());
+			i = pointWidthEndIndex + 1;
+		}
+
+//		Read point-height
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(point-height")) {
+			int pointHeightEndIndex = sb.indexOf(")", i);
+			pointHeight = Float.parseFloat(sb.substring(i + "(point-height".length(), pointHeightEndIndex).trim());
+			i = pointHeightEndIndex + 1;
 		}
 
 		while (sb.charAt(i) != ')') {
 			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next point or end of point set
 			if (sb.charAt(i) != ')') {
-				PointEndIndexPair pEi = readPoint(sb,i, diatonicPitch, withMidTimePoints, xScaleFactor);
+				PointEndIndexPair pEi = readPoint(sb,i, diatonicPitch, withMidTimePoints, xScaleFactor, useMorph, useChroma);
 				i = pEi.endIndex;
 				occEi.occurrence.add(pEi.point);
 				occEi.occurrence.setColArray(colArray);
 				occEi.occurrence.setColArray2(colArray2);
 				occEi.occurrence.setLabel(label);
+				occEi.occurrence.setStrokeWidth(strokeWidth);
+				occEi.occurrence.setPointWidth(pointWidth);
+				occEi.occurrence.setPointHeight(pointHeight);
 			}
 		}
 		occEi.endIndex = i + 1;
@@ -1753,11 +1790,48 @@ public class PointSet implements Comparable<PointSet>{
 		int endIndex;
 	}
 
-	private static PointEndIndexPair readPoint(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor) {
+	private static PointEndIndexPair readPoint(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor, boolean useMorph, boolean useChroma) {
+		int i = startIndex;
+		Float strokeWidth = null;
+		Float pointWidth = null;
+		Float pointHeight = null;
+		while (sb.charAt(i) != '(') i++; // puts i at beginning of this point encoding
+		i++; //puts i at first character following opening parenthesis of this point encoding
+		while (Character.isWhitespace(sb.charAt(i))) i++; 
+// 		puts i at first non-whitespace char within point encoding after opening parenthesis
+		if (sb.charAt(i) == '(') {
+//			Read stroke-width
+			if (sb.substring(i).startsWith("(stroke-width")) {
+				int strokeWidthEndIndex = sb.indexOf(")", i);
+				strokeWidth = Float.parseFloat(sb.substring(i + "(stroke-width".length(), strokeWidthEndIndex).trim());
+				i = strokeWidthEndIndex + 1;
+			}
+//			Find next non-whitespace character following stroke-width spec
+			while (Character.isWhitespace(sb.charAt(i))) i++; 
+			if (sb.charAt(i) == '(') {
+//				Read point-width
+				if (sb.substring(i).startsWith("(point-width")) {
+					int pointWidthEndIndex = sb.indexOf(")", i);
+					pointWidth = Float.parseFloat(sb.substring(i + "(point-width".length(), pointWidthEndIndex).trim());
+					i = pointWidthEndIndex + 1;
+				}
+
+				while (Character.isWhitespace(sb.charAt(i))) i++; 
+				if (sb.charAt(i) == '(') {
+//					Read point-height
+					while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+					if (sb.substring(i).startsWith("(point-height")) {
+						int pointHeightEndIndex = sb.indexOf(")", i);
+						pointHeight = Float.parseFloat(sb.substring(i + "(point-height".length(), pointHeightEndIndex).trim());
+						i = pointHeightEndIndex + 1;
+					}					
+				}
+			}
+		}
+//		i now points at the first character of the onset of the point
 		PointEndIndexPair pEi = new PointEndIndexPair();
-		int endIndex = sb.indexOf(")", startIndex);
-		//Assume startIndex is index of opening parenthesis of point encoding.
-		String pointString = sb.substring(startIndex+1, endIndex);
+		int endIndex = sb.indexOf(")", i);
+		String pointString = sb.substring(i, endIndex);
 		String[] a = pointString.split("\s");
 		//		pointString has format onset pitch-name duration [voice]
 		long originalOnset = Long.parseLong(a[0]);
@@ -1774,15 +1848,25 @@ public class PointSet implements Comparable<PointSet>{
 			y = Integer.parseInt(a[1]);
 		else {
 			p.setPitchName(a[1]);
-			y = diatonicPitch?p.getMorpheticPitch():p.getChromaticPitch();
+			if (useMorph)
+				y = p.getMorph();
+			else if (useChroma)
+				y = p.getChroma();
+			else if (diatonicPitch)
+				y = p.getMorpheticPitch();
+			else
+				y = p.getChromaticPitch();
 		}
 		pEi.point = new com.chromamorph.points022.Point(x,y);
+		pEi.point.setPointHeight(pointHeight);
+		pEi.point.setPointWidth(pointWidth);
+		pEi.point.setStrokeWidth(strokeWidth);
 		pEi.endIndex = endIndex + 1;
 		return pEi;
 	}
 
-	private void compareWithGroundTruthFile(String groundTruthFilePath, boolean diatonicPitch, String outputFilePath, boolean includePattern, boolean isMTM, boolean withMidTimePoints) {
-		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, withMidTimePoints, 1);
+	private void compareWithGroundTruthFile(String groundTruthFilePath, boolean diatonicPitch, String outputFilePath, boolean includePattern, boolean isMTM, boolean withMidTimePoints, boolean useMorph, boolean useChroma) {
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, withMidTimePoints, 1, useMorph, useChroma);
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> computedPatterns = getEncoding().getOccurrenceSetsAsArrayListsOfPointSets(includePattern);
 		if (isMTM) {
 			//			Make computedPatterns a single occurrence set of patterns
@@ -2362,10 +2446,12 @@ public class PointSet implements Comparable<PointSet>{
 			boolean useChroma,
 			boolean useMorph) throws IOException, DimensionalityException {
 		final PointSet dataset = new PointSet(new File(datasetFilePath),diatonicPitch,midTimePoint,dimensionMask,useChroma,useMorph);
-		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, 1);
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, 1, useMorph, useChroma);
 		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		final int endIndex = groundTruthFilePath.lastIndexOf(".");
-		final String outputFilePath = groundTruthFilePath.substring(0, endIndex)+".png";
+		String pitchType = useChroma?"C":(useMorph?"M":(diatonicPitch?"MP":"CP"));
+		String timeType = midTimePoint?"M":"O";
+		final String outputFilePath = groundTruthFilePath.substring(0, endIndex)+"-"+pitchType+timeType+".png";
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
 		for(com.chromamorph.maxtranpatsjava.Point p : points) {
 			long onset = midTimePoint?(long)Math.floor(p.get(0)):p.getOnset();
@@ -2410,7 +2496,7 @@ public class PointSet implements Comparable<PointSet>{
 			boolean morph,
 			int xScaleFactor) {
 		IS_OSTG = true;
-		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, xScaleFactor);
+		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, xScaleFactor, morph, chroma);
 		//		Flatten groundTruthPatterns into an array of MaxTranPats PointSets
 		ArrayList<PointSet> patternList = new ArrayList<PointSet>();
 		for(ArrayList<com.chromamorph.points022.PointSet> os : groundTruthPatterns) {
@@ -2456,6 +2542,7 @@ public class PointSet implements Comparable<PointSet>{
 			}
 			transformationGraph.add(row);
 		}
+		TreeSet<Integer> colsWithMultipleTransformations = new TreeSet<Integer>();
 		for(int i = 0; i < patternList.size(); i++)
 			for(int j = 0; j < patternList.size(); j++) {
 				try {
@@ -2469,7 +2556,8 @@ public class PointSet implements Comparable<PointSet>{
 							imagePattern, 
 							null, 
 							transformationClasses, 
-							Math.min(imagePattern.size(), objectPattern.size()), 
+//							Math.min(imagePattern.size(), objectPattern.size()),
+							objectPattern.size(),
 							HASH_TABLE_SIZE, 
 							false, 
 							diatonicPitch,
@@ -2488,6 +2576,8 @@ public class PointSet implements Comparable<PointSet>{
 					System.out.println(patternList.get(j).getLabel()+": "+imagePattern);
 					System.out.println(transformations);
 					System.out.println();
+					if (transformations != null && transformations.size() > 1)
+						colsWithMultipleTransformations.add(j);
 				} catch (FileNotFoundException | TimeOutException | NoTransformationClassesDefinedException
 						| SuperMTPsNotNullException | NullPointerException e) {
 					e.printStackTrace();
@@ -2501,16 +2591,23 @@ public class PointSet implements Comparable<PointSet>{
 			String pitchType = (chroma?"C":(morph?"M":(diatonicPitch?"MP":"CP")));
 			String timeType = (midTimePoint?"M":"O");
 			String repType = "-"+pitchType+timeType;
-			String graphFilePath = groundTruthFilePath.substring(0,startOfSuffix)+repType+".tex";
+			String graphFilePath = groundTruthFilePath.substring(0,startOfSuffix)+repType+"-IPTG.tex";
 			PrintWriter graphFile = new PrintWriter(graphFilePath);
 			graphFile.println("\\begin{sidewaystable}");
 			graphFile.println("\\caption{"+graphFilePath+"}");
+			int startOfName = graphFilePath.lastIndexOf('/')+1;
+			String graphFileName = graphFilePath.substring(startOfName,startOfSuffix);
+			graphFile.println("\\label{"+graphFileName+repType+"-IPTG}");
 			graphFile.println("\\resizebox{\\linewidth}{!}{");
-			graphFile.print("\\begin{tabularx}{2\\linewidth}{cc|");
-			for(int i = 0; i < patternList.size();i++)
-				graphFile.print("c");
+			graphFile.print("\\begin{tabularx}{1.5\\linewidth}{ll|");
+			for(int i = 0; i < patternList.size();i++) {
+				if (colsWithMultipleTransformations.contains(i))
+					graphFile.print("p{1.8cm}");
+				else
+					graphFile.print("l");
+			}
 			graphFile.println("}");
-			graphFile.println("&&\\multicolumn{"+patternList.size()+"}{c}{{\\bfseries To}}\\\\");
+			graphFile.println("&&\\multicolumn{"+patternList.size()+"}{c}{{\\bfseries To pattern}}\\\\");
 			graphFile.print("&"); // For the "From" column
 			for (int i = 0; i < patternList.size(); i++) 
 				graphFile.print("&"+patternList.get(i).getLabel());
@@ -2523,7 +2620,7 @@ public class PointSet implements Comparable<PointSet>{
 				}
 			}
 //			Print last line in table which also prints vertical From label
-			graphFile.print("\\multirow{-"+patternList.size()+"}{*}{\\rotatebox[origin=c]{90}{{\\bfseries From}}}&"+patternList.get(patternList.size()-1).getLabel()+" &");
+			graphFile.print("\\multirow{-"+patternList.size()+"}{*}{\\rotatebox[origin=c]{90}{{\\bfseries From pattern}}}&"+patternList.get(patternList.size()-1).getLabel()+" &");
 			for (int j = 0; j < patternList.size(); j++) {
 				String tranString = F_2STR.getOSTGString(transformationGraph.get(patternList.size()-1).get(j));
 				graphFile.print(tranString+" "+((j!=patternList.size()-1)?"&":"\\\\\\cline{2-"+(patternList.size()+2)+"}\n"));

@@ -24,6 +24,7 @@ public class MaxTranPats {
 	public static boolean CHROMA							= false;
 	public static boolean MORPH								= false;
 	public static int X_SCALE_FACTOR						= 1;
+	public static boolean IPTG								= false;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
@@ -44,6 +45,7 @@ public class MaxTranPats {
 	public static String CHROMA_SWITCH						= "c";
 	public static String MORPH_SWITCH						= "m";
 	public static String X_SCALE_FACTOR_SWITCH				= "xsf";
+	public static String IPTG_SWITCH						= "iptg";
 		
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
@@ -88,11 +90,13 @@ public class MaxTranPats {
 		sb.append(String.format("%s (-%s): %s\n", "Dimension mask", DIMENSION_MASK_SWITCH, DIMENSION_MASK));
 		sb.append(String.format("%s (-%s): %s\n", "Use ScaleXIA", SCALEXIA_SWITCH, SCALEXIA));
 		sb.append(String.format("%s (-%s): %s\n", "Draw patterns", DRAW_SWITCH, DRAW));
+		sb.append(String.format("%s (-%s): %s\n", "Show help", HELP_SWITCH, HELP));
 		sb.append(String.format("%s (-%s): %s\n", "Draw ground truth", DRAW_GROUND_TRUTH_SWITCH, DRAW_GROUND_TRUTH));
 		sb.append(String.format("%s (-%s): %s\n", "Draw bounding boxes around patterns", DRAW_BOUNDING_BOXES_SWITCH, DRAW_BOUNDING_BOXES));
 		sb.append(String.format("%s (-%s): %s\n", "Use chroma", CHROMA_SWITCH, CHROMA));
 		sb.append(String.format("%s (-%s): %s\n", "Use morph", MORPH_SWITCH, MORPH));
 		sb.append(String.format("%s (-%s): %s\n", "x-axis scale factor", X_SCALE_FACTOR_SWITCH, X_SCALE_FACTOR));
+		sb.append(String.format("%s (-%s): %s\n", "Generate inter-pattern transformation graph", IPTG_SWITCH, IPTG));
 
 		return sb.toString();
 	}
@@ -165,16 +169,16 @@ public class MaxTranPats {
 				"MaxTranPats Help",
 				"================",
 				"-"+INPUT_FILE_PATH_SWITCH+"\tPath to input file (required).",
-				"-"+OUTPUT_DIR_PATH_SWITCH+"\tDirectory in which to place output files. Default is same as input file directory.",
+				"-"+QUERY_FILE_PATH_SWITCH+"\tPath to file containing query.",
 				"-"+GROUND_TRUTH_FILE_PATH_SWITCH+"\tFile containing ground truth to be compared with output.",
+				"-"+MID_TIME_POINT_SWITCH+"\tUse mid-time points, not onset times (e.g., when looking for retrogrades).",
+				"-"+OUTPUT_DIR_PATH_SWITCH+"\tDirectory in which to place output files. Default is same as input file directory.",
 				"-"+MIN_PATTERN_SIZE_SWITCH+"\tMinimum pattern size (default is 0). -n sets minimum to size of query - n points.",
 				"-"+MIN_COMPACTNESS_SWITCH+"\tMinimum compactness of occurrence sets (default is 0.0).",
 				"-"+MIN_OCC_COMPACTNESS_SWITCH+"\tMinimum compactness of individual occurrences (default is 0.0).",
-				"-"+QUERY_FILE_PATH_SWITCH+"\tPath to file containing query.",
+				"-"+DIATONIC_PITCH_SWITCH+"\tUse morphetic pitch, not chromatic pitch.",
 				"-"+TRANSFORMATION_CLASSES_SWITCH+"\tFollowed by list of transformation classes to include. Must be in the following list:",
 				"\t"+getListOfAllTransformationClasses(),
-				"-"+DIATONIC_PITCH_SWITCH+"\tUse morphetic pitch, not chromatic pitch.",
-				"-"+MID_TIME_POINT_SWITCH+"\tUse mid-time points, not onset times (e.g., when looking for retrogrades).",
 				"-"+DIMENSION_MASK_SWITCH+"\tA binary string in which a 1 indicates that a dimenion is to be used.",
 				"-"+SCALEXIA_SWITCH+"\tUse Scalexia rather than a transformation class.",
 				"-"+DRAW_SWITCH+"\tDraw results in a graph.",
@@ -183,7 +187,8 @@ public class MaxTranPats {
 				"-"+DRAW_BOUNDING_BOXES_SWITCH+"\tDraw bounding boxes around patterns.",
 				"-"+CHROMA_SWITCH+"\tUse chroma.",
 				"-"+MORPH_SWITCH+"\tUse morph.",
-				"-"+X_SCALE_FACTOR+"\tMultiply the x-values of the points by this factor (needs to be an int)"
+				"-"+X_SCALE_FACTOR_SWITCH+"\tFollowed by integer value. Multiply the x-values of the points by this integer value.",
+				"-"+IPTG_SWITCH+"\tIf present, then generate inter-pattern transformation graph for patterns in ground-truth file."
 		);
 	}
 	
@@ -221,6 +226,7 @@ public class MaxTranPats {
 		CHROMA = getBooleanValue(argArray,CHROMA_SWITCH);
 		MORPH = getBooleanValue(argArray,MORPH_SWITCH);
 		X_SCALE_FACTOR = getIntValue(argArray,X_SCALE_FACTOR_SWITCH,1);
+		IPTG = getBooleanValue(argArray, IPTG_SWITCH);
 
 		if (OUTPUT_DIR_PATH == null && INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH != null) {
 			int end = GROUND_TRUTH_FILE_PATH.lastIndexOf("/");
@@ -235,7 +241,7 @@ public class MaxTranPats {
 		if (DIMENSION_MASK == null)
 			DIMENSION_MASK = "1100";
 		
-		if (GROUND_TRUTH_FILE_PATH != null && INPUT_FILE_PATH == null) {
+		if (IPTG) {
 			System.out.println(getParameterSettings());
 			PointSet.computeOccurrenceSetTransformationGraph(
 						GROUND_TRUTH_FILE_PATH,

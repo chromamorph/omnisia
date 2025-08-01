@@ -1,0 +1,67 @@
+OS(P(p(32,60),p(40,53),p(46,55),p(54,58),p(56,60),p(64,61),p(72,60),p(78,58),p(96,60)),[T(F_2STR,[1.0, 48.0, -101.0, -1.0]), T(F_2STR,[1.0, 272.0, -108.0, -1.0]), T(F_2STR,[2.0, -64.0, -89.0, -1.0]), T(F_2STR,[2.0, 160.0, -108.0, -1.0])],null)
+OS(P(p(40,53),p(46,55),p(78,58),p(90,55),p(94,58),p(96,60)),[T(F_2STR,[1.0, 48.0, -101.0, -1.0]), T(F_2STR,[1.0, 160.0, -17.0, 1.0]), T(F_2STR,[1.0, 272.0, -108.0, -1.0]), T(F_2STR,[1.0, 280.0, -89.0, -1.0])],null)
+OS(P(p(96,32),p(96,44),p(120,32),p(120,41),p(120,48)),[T(F_2STR,[-4.333333333333333, 760.0, 7.0, 1.0]), T(F_2STR,[-2.0, 544.0, -80.0, -1.0]), T(F_2STR,[1.0, 72.0, 0.0, 1.0]), T(F_2STR,[5.666666666666667, -354.0, 2.0, 1.0])],null)
+OS(P(p(296,43),p(310,41),p(312,39),p(318,38),p(318,53),p(320,36),p(320,51)),[T(F_2STR,[-11.0, 3600.0, 5.0, 1.0]), T(F_2STR,[5.0, -1248.0, 0.0, 1.0])],null)
+OS(P(p(134,17),p(150,24),p(152,22),p(158,20),p(160,19)),[T(F_2STR,[-1.0, 342.0, -56.0, -1.0]), T(F_2STR,[1.0, 96.0, 36.0, 1.0]), T(F_2STR,[1.0, 160.0, -55.0, -1.0])],null)
+OS(P(p(46,55),p(90,55),p(126,43),p(134,50),p(166,31),p(182,43),p(190,55),p(198,55),p(206,38),p(214,50),p(250,38),p(278,31),p(318,35),p(334,42),p(342,38),p(350,35),p(350,50),p(358,31),p(366,47)),[T(F_2STR,[1.0, 2.0, 1.0, 1.0])],null)
+OS(P(p(134,17),p(136,19),p(142,20),p(144,22),p(158,20),p(160,19)),[T(F_2STR,[-1.0, 374.0, 31.0, 1.0]), T(F_2STR,[1.0, 16.0, 33.0, 1.0])],null)
+OS(P(p(106,55),p(110,51),p(118,34),p(126,31)),[T(F_2STR,[-10.0, 1364.0, -87.0, -1.0]), T(F_2STR,[1.0, 2.0, -2.0, 1.0])],null)
+OS(P(p(221,50),p(222,48),p(223,47),p(224,48)),[T(F_2STR,[1.0, 160.0, -4.0, 1.0]), T(F_2STR,[72.0, -15832.0, -91.0, -1.0])],null)
+OS(P(p(32,32),p(288,31),p(328,32)),[T(F_2STR,[-0.25, 344.0, -63.0, -1.0])],null)
+OS(P(p(140,44),p(158,44),p(160,46),p(170,56),p(172,55),p(174,34),p(176,36),p(200,29),p(206,53),p(208,36),p(208,55),p(214,41),p(216,43),p(256,51),p(270,34),p(280,41),p(286,29),p(300,31),p(364,51),p(372,32)),[],null)
+
+
+Coverage: 187
+Dataset size: 187
+Uncompressed length: 374
+Encoding length: 276
+Compression factor: 1.355072463768116
+Running time in milliseconds: 1561326
+Encoding length without residual point set: 236
+Number of residual points: 20
+Percentage of residual points: 10.70%
+Compression factor without residual point set: 1.4152542372881356
+Number of occurrence sets: 11
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+         269445 ms         269445 ms  computeMaximalTransformablePatterns ends
+         308222 ms          38777 ms  computeSizeMTPSetArray ends
+         316446 ms           8224 ms  mergeMTPs ends
+        1197955 ms         881509 ms  computeSuperMTPs ends
+        1200514 ms           2559 ms  computeHeterogeneousOccurrenceSets ends
+        1400267 ms         199753 ms  removeDuplicateOccurrenceSets ends
+        1553201 ms         152934 ms  removeRedundantTransformations ends
+        1553267 ms             66 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        1559986 ms           6719 ms  computeSortedOccurrenceSets ends
+        1561326 ms           1340 ms  computeEncoding ends
+        1561326 ms              0 ms  Program ends
+
+
+Number of points: 187
+Number of OSs after removal: 239398
+
+
+Parameter settings:
+===================
+Input file path (-i): ./score-from-midi-200.opnd
+Query file path (-q): null
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): .
+Minimum pattern size (-min): 0
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+Use chroma (-c): false
+Use morph (-m): false
+x-axis scale factor (-xsf): 1
+

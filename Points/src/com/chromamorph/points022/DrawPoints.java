@@ -662,11 +662,17 @@ public class DrawPoints extends PApplet {
 				int c = firstOccurrence?col:col2;
 				Point lastPoint = occurrence.first();
 				for(Point p : occurrence.getPoints()) {
+					float sw = occurrence.getStrokeWidth()==null?2:occurrence.getStrokeWidth();//firstOccurrence?2:2;
+					float w = occurrence.getPointWidth()==null?pointWidth:occurrence.getPointWidth(); //firstOccurrence?pointWidth+2:pointWidth;
+					float h = occurrence.getPointHeight()==null?pointHeight:occurrence.getPointHeight(); //firstOccurrence?pointHeight+2:pointHeight;
+					if (p.getStrokeWidth() != null)
+						sw = p.getStrokeWidth();
+					if (p.getPointWidth() != null)
+						w = p.getPointWidth();
+					if (p.getPointHeight() != null)
+						h = p.getPointHeight();
 					int s = firstOccurrence?col:col2;
 					int f = firstOccurrence?col:col2;
-					float sw = firstOccurrence?2:2;
-					float w = pointWidth; //firstOccurrence?pointWidth+2:pointWidth;
-					float h = pointHeight; //firstOccurrence?pointHeight+2:pointHeight;
 					if (OMNISIA.RHYTHM_ONLY) { // Draws points and lines with y value equal to TEC number, i
 						drawPoint(p,s,f,sw,ROUND,w,h, i);
 						drawLine(lastPoint, p, s, sw, ROUND, i);
