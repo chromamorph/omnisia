@@ -19,6 +19,7 @@ import java.util.concurrent.ForkJoinPool;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
 
+import com.chromamorph.maths.Maths;
 import com.chromamorph.notes.Note;
 import com.chromamorph.notes.Notes;
 import com.chromamorph.pitch.Pitch;
@@ -606,7 +607,7 @@ public class PointSet implements Comparable<PointSet>{
 		}
 		return basis;
 	}
-
+	
 	public void computeMaximalTransformedMatchesForkJoin(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -657,6 +658,86 @@ public class PointSet implements Comparable<PointSet>{
 
 	}
 
+	public void computeMaximalTransformablePatternsInParallel(int minSize, int numThreads) throws NoTransformationClassesDefinedException {
+		if (transformationClasses == null)
+			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+
+		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
+		for (int i = 0; i < mtpArray.length; i++)
+			mtpArray[i] = new ListOfTransformationPointSetPairs();
+		
+		for (TransformationClass tc : transformationClasses) {
+			int numObjectBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
+			System.out.println("basisSize = " + tc.getBasisSize());
+			System.out.println("numObjectBases = " + numObjectBases);
+			int[][] perms = tc.getPerms();
+			int numComputations = numObjectBases * numObjectBases *perms.length;
+			System.out.println("numComputations = "+numComputations);
+			
+//			Find number of processors
+			int numProcessors = Runtime.getRuntime().availableProcessors();
+
+//			If number of processors is less than the square root of numComputations,
+//			then number of threads is set to number of processors; otherwise it is 
+//			set to the square root of numComputations
+			ArrayList<Thread> threadArray = new ArrayList<Thread>();
+			
+			if (numThreads == 0)
+				numThreads = Math.min(numProcessors-1, (int)Math.floor(Math.sqrt(numComputations)));
+			
+			int computationsPerThread = (int)Math.ceil(numComputations/(1.0*numThreads));
+			for(int threadNum = 0; threadNum < numThreads; threadNum++) {
+				ComputeMaximalTransformablePatternsRunnable runnable = new ComputeMaximalTransformablePatternsRunnable(
+						this, 
+						tc,
+						mtpArray,
+						minSize,
+						threadNum * computationsPerThread,
+						Math.min((threadNum + 1)*computationsPerThread,numComputations),
+						numObjectBases
+						);
+				Thread thread = new Thread(runnable);
+				thread.start();
+				threadArray.add(thread);
+			}
+			for(Thread thread : threadArray) {
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+
+		TreeSet<Integer> hashValues = new TreeSet<Integer>();
+		for(int i = 0; i < mtpArray.length; i++) {
+			if (!(mtpArray[i].isEmpty()))
+				hashValues.add(i);
+		}
+
+		mtps = new TreeSet<TransformationPointSetPair>();
+		int maxLoad = 0;
+		for(int i : hashValues) {
+			if (mtpArray[i].size() > maxLoad)
+				maxLoad = mtpArray[i].size();
+			for (TransformationPointSetPair mtp : mtpArray[i].getPairs()) {
+				mtps.add(mtp);
+			}
+		}
+
+		int[] loadHistogram = new int[maxLoad+1];
+		for(int i : hashValues)
+			loadHistogram[mtpArray[i].size()]++;
+
+		//		for(int i = 0; i < loadHistogram.length; i++)
+		//			if (loadHistogram[i] > 0) {
+		//				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
+		//			}
+
+		
+	}
+	
 	public void computeMaximalTransformablePatternsForkJoin(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -1379,8 +1460,26 @@ public class PointSet implements Comparable<PointSet>{
 		setEncoding(encoding);
 	}
 
-	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch, double minCompactness, double minOccurrenceCompactness, String groundTruthFileName, boolean midTimePoint, boolean drawBoundingBoxes, boolean useChroma, boolean useMorph) throws Exception {
-		encodePointSet(ps, outputFileName, transformationClasses, false, 3, HASH_TABLE_SIZE, draw, diatonicPitch, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes, useChroma, useMorph);
+	public static void encodePointSet(PointSet ps, String outputFileName, TransformationClass[] transformationClasses, boolean draw, boolean diatonicPitch, double minCompactness, double minOccurrenceCompactness, String groundTruthFileName, boolean midTimePoint, boolean drawBoundingBoxes, boolean useChroma, boolean useMorph, int numThreads, boolean multiThreaded, boolean forkJoin) throws Exception {
+		encodePointSet(
+				ps, 
+				outputFileName, 
+				transformationClasses, 
+				false, 
+				3, 
+				HASH_TABLE_SIZE, 
+				draw, 
+				diatonicPitch, 
+				minCompactness, 
+				minOccurrenceCompactness, 
+				groundTruthFileName, 
+				midTimePoint, 
+				drawBoundingBoxes, 
+				useChroma, 
+				useMorph,
+				numThreads,
+				multiThreaded,
+				forkJoin);
 	}
 
 	public static PointSet maximalTransformedMatches(
@@ -1398,7 +1497,10 @@ public class PointSet implements Comparable<PointSet>{
 			boolean midTimePoint,
 			boolean drawBoundingBoxes,
 			boolean useChroma,
-			boolean useMorph) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			boolean useMorph,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		return encodePointSet(
 				dataset, 
 				outputFilePath, 
@@ -1415,7 +1517,10 @@ public class PointSet implements Comparable<PointSet>{
 				midTimePoint,
 				drawBoundingBoxes,
 				useChroma,
-				useMorph
+				useMorph,
+				numThreads,
+				multiThreaded,
+				forkJoin
 				);
 	}
 
@@ -1434,7 +1539,10 @@ public class PointSet implements Comparable<PointSet>{
 			boolean midTimePoint,
 			boolean drawBoundingBoxes,
 			boolean useChroma, 
-			boolean useMorph) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			boolean useMorph,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) throws FileNotFoundException, TimeOutException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 		encodePointSet (
 				ps, 
 				outputFilePath, 
@@ -1451,7 +1559,10 @@ public class PointSet implements Comparable<PointSet>{
 				midTimePoint,
 				drawBoundingBoxes,
 				useChroma,
-				useMorph
+				useMorph,
+				numThreads,
+				multiThreaded,
+				forkJoin
 				);
 	}
 
@@ -1472,7 +1583,10 @@ public class PointSet implements Comparable<PointSet>{
 			boolean midTimePoint,
 			boolean drawBoundingBoxes,
 			boolean useChroma,
-			boolean useMorph) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
+			boolean useMorph,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) throws TimeOutException, FileNotFoundException, NoTransformationClassesDefinedException, SuperMTPsNotNullException {
 
 		LogInfo.ACCUMULATED_TIME = 0l;
 		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
@@ -1489,7 +1603,12 @@ public class PointSet implements Comparable<PointSet>{
 		if (useScalexia)
 			ps.computeMTPsWithScalexia(minSize);
 		else if (ps2 == null) {
-			ps.computeMaximalTransformablePatternsForkJoin(minSize);
+			if (multiThreaded || numThreads != 0)
+				ps.computeMaximalTransformablePatternsInParallel(minSize, numThreads);
+			else if (forkJoin)
+				ps.computeMaximalTransformablePatternsForkJoin(minSize);
+			else
+				ps.computeMaximalTransformablePatterns(minSize);
 		} else //ps2 is non-null
 			ps.computeMaximalTransformedMatchesForkJoin(ps2,minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", !IS_OSTG));
@@ -1969,7 +2088,10 @@ public class PointSet implements Comparable<PointSet>{
 			String groundTruthFileName,
 			boolean drawBoundingBoxes,
 			boolean useChroma,
-			boolean useMorph) {
+			boolean useMorph,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) {
 		String outputFileName = Utility.getOutputPathForPairFileEncoding(outputDirectory, filePath1, filePath2, transformationClasses, count);
 		try {
 			PointSet ps1 = new PointSet(
@@ -1993,7 +2115,25 @@ public class PointSet implements Comparable<PointSet>{
 			PointSet ps = new PointSet();
 			ps.addAll(ps1);
 			ps.addAll(translatedPS2);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes, useChroma, useMorph);
+			encodePointSet(
+					ps, 
+					outputFileName, 
+					transformationClasses, 
+					useScalexia, 
+					minSize, 
+					HASH_TABLE_SIZE, 
+					draw, 
+					pitchSpell, 
+					minCompactness, 
+					minOccurrenceCompactness, 
+					groundTruthFileName, 
+					midTimePoint, 
+					drawBoundingBoxes, 
+					useChroma, 
+					useMorph,
+					numThreads,
+					multiThreaded,
+					forkJoin);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -2021,7 +2161,10 @@ public class PointSet implements Comparable<PointSet>{
 			String groundTruthFileName,
 			boolean drawBoundingBoxes,
 			boolean useChroma,
-			boolean useMorph) {
+			boolean useMorph,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -2031,7 +2174,7 @@ public class PointSet implements Comparable<PointSet>{
 					dimensionMask,
 					useChroma,
 					useMorph);
-			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes, useChroma, useMorph);
+			encodePointSet(ps, outputFileName, transformationClasses, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes, useChroma, useMorph, numThreads, multiThreaded, forkJoin);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -2056,7 +2199,10 @@ public class PointSet implements Comparable<PointSet>{
 			String groundTruthFileName,
 			boolean drawBoundingBoxes,
 			boolean useChroma,
-			boolean useMorph) {
+			boolean useMorph,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, patternFileName, datasetFileName, transformationClasses);
 			TIME_SCALE_FACTOR = 1.0;
@@ -2111,7 +2257,10 @@ public class PointSet implements Comparable<PointSet>{
 					midTimePoint,
 					drawBoundingBoxes,
 					useChroma,
-					useMorph);
+					useMorph,
+					numThreads,
+					multiThreaded,
+					forkJoin);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DimensionalityException e) {
@@ -2141,7 +2290,10 @@ public class PointSet implements Comparable<PointSet>{
 			String groundTruthFileName,
 			boolean drawBoundingBoxes,
 			boolean useChroma,
-			boolean useMorph) {
+			boolean useMorph,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) {
 		try {
 			String outputFileName = Utility.getOutputFilePath(outputDir, fileName, transformationClasses);
 			PointSet ps = new PointSet(
@@ -2151,7 +2303,25 @@ public class PointSet implements Comparable<PointSet>{
 					dimensionMask,
 					useChroma,
 					useMorph);
-			encodePointSet(ps, outputFileName, transformationClasses, useScalexia, minSize, HASH_TABLE_SIZE, draw, pitchSpell, minCompactness, minOccurrenceCompactness, groundTruthFileName, midTimePoint, drawBoundingBoxes, useChroma, useMorph);
+			encodePointSet(
+					ps, 
+					outputFileName, 
+					transformationClasses, 
+					useScalexia, 
+					minSize, 
+					HASH_TABLE_SIZE, 
+					draw, 
+					pitchSpell, 
+					minCompactness, 
+					minOccurrenceCompactness, 
+					groundTruthFileName, 
+					midTimePoint, 
+					drawBoundingBoxes, 
+					useChroma, 
+					useMorph,
+					numThreads,
+					multiThreaded,
+					forkJoin);
 			return ps;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -2196,7 +2366,10 @@ public class PointSet implements Comparable<PointSet>{
 						null,
 						false,
 						false,
-						false);
+						false,
+						0,
+						false,
+						true);
 		}
 	}
 
@@ -2230,7 +2403,10 @@ public class PointSet implements Comparable<PointSet>{
 								null,
 								false,
 								false,
-								false);		
+								false,
+								0,
+								false,
+								true);		
 					}
 					count++;
 				}
@@ -2318,7 +2494,10 @@ public class PointSet implements Comparable<PointSet>{
 								null,
 								false,
 								false,
-								false);		
+								false,
+								0,
+								false,
+								true);		
 					}
 					count++;
 				}
@@ -2341,7 +2520,10 @@ public class PointSet implements Comparable<PointSet>{
 				null,
 				false,
 				false,
-				false
+				false,
+				0,
+				false,
+				true
 				);
 	}
 
@@ -2428,7 +2610,10 @@ public class PointSet implements Comparable<PointSet>{
 							null,
 							false,
 							false,
-							false
+							false,
+							0,
+							false,
+							true
 							);
 				}
 			}
@@ -2494,7 +2679,10 @@ public class PointSet implements Comparable<PointSet>{
 			String dimensionMask, 
 			boolean chroma, 
 			boolean morph,
-			int xScaleFactor) {
+			int xScaleFactor,
+			int numThreads,
+			boolean multiThreaded,
+			boolean forkJoin) {
 		IS_OSTG = true;
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, xScaleFactor, morph, chroma);
 		//		Flatten groundTruthPatterns into an array of MaxTranPats PointSets
@@ -2567,7 +2755,10 @@ public class PointSet implements Comparable<PointSet>{
 							midTimePoint,
 							false,
 							chroma,
-							morph);
+							morph,
+							numThreads,
+							multiThreaded,
+							forkJoin);
 					ArrayList<OccurrenceSet> occurrenceSets = maxTransformedMatches.getEncoding().getOccurrenceSets();
 					TreeSet<Transformation> transformations = (occurrenceSets != null && occurrenceSets.size() > 0)?occurrenceSets.get(0).getTransformations():null;
 					transformationGraph.get(i).set(j,transformations);

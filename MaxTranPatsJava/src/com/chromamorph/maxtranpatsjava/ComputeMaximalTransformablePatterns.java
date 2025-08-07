@@ -63,8 +63,8 @@ public class ComputeMaximalTransformablePatterns extends RecursiveAction {
 		int C = startIndex, N = numObjectBases, p = tc.getPerms().length;
 		int imgIndex = C/(N*p);
 		int objIndex = (C % (N * p)) / p;
-		if (imgIndex < objIndex)
-			return;
+//		if (imgIndex < objIndex)
+//			return;
 		int[] perm = tc.getPerm(C % p);
 		try {
 			PointSequence objectBasis = pointSet.computeBasis(tc.getBasisSize(), objIndex);

@@ -25,6 +25,9 @@ public class MaxTranPats {
 	public static boolean MORPH								= false;
 	public static int X_SCALE_FACTOR						= 1;
 	public static boolean IPTG								= false;
+	public static int NUM_THREADS							= 0;
+	public static boolean MULTITHREADED						= false;
+	public static boolean FORKJOIN							= false;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
@@ -46,6 +49,9 @@ public class MaxTranPats {
 	public static String MORPH_SWITCH						= "m";
 	public static String X_SCALE_FACTOR_SWITCH				= "xsf";
 	public static String IPTG_SWITCH						= "iptg";
+	public static String NUM_THREADS_SWITCH					= "numthreads";
+	public static String MULTITHREADED_SWITCH				= "multithreaded";
+	public static String FORKJOIN_SWITCH					= "forkjoin";
 		
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
@@ -97,6 +103,9 @@ public class MaxTranPats {
 		sb.append(String.format("%s (-%s): %s\n", "Use morph", MORPH_SWITCH, MORPH));
 		sb.append(String.format("%s (-%s): %s\n", "x-axis scale factor", X_SCALE_FACTOR_SWITCH, X_SCALE_FACTOR));
 		sb.append(String.format("%s (-%s): %s\n", "Generate inter-pattern transformation graph", IPTG_SWITCH, IPTG));
+		sb.append(String.format("%s (-%s): %s\n", "Multi-threaded computation and supply number of threads", NUM_THREADS_SWITCH, NUM_THREADS));
+		sb.append(String.format("%s (-%s): %s\n", "Multi-threaded computation with number of threads determined by number of processors", MULTITHREADED_SWITCH, MULTITHREADED));
+		sb.append(String.format("%s (-%s): %s\n", "Use Fork/Join framework", FORKJOIN_SWITCH, FORKJOIN));
 
 		return sb.toString();
 	}
@@ -188,7 +197,10 @@ public class MaxTranPats {
 				"-"+CHROMA_SWITCH+"\tUse chroma.",
 				"-"+MORPH_SWITCH+"\tUse morph.",
 				"-"+X_SCALE_FACTOR_SWITCH+"\tFollowed by integer value. Multiply the x-values of the points by this integer value.",
-				"-"+IPTG_SWITCH+"\tIf present, then generate inter-pattern transformation graph for patterns in ground-truth file."
+				"-"+IPTG_SWITCH+"\tIf present, then generate inter-pattern transformation graph for patterns in ground-truth file.",
+				"-"+NUM_THREADS_SWITCH+"\tSpecify multi-threaded computation and supply number of threads.",
+				"-"+MULTITHREADED_SWITCH+"\tSpecify multi-threaded computation with number of threads determined by number of processors.",
+				"-"+FORKJOIN_SWITCH+"\tUse Fork/Join framework parallel algorithm"
 		);
 	}
 	
@@ -227,6 +239,9 @@ public class MaxTranPats {
 		MORPH = getBooleanValue(argArray,MORPH_SWITCH);
 		X_SCALE_FACTOR = getIntValue(argArray,X_SCALE_FACTOR_SWITCH,1);
 		IPTG = getBooleanValue(argArray, IPTG_SWITCH);
+		NUM_THREADS = getIntValue(argArray,NUM_THREADS_SWITCH,0);
+		MULTITHREADED = getBooleanValue(argArray, MULTITHREADED_SWITCH);
+		FORKJOIN = getBooleanValue(argArray, FORKJOIN_SWITCH);
 
 		if (OUTPUT_DIR_PATH == null && INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH != null) {
 			int end = GROUND_TRUTH_FILE_PATH.lastIndexOf("/");
@@ -252,7 +267,10 @@ public class MaxTranPats {
 						DIMENSION_MASK,
 						CHROMA,
 						MORPH,
-						X_SCALE_FACTOR
+						X_SCALE_FACTOR,
+						NUM_THREADS,
+						MULTITHREADED,
+						FORKJOIN
 					);
 		}
 		else
@@ -286,7 +304,10 @@ public class MaxTranPats {
 					GROUND_TRUTH_FILE_PATH,
 					DRAW_BOUNDING_BOXES,
 					CHROMA,
-					MORPH
+					MORPH,
+					NUM_THREADS,
+					MULTITHREADED,
+					FORKJOIN
 					);
 		} else {
 			PointSet.maximalTransformedMatchesFromFiles(
@@ -304,7 +325,10 @@ public class MaxTranPats {
 					GROUND_TRUTH_FILE_PATH,
 					DRAW_BOUNDING_BOXES,
 					CHROMA,
-					MORPH
+					MORPH,
+					NUM_THREADS,
+					MULTITHREADED,
+					FORKJOIN
 					);
 		}
 	}
