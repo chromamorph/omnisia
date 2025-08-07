@@ -63,6 +63,9 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 			for(int i = 0; i < tc.getBasisSize(); i++)
 				imgBasisPerm.add(imageBasis.get(perm[i]));
 			ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
+//			if (!transformations.isEmpty()) {
+//				System.out.println(objectBasis+"->"+imgBasisPerm+":"+transformations);
+//			}
 			for(Transformation transformation : transformations) {
 
 				int i = transformation.hash(PointSet.HASH_TABLE_SIZE);

@@ -1,0 +1,219 @@
+ubuntu@maxtranpats01:~/maxtranpats$ java -Xmx64G -Xms64G -jar maxtranpats202507041625.jar -i ./score-from-midi-100.opnd -tc F_2STRscore-from-midi-100.opnd
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+basisSize = 2
+numObjectBases = 4186
+numComptutations = 35045192
+          22544 ms          22544 ms  computeMaximalTransformablePatterns ends
+          25021 ms           2477 ms  computeSizeMTPSetArray ends
+
+After running merge_mtps:
+mtp_sizes: 2 3 4 5 6 7 8 9 10 11 12 13 14 16 92 
+
+Num occurrence sets of each size
+2 : 4127
+3 : 12559
+4 : 4652
+5 : 923
+6 : 408
+7 : 88
+8 : 96
+9 : 10
+10 : 23
+11 : 6
+12 : 11
+13 : 2
+14 : 4
+16 : 1
+92 : 1
+          25572 ms            551 ms  mergeMTPs ends
+          29543 ms           3971 ms  computeSuperMTPs ends
+          29745 ms            202 ms  computeHeterogeneousOccurrenceSets ends
+Number of occurrence sets at beginning of removeDuplicateOccurrenceSets is 22911
+Number of occurrence sets at end of removeDuplicateOccurrenceSets is 22025
+          41048 ms          11303 ms  removeDuplicateOccurrenceSets ends
+          46570 ms           5522 ms  removeRedundantTransformations ends
+Number of occurrence sets at beginning of removeOccurrenceSetsWithNoTransformations is 22025
+Number of occurrence sets at end of removeOccurrenceSetsWithNoTransformations is 21162
+          46588 ms             18 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+          47095 ms            507 ms  computeSortedOccurrenceSets ends
+          47313 ms            218 ms  computeEncoding ends
+          47313 ms              0 ms  Program ends
+
+
+Output file: ./score-from-midi-100-opnd-F_2STR-2025-07-04-15-01-12-154/score-from-midi-100.enc
+Encoding:
+OS(P(p(0,29),p(16,36),p(28,34),p(32,32),p(44,31),p(48,29),p(64,28),p(80,29),p(92,31),p(96,32),p(120,32),p(128,29)),[T(F_2STR,[0.5, 80.0, 12.0, 1.0])],null)
+OS(P(p(56,60),p(78,58),p(90,55),p(104,41),p(126,43),p(134,50),p(142,20),p(158,53),p(168,44),p(174,34),p(184,36)),[T(F_2STR,[1.0, 16.0, 0.0, 1.0])],null)
+OS(P(p(94,58),p(102,43),p(102,58),p(150,24),p(152,22),p(158,53),p(160,19),p(166,31),p(174,34),p(176,36),p(184,53)),[T(F_2STR,[-1.0, 294.0, -2.0, 1.0])],null)
+OS(P(p(40,53),p(126,31),p(128,29),p(158,44),p(176,52),p(182,43)),[T(F_2STR,[1.0, 24.0, -81.0, -1.0])],null)
+OS(P(p(32,60),p(46,55),p(48,56),p(54,58),p(64,61),p(80,56),p(92,56),p(96,60),p(104,56),p(108,53),p(112,49),p(120,48),p(136,19),p(138,46),p(152,43),p(160,46),p(160,55),p(168,32),p(170,56),p(172,55),p(190,46),p(190,55),p(192,32),p(192,48),p(198,55)),[],null)
+
+
+Coverage: 92
+Dataset size: 92
+Uncompressed length: 184
+Encoding length: 146
+Compression factor: 1.2602739726027397
+Running time in milliseconds: 47313
+Encoding length without residual point set: 96
+Number of residual points: 25
+Percentage of residual points: 27.17%
+Compression factor without residual point set: 1.3958333333333333
+Number of occurrence sets: 5
+
+ubuntu@maxtranpats01:~/maxtranpats$ java -Xmx64G -Xms64G -jar maxtranpats202507041625.jar -i ./score-from-midi-150.opnd -tc F_2STR
+score-from-midi-150.opnd
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+basisSize = 2
+numObjectBases = 10011
+numComptutations = 200440242
+         147556 ms         147556 ms  computeMaximalTransformablePatterns ends
+         170003 ms          22447 ms  computeSizeMTPSetArray ends
+
+After running merge_mtps:
+mtp_sizes: 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 20 21 24 142 
+
+Num occurrence sets of each size
+2 : 9927
+3 : 53571
+4 : 26514
+5 : 6909
+6 : 2597
+7 : 805
+8 : 557
+9 : 134
+10 : 187
+11 : 33
+12 : 81
+13 : 15
+14 : 32
+15 : 5
+16 : 9
+17 : 2
+18 : 8
+20 : 2
+21 : 1
+24 : 1
+142 : 1
+         174259 ms           4256 ms  mergeMTPs ends
+         272568 ms          98309 ms  computeSuperMTPs ends
+         273803 ms           1235 ms  computeHeterogeneousOccurrenceSets ends
+Number of occurrence sets at beginning of removeDuplicateOccurrenceSets is 101391
+Number of occurrence sets at end of removeDuplicateOccurrenceSets is 97365
+         351969 ms          78166 ms  removeDuplicateOccurrenceSets ends
+         410993 ms          59024 ms  removeRedundantTransformations ends
+Number of occurrence sets at beginning of removeOccurrenceSetsWithNoTransformations is 97365
+Number of occurrence sets at end of removeOccurrenceSetsWithNoTransformations is 95192
+         411039 ms             46 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+         414599 ms           3560 ms  computeSortedOccurrenceSets ends
+         415840 ms           1241 ms  computeEncoding ends
+         415840 ms              0 ms  Program ends
+
+
+Output file: ./score-from-midi-150-opnd-F_2STR-2025-07-04-15-06-36-009/score-from-midi-150.enc
+Encoding:
+OS(P(p(32,60),p(40,53),p(46,55),p(54,58),p(56,60),p(64,61),p(72,60)),[T(F_2STR,[1.0, 48.0, -101.0, -1.0]), T(F_2STR,[2.0, -64.0, -89.0, -1.0]), T(F_2STR,[2.0, 160.0, -108.0, -1.0])],null)
+OS(P(p(16,36),p(28,34),p(32,32),p(44,31),p(96,32)),[T(F_2STR,[0.5, 80.0, 12.0, 1.0]), T(F_2STR,[0.5, 160.0, -68.0, -1.0]), T(F_2STR,[0.5, 256.0, 0.0, 1.0])],null)
+OS(P(p(40,53),p(48,56),p(56,60),p(72,60),p(94,58),p(96,60)),[T(F_2STR,[1.0, 160.0, -17.0, 1.0]), T(F_2STR,[2.0, 80.0, -108.0, -1.0])],null)
+OS(P(p(56,60),p(78,58),p(80,56),p(90,55),p(92,56),p(94,58)),[T(F_2STR,[1.0, 80.0, -111.0, -1.0]), T(F_2STR,[1.0, 160.0, -17.0, 1.0])],null)
+OS(P(p(80,29),p(92,56),p(96,44),p(108,53),p(112,49),p(118,34)),[T(F_2STR,[4.0, -242.0, -87.0, -1.0]), T(F_2STR,[4.0, -240.0, -85.0, -1.0])],null)
+OS(P(p(134,17),p(136,19),p(142,20),p(144,22),p(158,20),p(160,19)),[T(F_2STR,[-1.0, 374.0, 31.0, 1.0]), T(F_2STR,[1.0, 16.0, 33.0, 1.0])],null)
+OS(P(p(102,43),p(106,55),p(126,43),p(134,50)),[T(F_2STR,[-1.0, 358.0, -94.0, -1.0]), T(F_2STR,[2.0, 4.0, -98.0, -1.0]), T(F_2STR,[4.0, -242.0, -12.0, 1.0]), T(F_2STR,[4.0, -234.0, -9.0, 1.0])],null)
+OS(P(p(184,53),p(190,34),p(190,55),p(192,56),p(198,55),p(206,53),p(208,55)),[T(F_2STR,[8.0, -1368.0, -12.0, 1.0])],null)
+OS(P(p(92,31),p(184,44),p(192,41)),[T(F_2STR,[-0.25, 269.0, -91.0, -1.0])],null)
+OS(P(p(102,58),p(104,56),p(110,51),p(120,32),p(120,48),p(138,46),p(140,44),p(150,24),p(158,44),p(160,46),p(184,36),p(200,29),p(200,56),p(214,41),p(222,48),p(248,58),p(254,56),p(280,32),p(286,29),p(288,31),p(300,31),p(304,39)),[],null)
+
+
+Coverage: 142
+Dataset size: 142
+Uncompressed length: 284
+Encoding length: 224
+Compression factor: 1.2678571428571428
+Running time in milliseconds: 415840
+Encoding length without residual point set: 180
+Number of residual points: 22
+Percentage of residual points: 15.49%
+Compression factor without residual point set: 1.3333333333333333
+Number of occurrence sets: 10
+
+ubuntu@maxtranpats01:~/maxtranpats$ java -Xmx64G -Xms64G -jar maxtranpats202507041625.jar -i ./score-from-midi-200.opnd -tc F_2STR
+score-from-midi-200.opnd
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+basisSize = 2
+numObjectBases = 17391
+numComptutations = 604893762
+         487322 ms         487322 ms  computeMaximalTransformablePatterns ends
+         557712 ms          70390 ms  computeSizeMTPSetArray ends
+
+After running merge_mtps:
+mtp_sizes: 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 24 26 29 32 187 
+
+Num occurrence sets of each size
+2 : 17293
+3 : 125283
+4 : 75024
+5 : 21604
+6 : 8004
+7 : 2685
+8 : 1618
+9 : 583
+10 : 493
+11 : 159
+12 : 229
+13 : 53
+14 : 97
+15 : 17
+16 : 49
+17 : 12
+18 : 18
+19 : 7
+20 : 15
+21 : 2
+22 : 8
+24 : 4
+26 : 1
+29 : 1
+32 : 2
+187 : 1
+         570689 ms          12977 ms  mergeMTPs ends
+        1234180 ms         663491 ms  computeSuperMTPs ends
+        1238534 ms           4354 ms  computeHeterogeneousOccurrenceSets ends
+Number of occurrence sets at beginning of removeDuplicateOccurrenceSets is 253262
+Number of occurrence sets at end of removeDuplicateOccurrenceSets is 243264
+        1494578 ms         256044 ms  removeDuplicateOccurrenceSets ends
+        1752611 ms         258033 ms  removeRedundantTransformations ends
+Number of occurrence sets at beginning of removeOccurrenceSetsWithNoTransformations is 243264
+Number of occurrence sets at end of removeOccurrenceSetsWithNoTransformations is 239398
+        1752732 ms            121 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+        1763509 ms          10777 ms  computeSortedOccurrenceSets ends
+        1766745 ms           3236 ms  computeEncoding ends
+        1766745 ms              0 ms  Program ends
+
+
+Output file: ./score-from-midi-200-opnd-F_2STR-2025-07-04-15-14-30-393/score-from-midi-200.enc
+Encoding:
+OS(P(p(32,60),p(40,53),p(46,55),p(54,58),p(56,60),p(64,61),p(72,60),p(78,58),p(96,60)),[T(F_2STR,[1.0, 48.0, -101.0, -1.0]), T(F_2STR,[1.0, 272.0, -108.0, -1.0]), T(F_2STR,[2.0, -64.0, -89.0, -1.0]), T(F_2STR,[2.0, 160.0, -108.0, -1.0])],null)
+OS(P(p(40,53),p(46,55),p(78,58),p(90,55),p(94,58),p(96,60)),[T(F_2STR,[1.0, 48.0, -101.0, -1.0]), T(F_2STR,[1.0, 160.0, -17.0, 1.0]), T(F_2STR,[1.0, 272.0, -108.0, -1.0]), T(F_2STR,[1.0, 280.0, -89.0, -1.0])],null)
+OS(P(p(96,32),p(96,44),p(120,32),p(120,41),p(120,48)),[T(F_2STR,[-4.333333333333333, 760.0, 7.0, 1.0]), T(F_2STR,[-2.0, 544.0, -80.0, -1.0]), T(F_2STR,[1.0, 72.0, 0.0, 1.0]), T(F_2STR,[5.666666666666667, -354.0, 2.0, 1.0])],null)
+OS(P(p(296,43),p(310,41),p(312,39),p(318,38),p(318,53),p(320,36),p(320,51)),[T(F_2STR,[-11.0, 3600.0, 5.0, 1.0]), T(F_2STR,[5.0, -1248.0, 0.0, 1.0])],null)
+OS(P(p(134,17),p(150,24),p(152,22),p(158,20),p(160,19)),[T(F_2STR,[-1.0, 342.0, -56.0, -1.0]), T(F_2STR,[1.0, 96.0, 36.0, 1.0]), T(F_2STR,[1.0, 160.0, -55.0, -1.0])],null)
+OS(P(p(46,55),p(90,55),p(126,43),p(134,50),p(166,31),p(182,43),p(190,55),p(198,55),p(206,38),p(214,50),p(250,38),p(278,31),p(318,35),p(334,42),p(342,38),p(350,35),p(350,50),p(358,31),p(366,47)),[T(F_2STR,[1.0, 2.0, 1.0, 1.0])],null)
+OS(P(p(134,17),p(136,19),p(142,20),p(144,22),p(158,20),p(160,19)),[T(F_2STR,[-1.0, 374.0, 31.0, 1.0]), T(F_2STR,[1.0, 16.0, 33.0, 1.0])],null)
+OS(P(p(106,55),p(110,51),p(118,34),p(126,31)),[T(F_2STR,[-10.0, 1364.0, -87.0, -1.0]), T(F_2STR,[1.0, 2.0, -2.0, 1.0])],null)
+OS(P(p(221,50),p(222,48),p(223,47),p(224,48)),[T(F_2STR,[1.0, 160.0, -4.0, 1.0]), T(F_2STR,[72.0, -15832.0, -91.0, -1.0])],null)
+OS(P(p(32,32),p(288,31),p(328,32)),[T(F_2STR,[-0.25, 344.0, -63.0, -1.0])],null)
+OS(P(p(140,44),p(158,44),p(160,46),p(170,56),p(172,55),p(174,34),p(176,36),p(200,29),p(206,53),p(208,36),p(208,55),p(214,41),p(216,43),p(256,51),p(270,34),p(280,41),p(286,29),p(300,31),p(364,51),p(372,32)),[],null)
+
+
+Coverage: 187
+Dataset size: 187
+Uncompressed length: 374
+Encoding length: 276
+Compression factor: 1.355072463768116
+Running time in milliseconds: 1766745
+Encoding length without residual point set: 236
+Number of residual points: 20
+Percentage of residual points: 10.70%
+Compression factor without residual point set: 1.4152542372881356
+Number of occurrence sets: 11
+

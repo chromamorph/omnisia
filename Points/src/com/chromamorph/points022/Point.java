@@ -16,6 +16,9 @@ public class Point implements Comparable<Point>{
 	private int y;
 	private Integer voice;
 	private Long duration;
+	Float strokeWidth = null;
+	Float pointWidth = null;
+	Float pointHeight = null;
 
 	public Point(int x, int y) {
 		setX(x);
@@ -129,4 +132,30 @@ public class Point implements Comparable<Point>{
 	public String getLatexString() {
 		return "\\langle"+getX()+","+getY()+"\\rangle";
 	}
+	
+	public Float getStrokeWidth() {
+		return strokeWidth;
+	}
+	
+	public void setStrokeWidth(Float strokeWidth) {
+		this.strokeWidth = strokeWidth;
+	}
+
+	public Float getPointWidth() {
+		return pointWidth;
+	}
+
+	public void setPointWidth(Float pointWidth) {
+		this.pointWidth = pointWidth;
+	}
+
+	public Float getPointHeight() {
+		return pointHeight;
+	}
+
+	public void setPointHeight(Float pointHeight) {
+		this.pointHeight = pointHeight;
+	}
+	
+	
 }

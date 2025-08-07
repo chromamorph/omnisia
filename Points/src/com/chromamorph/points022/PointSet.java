@@ -42,6 +42,9 @@ public class PointSet implements Comparable<PointSet>{
 	protected int[] colArray = null;
 	protected int[] colArray2 = null;
 	protected String label = null;
+	protected Float strokeWidth = null;
+	protected Float pointWidth = null;
+	protected Float pointHeight = null;
 
 	public PointSet() {}
 
@@ -1261,6 +1264,30 @@ public class PointSet implements Comparable<PointSet>{
 	
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public void setStrokeWidth(Float strokeWidth) {
+		this.strokeWidth = strokeWidth;
+	}
+	
+	public Float getStrokeWidth() {
+		return strokeWidth;
+	}
+
+	public void setPointWidth(Float pointWidth) {
+		this.pointWidth = pointWidth;
+	}
+	
+	public Float getPointWidth() {
+		return pointWidth;
+	}
+
+	public void setPointHeight(Float pointHeight) {
+		this.pointHeight = pointHeight;
+	}
+	
+	public Float getPointHeight() {
+		return pointHeight;
 	}
 
 }
