@@ -455,6 +455,17 @@ public class Utility {
 		return Math.abs(x - y) <= TOLERANCE;
 	}
 	
+	public static ArrayList<Double> roundSigmaValuesToNearestHalf(ArrayList<Double> sigma) {
+		ArrayList<Double> newSigma = new ArrayList<Double>();
+		for(double x: sigma) {
+			if (Utility.equalWithTolerance(0, x%.5))
+				newSigma.add(Utility.roundToNearestHalf(x));
+			else
+				newSigma.add(x);
+		}
+		return newSigma;
+	}
+	
 	public static double roundToNearestHalf(double x) {
 		return (1.0 * Math.round(2*x))/2;
 	}
@@ -573,6 +584,7 @@ public class Utility {
 	}
 	
 	public static void main(String[] args) {
+		System.out.println(lcm(5,24,16));
 //		ArrayList<Double> a = new ArrayList<Double>();
 //		a.add(1.0);
 //		a.add(0.0);
@@ -660,16 +672,16 @@ public class Utility {
 //			}
 //		}
 
-		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
-		for(int i = 2; i < 13; i++) {
-			//log.add(new LogInfo("Start i = "+i,true));
-			long start = System.currentTimeMillis();
-			computePermutationIndexSequences(i);
-			long end = System.currentTimeMillis();
-			long runningTime = end - start;
-			System.out.println(String.format("%10d%10dms\t%10.5f", i, runningTime, runningTime/(1.0 * factorial(i))));
-			//log.add(new LogInfo("End i = "+i,true));
-		}
+//		ArrayList<LogInfo> log = new ArrayList<LogInfo>();
+//		for(int i = 2; i < 13; i++) {
+//			//log.add(new LogInfo("Start i = "+i,true));
+//			long start = System.currentTimeMillis();
+//			computePermutationIndexSequences(i);
+//			long end = System.currentTimeMillis();
+//			long runningTime = end - start;
+//			System.out.println(String.format("%10d%10dms\t%10.5f", i, runningTime, runningTime/(1.0 * factorial(i))));
+//			//log.add(new LogInfo("End i = "+i,true));
+//		}
 	}
 
 	

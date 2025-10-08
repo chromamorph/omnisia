@@ -1369,77 +1369,6 @@ public class Notes {
 			note.setOnset(note.getOnset()+delayInTatums);
 	}
 
-
-	
-	public static void main2(String[] args) {
-		String inputDirectory = "/Users/dave/Documents/Work/Research/Data/Gissel/BachPF/";
-		String outputDirectory = "/Users/dave/Documents/Work/Research/Data/Gissel/BachPF-OPD/";
-		boolean pitchSpell = true;
-		boolean withoutChannel10 = true;
-		for(int bwv = 846; bwv < 894; bwv++) {
-			for(int i = 1; i < 3; i++) {
-				try {
-					String midiFilePath = inputDirectory+"0"+bwv+"/0"+i+".mid";
-					Notes notes = Notes.fromMIDI(midiFilePath, pitchSpell, withoutChannel10);
-					String opdvFilePath = outputDirectory+ "0"+bwv+"/0"+i+".opd";
-					notes.toOPDVFile(opdvFilePath);
-				} catch (InvalidMidiDataException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	public static void main(String[] args) {
-
-//		try {
-//			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opnd");
-//			notes.toOPDVFile("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opd");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		
-
-//		try {
-//			Notes notes = Notes.fromOPND("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/01 Debussy-Hommage-a-Haydn/DEBUSSY-HOMMAGE-A-HAYDN.OPND");
-//			notes.play(4, 50);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (InvalidMidiDataException e) {
-//			e.printStackTrace();
-//		} catch (MidiUnavailableException e) {
-//			e.printStackTrace();
-//		}
-		
-//		try {
-//			String opndFileName = "../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";
-//			Notes notes = Notes.fromOPND(opndFileName);
-//			notes.toOPMFileForRetrograde("../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-729.opmr");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-		
-//		String notesFileName = "data/chopin-etude-op10-no3.notes";
-////		String opndFileName = "/Users/dave/Documents/Work/Research/2015-06-17-workspace-mars/notes/data/chopin-etude-op10-no1.opndv";
-////		new Notes(notesFileName).toOPNDFile(opndFileName);
-//		try {
-//			new Notes(notesFileName).play(4,176);
-//		} catch (InvalidMidiDataException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (MidiUnavailableException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-		Notes notes = new Notes("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI.opnd");
-		notes.toOPNDFile("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI-from-notes.opnd");
-	}
-
 	public Notes getSegment(Long startTatum, Long endTatum, boolean zeroOnset) {
 		Notes segment = new Notes();
 		TreeSet<Note> noteSet = getNotes();
@@ -1546,5 +1475,90 @@ public class Notes {
 		
 		return groundTruthPatterns;
 	}
+
+
+	
+	public static void main2(String[] args) {
+		String inputDirectory = "/Users/dave/Documents/Work/Research/Data/Gissel/BachPF/";
+		String outputDirectory = "/Users/dave/Documents/Work/Research/Data/Gissel/BachPF-OPD/";
+		boolean pitchSpell = true;
+		boolean withoutChannel10 = true;
+		for(int bwv = 846; bwv < 894; bwv++) {
+			for(int i = 1; i < 3; i++) {
+				try {
+					String midiFilePath = inputDirectory+"0"+bwv+"/0"+i+".mid";
+					Notes notes = Notes.fromMIDI(midiFilePath, pitchSpell, withoutChannel10);
+					String opdvFilePath = outputDirectory+ "0"+bwv+"/0"+i+".opd";
+					notes.toOPDVFile(opdvFilePath);
+				} catch (InvalidMidiDataException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+
+//		try {
+//			Notes notes = Notes.fromOPND("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opnd");
+//			notes.toOPDVFile("/Users/susanne/Repos/omnisia/Points/data/Die Kunst der Fuge/ContapunctusVI/ContrapunctusVIStart.opd");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		
+
+//		try {
+//			Notes notes = Notes.fromOPND("/Users/susanne/Repos/data/Hommage-a-Joseph-Haydn-1909/01 Debussy-Hommage-a-Haydn/DEBUSSY-HOMMAGE-A-HAYDN.OPND");
+//			notes.play(4, 50);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (InvalidMidiDataException e) {
+//			e.printStackTrace();
+//		} catch (MidiUnavailableException e) {
+//			e.printStackTrace();
+//		}
+		
+//		try {
+//			String opndFileName = "../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-done.opnd";
+//			Notes notes = Notes.fromOPND(opndFileName);
+//			notes.toOPMFileForRetrograde("../Points/data/WTCI-FUGUES-FOR-JNMR-2014/bwv846b-729.opmr");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		
+//		String notesFileName = "data/chopin-etude-op10-no3.notes";
+////		String opndFileName = "/Users/dave/Documents/Work/Research/2015-06-17-workspace-mars/notes/data/chopin-etude-op10-no1.opndv";
+////		new Notes(notesFileName).toOPNDFile(opndFileName);
+//		try {
+//			new Notes(notesFileName).play(4,176);
+//		} catch (InvalidMidiDataException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (MidiUnavailableException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+//		Notes notes = new Notes("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI.opnd");
+//		notes.toOPNDFile("/Users/susanne/Repos/omnisia/MaxTranPatsJava/data/DieKunstDerFuge/ContrapunctusVI/ContrapunctusVI-from-notes.opnd");
+
+		
+		try {
+			Notes notes = fromOPND("/Users/susanne/Repos/data/Barber/SonataForPianoOp26/BarberSonataOp26MvtI/BarberSonataOp26MvtI.opnd");
+			notes.play(60,60,4920);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	
 }

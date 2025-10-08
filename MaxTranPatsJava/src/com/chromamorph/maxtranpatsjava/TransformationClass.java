@@ -125,4 +125,15 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 		return "TC("+getId()+","+getName()+")";
 	}
 	
+	public static String getTransformationClassesString(TransformationClass[] transformationClasses) {
+		StringBuilder s = new StringBuilder();
+		for(int i = 0; i < transformationClasses.length; i++) {
+			TransformationClass tc = transformationClasses[i];
+			s.append(tc.getName());
+			if (i < transformationClasses.length - 1)
+				s.append("-");
+		}
+		return s.toString().replace("_", "");
+	}
+	
 }

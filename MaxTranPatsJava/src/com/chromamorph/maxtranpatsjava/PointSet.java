@@ -60,11 +60,11 @@ public class PointSet implements Comparable<PointSet>{
 	public static double TIME_SCALE_FACTOR = 1.0;
 	public static boolean IS_OSTG = false;
 	protected String label = null;
-	
+
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	
+
 	public String getLabel() {
 		return label;
 	}
@@ -165,7 +165,7 @@ public class PointSet implements Comparable<PointSet>{
 			makePointSetFromPTSFile(file);
 			return;
 		}
-		if (file.getName().toLowerCase().endsWith(".mid")) {
+		if (file.getName().toLowerCase().endsWith(".mid") || file.getName().toLowerCase().endsWith(".midi")) {
 			makePointSetFromMIDIFile(file, pitchSpell, midTimePoint, dimensionMask, useChroma, useMorph);
 			return;
 		}
@@ -593,7 +593,7 @@ public class PointSet implements Comparable<PointSet>{
 		PointSequence basis = new PointSequence();
 		try {
 			basisIndexSequence = Utility.computeCombinationIndexSequence(basisIndex,basisSize,size());
-//			System.out.println(basisIndexSequence);
+			//			System.out.println(basisIndexSequence);
 			for(int i : basisIndexSequence) {
 				if (this.size() == 0) {
 					throw new Exception("this.size() == 0 in PointSet.computeBasis() with basisSize = "+basisSize+" and basisIndex = "+basisIndex);
@@ -603,11 +603,11 @@ public class PointSet implements Comparable<PointSet>{
 		} catch(Exception e) {
 			System.out.println(this);
 			e.printStackTrace();
-						System.exit(1);
+			System.exit(1);
 		}
 		return basis;
 	}
-	
+
 	public void computeMaximalTransformedMatchesForkJoin(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -665,7 +665,7 @@ public class PointSet implements Comparable<PointSet>{
 		ListOfTransformationPointSetPairs[] mtpArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
 		for (int i = 0; i < mtpArray.length; i++)
 			mtpArray[i] = new ListOfTransformationPointSetPairs();
-		
+
 		for (TransformationClass tc : transformationClasses) {
 			int numObjectBases = Utility.computeNumCombinations(size(), tc.getBasisSize());
 			System.out.println("basisSize = " + tc.getBasisSize());
@@ -673,18 +673,18 @@ public class PointSet implements Comparable<PointSet>{
 			int[][] perms = tc.getPerms();
 			int numComputations = numObjectBases * numObjectBases *perms.length;
 			System.out.println("numComputations = "+numComputations);
-			
-//			Find number of processors
+
+			//			Find number of processors
 			int numProcessors = Runtime.getRuntime().availableProcessors();
 
-//			If number of processors is less than the square root of numComputations,
-//			then number of threads is set to number of processors; otherwise it is 
-//			set to the square root of numComputations
+			//			If number of processors is less than the square root of numComputations,
+			//			then number of threads is set to number of processors; otherwise it is 
+			//			set to the square root of numComputations
 			ArrayList<Thread> threadArray = new ArrayList<Thread>();
-			
+
 			if (numThreads == 0)
 				numThreads = Math.min(numProcessors-1, (int)Math.floor(Math.sqrt(numComputations)));
-			
+
 			int computationsPerThread = (int)Math.ceil(numComputations/(1.0*numThreads));
 			for(int threadNum = 0; threadNum < numThreads; threadNum++) {
 				ComputeMaximalTransformablePatternsRunnable runnable = new ComputeMaximalTransformablePatternsRunnable(
@@ -707,7 +707,7 @@ public class PointSet implements Comparable<PointSet>{
 					e.printStackTrace();
 				}
 			}
-			
+
 		}
 
 		TreeSet<Integer> hashValues = new TreeSet<Integer>();
@@ -735,9 +735,9 @@ public class PointSet implements Comparable<PointSet>{
 		//				System.out.println(String.format("%5d:%8d", i, loadHistogram[i]));
 		//			}
 
-		
+
 	}
-	
+
 	public void computeMaximalTransformablePatternsForkJoin(int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -754,8 +754,8 @@ public class PointSet implements Comparable<PointSet>{
 			int numComputations = numObjectBases * numObjectBases *perms.length;
 			System.out.println("numComptutations = "+numComputations);
 			ComputeMaximalTransformablePatterns action = new ComputeMaximalTransformablePatterns(this, tc, mtpArray, minSize, 0, numComputations, numObjectBases,0);
-//			System.out.println(ForkJoinPool.commonPool().toString());
-//			ForkJoinPool.commonPool().invoke(action);
+			//			System.out.println(ForkJoinPool.commonPool().toString());
+			//			ForkJoinPool.commonPool().invoke(action);
 			ForkJoinPool pool = new ForkJoinPool(
 					Runtime.getRuntime().availableProcessors(),
 					ForkJoinPool.defaultForkJoinWorkerThreadFactory,
@@ -1617,7 +1617,7 @@ public class PointSet implements Comparable<PointSet>{
 		//		System.out.println("Number of MTPs before removal: "+numMTPsBeforeRemoval);
 
 		int sizeMTPSetArraySize = 1+ps.size();
-		
+
 		if (ps2 != null)
 			sizeMTPSetArraySize = 1+Math.max(ps.size(), ps2.size());
 		ps.computeSizeMTPSetArray(minSize,sizeMTPSetArraySize);
@@ -1855,22 +1855,22 @@ public class PointSet implements Comparable<PointSet>{
 		}
 
 		//*********************************
-		
-//		Read pattern label
+
+		//		Read pattern label
 		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
 		if (sb.substring(i).startsWith("(label")) {
 			int labelEndIndex = sb.indexOf(")", i);
 			label = sb.substring(i + "(label".length(), labelEndIndex).trim();
 			i = labelEndIndex + 1;
 		}
-//		Read stroke-width
+		//		Read stroke-width
 		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
 		if (sb.substring(i).startsWith("(stroke-width")) {
 			int strokeWidthEndIndex = sb.indexOf(")", i);
 			strokeWidth = Float.parseFloat(sb.substring(i + "(stroke-width".length(), strokeWidthEndIndex).trim());
 			i = strokeWidthEndIndex + 1;
 		}
-//		Read point-width
+		//		Read point-width
 		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
 		if (sb.substring(i).startsWith("(point-width")) {
 			int pointWidthEndIndex = sb.indexOf(")", i);
@@ -1878,7 +1878,7 @@ public class PointSet implements Comparable<PointSet>{
 			i = pointWidthEndIndex + 1;
 		}
 
-//		Read point-height
+		//		Read point-height
 		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
 		if (sb.substring(i).startsWith("(point-height")) {
 			int pointHeightEndIndex = sb.indexOf(")", i);
@@ -1917,18 +1917,18 @@ public class PointSet implements Comparable<PointSet>{
 		while (sb.charAt(i) != '(') i++; // puts i at beginning of this point encoding
 		i++; //puts i at first character following opening parenthesis of this point encoding
 		while (Character.isWhitespace(sb.charAt(i))) i++; 
-// 		puts i at first non-whitespace char within point encoding after opening parenthesis
+		// 		puts i at first non-whitespace char within point encoding after opening parenthesis
 		if (sb.charAt(i) == '(') {
-//			Read stroke-width
+			//			Read stroke-width
 			if (sb.substring(i).startsWith("(stroke-width")) {
 				int strokeWidthEndIndex = sb.indexOf(")", i);
 				strokeWidth = Float.parseFloat(sb.substring(i + "(stroke-width".length(), strokeWidthEndIndex).trim());
 				i = strokeWidthEndIndex + 1;
 			}
-//			Find next non-whitespace character following stroke-width spec
+			//			Find next non-whitespace character following stroke-width spec
 			while (Character.isWhitespace(sb.charAt(i))) i++; 
 			if (sb.charAt(i) == '(') {
-//				Read point-width
+				//				Read point-width
 				if (sb.substring(i).startsWith("(point-width")) {
 					int pointWidthEndIndex = sb.indexOf(")", i);
 					pointWidth = Float.parseFloat(sb.substring(i + "(point-width".length(), pointWidthEndIndex).trim());
@@ -1937,7 +1937,7 @@ public class PointSet implements Comparable<PointSet>{
 
 				while (Character.isWhitespace(sb.charAt(i))) i++; 
 				if (sb.charAt(i) == '(') {
-//					Read point-height
+					//					Read point-height
 					while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
 					if (sb.substring(i).startsWith("(point-height")) {
 						int pointHeightEndIndex = sb.indexOf(")", i);
@@ -1947,7 +1947,7 @@ public class PointSet implements Comparable<PointSet>{
 				}
 			}
 		}
-//		i now points at the first character of the onset of the point
+		//		i now points at the first character of the onset of the point
 		PointEndIndexPair pEi = new PointEndIndexPair();
 		int endIndex = sb.indexOf(")", i);
 		String pointString = sb.substring(i, endIndex);
@@ -2697,7 +2697,7 @@ public class PointSet implements Comparable<PointSet>{
 				patternList.add(newPs);
 			}
 		}
-//		Sort patterns in patternList by label
+		//		Sort patterns in patternList by label
 		Collections.sort(patternList,new Comparator<PointSet>() {
 
 			@Override
@@ -2719,7 +2719,7 @@ public class PointSet implements Comparable<PointSet>{
 					return 1;
 				return o1.getLabel().compareTo(o2.getLabel());
 			}
-			
+
 		});
 		TIME_SCALE_FACTOR = 1.0;
 		ArrayList<ArrayList<TreeSet<Transformation>>> transformationGraph = new ArrayList<ArrayList<TreeSet<Transformation>>>();
@@ -2736,37 +2736,42 @@ public class PointSet implements Comparable<PointSet>{
 				try {
 					PointSet objectPattern = new PointSet(patternList.get(i).toString());
 					PointSet imagePattern = new PointSet(patternList.get(j).toString());
-					//				Now we need to do MTM of objectPattern in imagePattern
-					//				and select only complete matches, 
-					//				then find the transformations for these complete matches
-					PointSet maxTransformedMatches = maximalTransformedMatches(			
-							objectPattern, 
-							imagePattern, 
-							null, 
-							transformationClasses, 
-//							Math.min(imagePattern.size(), objectPattern.size()),
-							objectPattern.size(),
-							HASH_TABLE_SIZE, 
-							false, 
-							diatonicPitch,
-							0,
-							0,
-							null,
-							midTimePoint,
-							false,
-							chroma,
-							morph,
-							numThreads,
-							multiThreaded,
-							forkJoin);
-					ArrayList<OccurrenceSet> occurrenceSets = maxTransformedMatches.getEncoding().getOccurrenceSets();
-					TreeSet<Transformation> transformations = (occurrenceSets != null && occurrenceSets.size() > 0)?occurrenceSets.get(0).getTransformations():null;
+					TreeSet<Transformation> transformations = null;
+					if (imagePattern.size() == objectPattern.size()) {
+
+						//				Now we need to do MTM of objectPattern in imagePattern
+						//				and select only complete matches, 
+						//				then find the transformations for these complete matches
+						PointSet maxTransformedMatches = maximalTransformedMatches(			
+								objectPattern, 
+								imagePattern, 
+								null, 
+								transformationClasses, 
+								objectPattern.size(),
+								HASH_TABLE_SIZE, 
+								false, 
+								diatonicPitch,
+								0,
+								0,
+								null,
+								midTimePoint,
+								false,
+								chroma,
+								morph,
+								numThreads,
+								multiThreaded,
+								forkJoin);
+						ArrayList<OccurrenceSet> occurrenceSets = maxTransformedMatches.getEncoding().getOccurrenceSets();
+						transformations = (occurrenceSets != null && occurrenceSets.size() > 0)?occurrenceSets.get(0).getTransformations():null;
+					}
+
 					transformationGraph.get(i).set(j,transformations);
-					
-					System.out.println(patternList.get(i).getLabel()+": "+objectPattern);
-					System.out.println(patternList.get(j).getLabel()+": "+imagePattern);
-					System.out.println(transformations);
-					System.out.println();
+					if (transformations != null) {
+						System.out.println(patternList.get(i).getLabel()+": "+objectPattern);
+						System.out.println(patternList.get(j).getLabel()+": "+imagePattern);
+						System.out.println(transformations);
+						System.out.println();
+					}
 					if (transformations != null && transformations.size() > 1)
 						colsWithMultipleTransformations.add(j);
 				} catch (FileNotFoundException | TimeOutException | NoTransformationClassesDefinedException
@@ -2782,15 +2787,16 @@ public class PointSet implements Comparable<PointSet>{
 			String pitchType = (chroma?"C":(morph?"M":(diatonicPitch?"MP":"CP")));
 			String timeType = (midTimePoint?"M":"O");
 			String repType = "-"+pitchType+timeType;
-			String graphFilePath = groundTruthFilePath.substring(0,startOfSuffix)+repType+"-IPTG.tex";
+			String transformationClassesString = TransformationClass.getTransformationClassesString(transformationClasses);
+			String graphFilePath = groundTruthFilePath.substring(0,startOfSuffix)+repType+"-"+transformationClassesString+"-IPTG.tex";
 			PrintWriter graphFile = new PrintWriter(graphFilePath);
 			graphFile.println("\\begin{sidewaystable}");
 			graphFile.println("\\caption{"+graphFilePath+"}");
 			int startOfName = graphFilePath.lastIndexOf('/')+1;
 			String graphFileName = graphFilePath.substring(startOfName,startOfSuffix);
-			graphFile.println("\\label{"+graphFileName+repType+"-IPTG}");
+			graphFile.println("\\label{"+graphFileName+repType+"-"+transformationClassesString+"-IPTG}");
 			graphFile.println("\\resizebox{\\linewidth}{!}{");
-			graphFile.print("\\begin{tabularx}{1.5\\linewidth}{ll|");
+			graphFile.print("\\begin{tabularx}{2\\linewidth}{ll|");
 			for(int i = 0; i < patternList.size();i++) {
 				if (colsWithMultipleTransformations.contains(i))
 					graphFile.print("p{1.8cm}");
@@ -2810,14 +2816,14 @@ public class PointSet implements Comparable<PointSet>{
 					graphFile.print(tranString+" "+((j!=patternList.size()-1)?"&":"\\\\\\cline{2-"+(patternList.size()+2)+"}\n"));
 				}
 			}
-//			Print last line in table which also prints vertical From label
+			//			Print last line in table which also prints vertical From label
 			graphFile.print("\\multirow{-"+patternList.size()+"}{*}{\\rotatebox[origin=c]{90}{{\\bfseries From pattern}}}&"+patternList.get(patternList.size()-1).getLabel()+" &");
 			for (int j = 0; j < patternList.size(); j++) {
 				String tranString = F_2STR.getOSTGString(transformationGraph.get(patternList.size()-1).get(j));
 				graphFile.print(tranString+" "+((j!=patternList.size()-1)?"&":"\\\\\\cline{2-"+(patternList.size()+2)+"}\n"));
 			}
-			
-//			graphFile.println("\\hline");
+
+			//			graphFile.println("\\hline");
 			graphFile.println("\\end{tabularx}");
 			graphFile.println("}");
 			graphFile.println("\\end{sidewaystable}");
@@ -2829,7 +2835,7 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 	public static void main(String[] args) {
-		
+
 		try {
 			PointSet ps = new PointSet("P(p(252,62),p(256,60),p(258,53),p(260,53),p(262,58))");
 			System.out.println("PointSet is "+ps);
@@ -2838,27 +2844,27 @@ public class PointSet implements Comparable<PointSet>{
 		} catch (InvalidArgumentException e) {
 			e.printStackTrace();
 		}
-		
-//		for (int patternSize = 20; patternSize < 10000; patternSize += 10) {
-//			PointSet P = new PointSet();
-//			for (double i = 0; i < patternSize; i++) {
-//				P.add(new Point(i,2*i));
-//			}
-//			PointSequence basis = null;
-//			long start = System.currentTimeMillis();
-//
-//			try {
-//				basis = P.computeBasis(13, 8);
-//			} catch (Exception e) {
-//				System.out.println(e.getMessage());
-//			}
-//			long end = System.currentTimeMillis();
-//			long runningTime = end - start;
-//			System.out.println(String.format("%20s%10d%10dms%10.20f", basis, patternSize, runningTime, runningTime/(1.0 * patternSize)));
-//
-//		}		
+
+		//		for (int patternSize = 20; patternSize < 10000; patternSize += 10) {
+		//			PointSet P = new PointSet();
+		//			for (double i = 0; i < patternSize; i++) {
+		//				P.add(new Point(i,2*i));
+		//			}
+		//			PointSequence basis = null;
+		//			long start = System.currentTimeMillis();
+		//
+		//			try {
+		//				basis = P.computeBasis(13, 8);
+		//			} catch (Exception e) {
+		//				System.out.println(e.getMessage());
+		//			}
+		//			long end = System.currentTimeMillis();
+		//			long runningTime = end - start;
+		//			System.out.println(String.format("%20s%10d%10dms%10.20f", basis, patternSize, runningTime, runningTime/(1.0 * patternSize)));
+		//
+		//		}		
 	}
 
 
-	
+
 }

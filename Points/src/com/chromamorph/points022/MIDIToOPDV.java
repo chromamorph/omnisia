@@ -17,9 +17,9 @@ public class MIDIToOPDV {
 				Notes notes = Notes.fromMIDI(args[0],true,true);
 				Path inputFilePath = Paths.get(args[0]);
 				String inputFileName = inputFilePath.getFileName().toString();
-				String outputFileName = inputFileName.substring(0, inputFileName.lastIndexOf('.'))+".opdv";
+				String outputFileName = inputFileName.substring(0, inputFileName.lastIndexOf('.'))+".opnd";
 				Path outputFilePath = inputFilePath.getParent().resolve(outputFileName);
-				notes.toGVFile(outputFilePath.toString());
+				notes.toOPNDFile(outputFilePath.toString(), false, true, false);
 			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

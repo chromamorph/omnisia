@@ -60,7 +60,8 @@ public class MaxTranPats {
 			"F_2T",
 			"F_2TR",
 			"F_2STR_Mod7",
-			"F_2STR_Mod12"};
+			"F_2STR_Mod12",
+			"F_2STR_Book"};
 	public static TransformationClass[] ALL_TRANS_CLASSES = new TransformationClass[] {
 			new F_2STR_FIXED(),
 			new F_2STR_Rational(),
@@ -68,7 +69,8 @@ public class MaxTranPats {
 			new F_2T(),
 			new F_2TR(),
 			new F_2STR_Mod(7),
-			new F_2STR_Mod(12)
+			new F_2STR_Mod(12),
+			new F_2STR_Book()
 	};
 	
 	public static String getTransformationClasses() {

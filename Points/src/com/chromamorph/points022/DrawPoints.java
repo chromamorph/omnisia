@@ -675,21 +675,21 @@ public class DrawPoints extends PApplet {
 					int f = firstOccurrence?col:col2;
 					if (OMNISIA.RHYTHM_ONLY) { // Draws points and lines with y value equal to TEC number, i
 						drawPoint(p,s,f,sw,ROUND,w,h, i);
-						drawLine(lastPoint, p, s, sw, ROUND, i);
+//						drawLine(lastPoint, p, s, sw, ROUND, i);
 					}
 					else {
 						drawPoint(p,s,f,sw,ROUND,w,h);
-						drawLine(lastPoint,p,s,sw,ROUND);
+//						drawLine(lastPoint,p,s,sw,ROUND);
 					}
 					//					drawPoint(p,0,0,1,ROUND,pointWidth+1,pointHeight+1);
 					//					drawLine(lastPoint,p,0,lineWidth,ROUND);
 					lastPoint = p;
 				}
-				if (this.drawBoundingBoxes) {
+//				if (this.drawBoundingBoxes) {
 					Point topLeft = occurrence.getTopLeft();
 					Point bottomRight = occurrence.getBottomRight();
-					drawRectangle(col,topLeft,bottomRight);
-				}
+					drawFilledRectangle(col,topLeft,bottomRight,75f);
+//				}
 				firstOccurrence = false;
 			}
 			if ((numberOfTecs-i)%500==0)

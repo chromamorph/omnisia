@@ -63,9 +63,6 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 			for(int i = 0; i < tc.getBasisSize(); i++)
 				imgBasisPerm.add(imageBasis.get(perm[i]));
 			ArrayList<Transformation> transformations = Transformation.getTransformations(tc, objectBasis, imgBasisPerm);
-//			if (!transformations.isEmpty()) {
-//				System.out.println(objectBasis+"->"+imgBasisPerm+":"+transformations);
-//			}
 			for(Transformation transformation : transformations) {
 
 				int i = transformation.hash(PointSet.HASH_TABLE_SIZE);
@@ -75,13 +72,8 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 					mtmArray[i].add(transformation,objectBasis);
 				}
 
-				//			i = transformation.getInverse().hash(PointSet.HASH_TABLE_SIZE);
-				//			synchronized (mtmArray[i]) {
-				//				mtmArray[i].add(transformation.getInverse(),imageBasis);
-				//			}
 				synchronized (tc) {
 					tc.addTransformationInstance(transformation);
-					//				tc.addTransformationInstance(transformation.getInverse());
 				}
 			}
 		} catch (Exception e) {
