@@ -161,6 +161,7 @@ public class PointSet implements Comparable<PointSet>{
 			boolean useChroma,
 			boolean useMorph) throws IOException, DimensionalityException {
 		mtpSizes = new ArrayList<Integer>();
+		System.out.println(file.getName().toLowerCase());
 		if (file.getName().toLowerCase().endsWith(".pts")) {
 			makePointSetFromPTSFile(file);
 			return;
@@ -169,7 +170,6 @@ public class PointSet implements Comparable<PointSet>{
 			makePointSetFromMIDIFile(file, pitchSpell, midTimePoint, dimensionMask, useChroma, useMorph);
 			return;
 		}
-		System.out.println(file.getName().toLowerCase());
 		if (file.getName().toLowerCase().endsWith(".opnd")) {
 			makePointSetFromOPNDFile(file, pitchSpell, midTimePoint, dimensionMask, useChroma, useMorph);
 		}
