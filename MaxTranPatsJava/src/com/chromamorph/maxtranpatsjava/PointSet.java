@@ -2865,6 +2865,104 @@ public class PointSet implements Comparable<PointSet>{
 		//		}		
 	}
 
+	/**
+	 * Assumes input file is a .csv file with the following column headings:
+	 * 	REC			string
+	 * 	nClicks		int
+	 * 	Duration	double
+	 * 	ICI1		double
+	 * 	ICI2		double	
+	 * 	ICI3		double
+	 * 	ICI4		double
+	 * 	ICI5		double
+	 * 	ICI6		double
+	 * 	ICI7		double
+	 * 	ICI8		double
+	 * 	ICI9		double
+	 *  ICI10		double
+	 *  ICI11		double
+	 *  ICI12		double
+	 *  ICI13		double
+	 *  ICI14		double
+	 *  ICI15		double
+	 *  ICI16		double
+	 *  ICI17		double
+	 *  ICI18		double
+	 *  ICI19		double
+	 *  ICI20		double
+	 *  ICI21		double
+	 *  ICI22		double
+	 *  ICI23		double
+	 *  ICI24		double
+	 *  ICI25		double
+	 *  ICI26		double
+	 *  ICI27		double
+	 *  ICI28		double
+	 *  Whale		int
+	 *  TsTo		double
+	 *  
+	 * @param inputFilePath
+	 * @param outputDirPath
+	 */
+	public static void generateSpermWhalePointSets(String inputFilePath, String outputDirPath) {
+		BufferedReader br;
+		PointSet ps = null;
+		String rec = null;
+		ArrayList<PointSet> pointSets = new ArrayList<PointSet>();
+		ArrayList<String> recs = new ArrayList<String>();
+		try {
+			br = new BufferedReader(new FileReader(inputFilePath));
+			String l = br.readLine();
+			while ((l = br.readLine()) != null) {
+				Coda coda = new Coda(l);
+				if (ps == null) {
+					ps = new PointSet();
+					ps.addAll(coda.getPointSet());
+					rec = coda.getRec();
+				} else if (rec != null && rec.equals(coda.getRec()))
+					ps.addAll(coda.getPointSet());
+				else if (rec != null && !rec.equals(coda.getRec())) {
+					recs.add(rec);
+					rec = coda.getRec();
+					pointSets.add(ps);
+					ps = new PointSet();
+					ps.addAll(coda.getPointSet());
+				}
+				
+			}
+			pointSets.add(ps);
+			recs.add(rec);
+			br.close();
+			
+			if (!outputDirPath.endsWith("/"))
+				outputDirPath += "/";
+			for(int i = 0; i < pointSets.size(); i++) {
+				pointSets.get(i).writeToPTSFile(outputDirPath+recs.get(i)+".pts");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void writeToPTSFile(String filePath) {
+		try {
+			PrintWriter pw = new PrintWriter(filePath);
+			for(Point p : getPoints()) {
+				int len = p.getCoords().size();
+				for (int i = 0; i < len; i++) {
+					pw.write(String.format("%f", p.get(i)));
+					if (i < len - 1)
+						pw.write('\t');
+					else
+						pw.write('\n');
+				}
+			}
+			pw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 
 }
