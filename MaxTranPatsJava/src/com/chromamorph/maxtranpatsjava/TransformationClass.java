@@ -136,4 +136,25 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 		return s.toString().replace("_", "");
 	}
 	
+	public String getOSTGString(Transformation transformation) {
+		return transformation.getOSTGString();
+	}
+	
+	public static String getOSTGString(TreeSet<Transformation> transformations) {
+		if (transformations == null || transformations.size() == 0) return "";
+		StringBuffer sb = new StringBuffer();
+		boolean first = true;
+		for(Transformation tran : transformations) {
+			if (Utility.equalsArrayListOfDoubles(tran.getSigma(), tran.getIdentitySigma())) {
+				sb.append("$I$");
+				return sb.toString();
+			}
+			if (!first) sb.append("\\newline");
+			if (first) first = false;
+			sb.append(tran.getOSTGString());
+		}
+		return sb.toString();
+	}
+
+	
 }

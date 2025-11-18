@@ -70,7 +70,7 @@ public class Coda {
 	
 	public Coda(String line) {
 		String[] a = line.split(",");
-		setRec(a[0].trim());
+		setRec(a[0].trim().replace('_', '-'));
 		setnClicks(Integer.parseInt(a[1]));
 		setDuration(Double.parseDouble(a[2]));
 		for(int i = 0; i < 28; i++) {
@@ -78,5 +78,23 @@ public class Coda {
 		}
 		setWhale(Integer.parseInt(a[31]));
 		setTsTo(Double.parseDouble(a[32]));
+	}
+	
+	public String getGTString() {
+		StringBuilder sb = new StringBuilder("(\n");
+		sb.append("  (label "+getTsTo()+"-"+getWhale()+")\n");
+		PointSet ps = getPointSet();
+		for(Point p : ps.getPoints()) {
+			sb.append("  (");
+			int k = p.getCoords().size();
+			for(int i = 0; i < k; i++) {
+				sb.append(String.format("%f", p.get(i)));
+				if (i != k - 1)
+					sb.append(" ");
+			}
+			sb.append(")\n");
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 }

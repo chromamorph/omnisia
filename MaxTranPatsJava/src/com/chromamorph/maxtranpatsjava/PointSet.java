@@ -1778,10 +1778,30 @@ public class PointSet implements Comparable<PointSet>{
 		}
 		return groundTruthPatterns;
 	}
+	
+	private static ArrayList<ArrayList<PointSet>> readGroundTruthPatternsFromFileMTP(String groundTruthFilePath) {
+		StringBuilder sb = readGroundTruthFileIntoStringBuilder(groundTruthFilePath);
+		ArrayList<ArrayList<PointSet>> groundTruthPatterns = new ArrayList<ArrayList<PointSet>>();
+		int i = 0;
+		while (i < sb.length()) {
+			while (i < sb.length() && sb.charAt(i) != '(') i++; //Puts i at beginning of encoding of next occurrence set or end of file
+			if (i < sb.length()) {
+				OccurrenceSetEndIndexPairMTP osei = readOccurrenceSetMTP(sb,i);
+				i = osei.endIndex; //Should be one character after the end of the occurrence set encoding
+				groundTruthPatterns.add(osei.occurrenceSet);
+			}
+		}
+		return groundTruthPatterns;
+	}
 
 
 	static class OccurrenceSetEndIndexPair {
 		ArrayList<com.chromamorph.points022.PointSet> occurrenceSet = new ArrayList<com.chromamorph.points022.PointSet>();
+		int endIndex;
+
+	}
+	static class OccurrenceSetEndIndexPairMTP {
+		ArrayList<PointSet> occurrenceSet = new ArrayList<PointSet>();
 		int endIndex;
 
 	}
@@ -1822,6 +1842,28 @@ public class PointSet implements Comparable<PointSet>{
 		int endIndex = 0;
 	}
 
+	private static OccurrenceSetEndIndexPairMTP readOccurrenceSetMTP(StringBuilder sb, int startIndex) {
+		OccurrenceSetEndIndexPairMTP osei = new OccurrenceSetEndIndexPairMTP();
+		//Find start of first pattern within this occurrence set
+		int i = startIndex + 1;
+		while (sb.charAt(i) != ')') {
+			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next pattern occurrence or end of occurrence set
+			if (sb.charAt(i) != ')') {
+				OccurrenceEndIndexPairMTP occEi = readOccurrenceMTP(sb,i);
+				i = occEi.endIndex; //Should be one character after the occurrence just read.
+				osei.occurrenceSet.add(occEi.occurrence);
+			}
+		}
+		osei.endIndex = i+1;
+		return osei;
+	}
+
+	static class OccurrenceEndIndexPairMTP {
+		PointSet occurrence = new PointSet();
+		int endIndex = 0;
+	}
+
+	
 	private static OccurrenceEndIndexPair readOccurrence(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor, boolean useMorph, boolean useChroma) {
 		OccurrenceEndIndexPair occEi = new OccurrenceEndIndexPair();
 		int i = startIndex + 1;
@@ -1909,6 +1951,95 @@ public class PointSet implements Comparable<PointSet>{
 		int endIndex;
 	}
 
+
+private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int startIndex) {
+		OccurrenceEndIndexPairMTP occEi = new OccurrenceEndIndexPairMTP();
+		int i = startIndex + 1;
+		int[] colArray = null;
+		int[] colArray2 = null;
+		String label = null;
+		Float strokeWidth = null;
+		Float pointWidth = null;
+		Float pointHeight = null;
+
+		//		Read colArrays
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(col")) {
+			colArray = new int[4];
+			int colEndIndex = sb.indexOf(")", i);
+			String colStr = sb.substring(i+4, colEndIndex);
+			String[] colStrArr = colStr.trim().split(" ");
+			for(int k = 0; k < 4; k++)
+				colArray[k] = Integer.parseInt(colStrArr[k]);
+			i = colEndIndex+1;
+		}
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(col2")) {
+			colArray2 = new int[4];
+			int colEndIndex = sb.indexOf(")", i);
+			String colStr = sb.substring(i+4, colEndIndex);
+			String[] colStrArr = colStr.trim().split(" ");
+			for(int k = 0; k < 4; k++)
+				colArray2[k] = Integer.parseInt(colStrArr[k]);
+			i = colEndIndex+1;
+		}
+
+		//*********************************
+
+		//		Read pattern label
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(label")) {
+			int labelEndIndex = sb.indexOf(")", i);
+			label = sb.substring(i + "(label".length(), labelEndIndex).trim();
+			i = labelEndIndex + 1;
+		}
+		//		Read stroke-width
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(stroke-width")) {
+			int strokeWidthEndIndex = sb.indexOf(")", i);
+			strokeWidth = Float.parseFloat(sb.substring(i + "(stroke-width".length(), strokeWidthEndIndex).trim());
+			i = strokeWidthEndIndex + 1;
+		}
+		//		Read point-width
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(point-width")) {
+			int pointWidthEndIndex = sb.indexOf(")", i);
+			pointWidth = Float.parseFloat(sb.substring(i + "(point-width".length(), pointWidthEndIndex).trim());
+			i = pointWidthEndIndex + 1;
+		}
+
+		//		Read point-height
+		while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+		if (sb.substring(i).startsWith("(point-height")) {
+			int pointHeightEndIndex = sb.indexOf(")", i);
+			pointHeight = Float.parseFloat(sb.substring(i + "(point-height".length(), pointHeightEndIndex).trim());
+			i = pointHeightEndIndex + 1;
+		}
+
+		while (sb.charAt(i) != ')') {
+			while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++; //Puts i at beginning of encoding of next point or end of point set
+			if (sb.charAt(i) != ')') {
+				PointEndIndexPairMTP pEi = readPointMTP(sb,i);
+				i = pEi.endIndex;
+				occEi.occurrence.add(pEi.point);
+//				occEi.occurrence.setColArray(colArray);
+//				occEi.occurrence.setColArray2(colArray2);
+				occEi.occurrence.setLabel(label);
+//				occEi.occurrence.setStrokeWidth(strokeWidth);
+//				occEi.occurrence.setPointWidth(pointWidth);
+//				occEi.occurrence.setPointHeight(pointHeight);
+			}
+		}
+		occEi.endIndex = i + 1;
+		return occEi;
+	}
+
+	static class PointEndIndexPairMTP {
+		Point point;
+		int endIndex;
+	}
+
+	
 	private static PointEndIndexPair readPoint(StringBuilder sb, int startIndex, boolean diatonicPitch, boolean withMidTimePoints, int xScaleFactor, boolean useMorph, boolean useChroma) {
 		int i = startIndex;
 		Float strokeWidth = null;
@@ -1983,6 +2114,61 @@ public class PointSet implements Comparable<PointSet>{
 		pEi.endIndex = endIndex + 1;
 		return pEi;
 	}
+	
+	private static PointEndIndexPairMTP readPointMTP(StringBuilder sb, int startIndex) {
+		int i = startIndex;
+		Float strokeWidth = null;
+		Float pointWidth = null;
+		Float pointHeight = null;
+		while (sb.charAt(i) != '(') i++; // puts i at beginning of this point encoding
+		i++; //puts i at first character following opening parenthesis of this point encoding
+		while (Character.isWhitespace(sb.charAt(i))) i++; 
+		// 		puts i at first non-whitespace char within point encoding after opening parenthesis
+		if (sb.charAt(i) == '(') {
+			//			Read stroke-width
+			if (sb.substring(i).startsWith("(stroke-width")) {
+				int strokeWidthEndIndex = sb.indexOf(")", i);
+				strokeWidth = Float.parseFloat(sb.substring(i + "(stroke-width".length(), strokeWidthEndIndex).trim());
+				i = strokeWidthEndIndex + 1;
+			}
+			//			Find next non-whitespace character following stroke-width spec
+			while (Character.isWhitespace(sb.charAt(i))) i++; 
+			if (sb.charAt(i) == '(') {
+				//				Read point-width
+				if (sb.substring(i).startsWith("(point-width")) {
+					int pointWidthEndIndex = sb.indexOf(")", i);
+					pointWidth = Float.parseFloat(sb.substring(i + "(point-width".length(), pointWidthEndIndex).trim());
+					i = pointWidthEndIndex + 1;
+				}
+
+				while (Character.isWhitespace(sb.charAt(i))) i++; 
+				if (sb.charAt(i) == '(') {
+					//					Read point-height
+					while (sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+					if (sb.substring(i).startsWith("(point-height")) {
+						int pointHeightEndIndex = sb.indexOf(")", i);
+						pointHeight = Float.parseFloat(sb.substring(i + "(point-height".length(), pointHeightEndIndex).trim());
+						i = pointHeightEndIndex + 1;
+					}					
+				}
+			}
+		}
+		//		i now points at the first character of the onset of the point
+		PointEndIndexPairMTP pEi = new PointEndIndexPairMTP();
+		int endIndex = sb.indexOf(")", i);
+		String pointString = sb.substring(i, endIndex);
+		String[] a = pointString.split("\s");
+		pEi.point = new Point();
+		for(String s : a) {
+			pEi.point.add(Double.parseDouble(s));
+		}
+//		pEi.point.setPointHeight(pointHeight);
+//		pEi.point.setPointWidth(pointWidth);
+//		pEi.point.setStrokeWidth(strokeWidth);
+		pEi.endIndex = endIndex + 1;
+		return pEi;
+	}
+
 
 	private void compareWithGroundTruthFile(String groundTruthFilePath, boolean diatonicPitch, String outputFilePath, boolean includePattern, boolean isMTM, boolean withMidTimePoints, boolean useMorph, boolean useChroma) {
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, withMidTimePoints, 1, useMorph, useChroma);
@@ -2682,19 +2868,29 @@ public class PointSet implements Comparable<PointSet>{
 			int xScaleFactor,
 			int numThreads,
 			boolean multiThreaded,
-			boolean forkJoin) {
+			boolean forkJoin,
+			boolean opndFormat) {
 		IS_OSTG = true;
-		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, xScaleFactor, morph, chroma);
-		//		Flatten groundTruthPatterns into an array of MaxTranPats PointSets
 		ArrayList<PointSet> patternList = new ArrayList<PointSet>();
-		for(ArrayList<com.chromamorph.points022.PointSet> os : groundTruthPatterns) {
-			for (com.chromamorph.points022.PointSet ps : os) {
-				PointSet newPs = new PointSet();
-				TreeSet<com.chromamorph.points022.Point> points = ps.getPoints();
-				for (com.chromamorph.points022.Point oldPoint : points)
-					newPs.add(new Point((double)oldPoint.getX(),(double)oldPoint.getY()));
-				newPs.setLabel(ps.getLabel());
-				patternList.add(newPs);
+		if (opndFormat) {
+			ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, xScaleFactor, morph, chroma);
+			//		Flatten groundTruthPatterns into an array of MaxTranPats PointSets
+			for(ArrayList<com.chromamorph.points022.PointSet> os : groundTruthPatterns) {
+				for (com.chromamorph.points022.PointSet ps : os) {
+					PointSet newPs = new PointSet();
+					TreeSet<com.chromamorph.points022.Point> points = ps.getPoints();
+					for (com.chromamorph.points022.Point oldPoint : points)
+						newPs.add(new Point((double)oldPoint.getX(),(double)oldPoint.getY()));
+					newPs.setLabel(ps.getLabel());
+					patternList.add(newPs);
+				}
+			}
+		} else { //Points have format (x1 x2 ... xn) where xi is a floating point number
+			ArrayList<ArrayList<PointSet>> occSetList = readGroundTruthPatternsFromFileMTP(groundTruthFilePath);
+			for(ArrayList<PointSet> occSet : occSetList) {
+				for(PointSet ps : occSet) {
+					patternList.add(ps);
+				}
 			}
 		}
 		//		Sort patterns in patternList by label
@@ -2812,14 +3008,14 @@ public class PointSet implements Comparable<PointSet>{
 			for (int i = 0; i < patternList.size()-1; i++) {
 				graphFile.print("&"+patternList.get(i).getLabel()+" &");
 				for (int j = 0; j < patternList.size(); j++) {
-					String tranString = F_2STR.getOSTGString(transformationGraph.get(i).get(j));
+					String tranString = TransformationClass.getOSTGString(transformationGraph.get(i).get(j));
 					graphFile.print(tranString+" "+((j!=patternList.size()-1)?"&":"\\\\\\cline{2-"+(patternList.size()+2)+"}\n"));
 				}
 			}
 			//			Print last line in table which also prints vertical From label
 			graphFile.print("\\multirow{-"+patternList.size()+"}{*}{\\rotatebox[origin=c]{90}{{\\bfseries From pattern}}}&"+patternList.get(patternList.size()-1).getLabel()+" &");
 			for (int j = 0; j < patternList.size(); j++) {
-				String tranString = F_2STR.getOSTGString(transformationGraph.get(patternList.size()-1).get(j));
+				String tranString = TransformationClass.getOSTGString(transformationGraph.get(patternList.size()-1).get(j));
 				graphFile.print(tranString+" "+((j!=patternList.size()-1)?"&":"\\\\\\cline{2-"+(patternList.size()+2)+"}\n"));
 			}
 
@@ -2908,7 +3104,9 @@ public class PointSet implements Comparable<PointSet>{
 		BufferedReader br;
 		PointSet ps = null;
 		String rec = null;
+		StringBuilder gt = null;
 		ArrayList<PointSet> pointSets = new ArrayList<PointSet>();
+		ArrayList<String> gtStrings = new ArrayList<String>();
 		ArrayList<String> recs = new ArrayList<String>();
 		try {
 			br = new BufferedReader(new FileReader(inputFilePath));
@@ -2919,25 +3117,36 @@ public class PointSet implements Comparable<PointSet>{
 					ps = new PointSet();
 					ps.addAll(coda.getPointSet());
 					rec = coda.getRec();
-				} else if (rec != null && rec.equals(coda.getRec()))
+					gt = new StringBuilder("(");
+					gt.append(coda.getGTString());
+				} else if (rec != null && rec.equals(coda.getRec())) {
 					ps.addAll(coda.getPointSet());
-				else if (rec != null && !rec.equals(coda.getRec())) {
+					gt.append(coda.getGTString());
+				} else if (rec != null && !rec.equals(coda.getRec())) {
 					recs.add(rec);
 					rec = coda.getRec();
 					pointSets.add(ps);
 					ps = new PointSet();
 					ps.addAll(coda.getPointSet());
+					gt.append(")");
+					gtStrings.add(gt.toString());
+					gt = new StringBuilder("(");
+					gt.append(coda.getGTString());
 				}
 				
 			}
 			pointSets.add(ps);
 			recs.add(rec);
+			gtStrings.add(gt.toString());
 			br.close();
 			
 			if (!outputDirPath.endsWith("/"))
 				outputDirPath += "/";
 			for(int i = 0; i < pointSets.size(); i++) {
-				pointSets.get(i).writeToPTSFile(outputDirPath+recs.get(i)+".pts");
+				pointSets.get(i).writeToPTSFile(outputDirPath+recs.get(i).replace('_', '-')+".pts");
+				PrintWriter pw = new PrintWriter(outputDirPath+recs.get(i).replace('_', '-')+".gt");
+				pw.println(gtStrings.get(i));
+				pw.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
