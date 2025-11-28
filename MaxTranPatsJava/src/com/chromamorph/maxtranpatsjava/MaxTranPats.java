@@ -29,7 +29,6 @@ public class MaxTranPats {
 	public static boolean MULTITHREADED						= false;
 	public static boolean FORKJOIN							= false;
 	public static boolean SPERM_WHALES						= false;
-	public static boolean OPND_FORMAT						= false;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
@@ -55,7 +54,6 @@ public class MaxTranPats {
 	public static String MULTITHREADED_SWITCH				= "multithreaded";
 	public static String FORKJOIN_SWITCH					= "forkjoin";
 	public static String SPERM_WHALES_SWITCH				= "sw";
-	public static String OPND_FORMAT_SWITCH					= "opnd";
 	
 	
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
@@ -123,7 +121,6 @@ public class MaxTranPats {
 		sb.append(String.format("%s (-%s): %s\n", "Multi-threaded computation with number of threads determined by number of processors", MULTITHREADED_SWITCH, MULTITHREADED));
 		sb.append(String.format("%s (-%s): %s\n", "Use Fork/Join framework", FORKJOIN_SWITCH, FORKJOIN));
 		sb.append(String.format("%s (-%s): %s\n", "Generate point sets from sperm whale data", SPERM_WHALES_SWITCH, SPERM_WHALES));
-		sb.append(String.format("%s (-%s): %s\n", "Ground-truth file uses OPND format points (as opposed to MaxTranPats format points)", OPND_FORMAT_SWITCH, OPND_FORMAT));
 		return sb.toString();
 	}
 
@@ -217,7 +214,9 @@ public class MaxTranPats {
 				"-"+IPTG_SWITCH+"\tIf present, then generate inter-pattern transformation graph for patterns in ground-truth file.",
 				"-"+NUM_THREADS_SWITCH+"\tSpecify multi-threaded computation and supply number of threads.",
 				"-"+MULTITHREADED_SWITCH+"\tSpecify multi-threaded computation with number of threads determined by number of processors.",
-				"-"+FORKJOIN_SWITCH+"\tUse Fork/Join framework parallel algorithm"
+				"-"+FORKJOIN_SWITCH+"\tUse Fork/Join framework parallel algorithm",
+				"-"+SPERM_WHALES_SWITCH+"\tGenerate pts files from Sperm Whale Coda data files."
+
 		);
 	}
 	
@@ -247,7 +246,6 @@ public class MaxTranPats {
 		MULTITHREADED = getBooleanValue(argArray, MULTITHREADED_SWITCH);
 		FORKJOIN = getBooleanValue(argArray, FORKJOIN_SWITCH);
 		SPERM_WHALES = getBooleanValue(argArray, SPERM_WHALES_SWITCH);
-		OPND_FORMAT = getBooleanValue(argArray, OPND_FORMAT_SWITCH);
 
 		INPUT_FILE_PATH = getStringValue(argArray, INPUT_FILE_PATH_SWITCH);
 		GROUND_TRUTH_FILE_PATH = getStringValue(argArray, GROUND_TRUTH_FILE_PATH_SWITCH);
@@ -300,8 +298,7 @@ public class MaxTranPats {
 						X_SCALE_FACTOR,
 						NUM_THREADS,
 						MULTITHREADED,
-						FORKJOIN,
-						OPND_FORMAT
+						FORKJOIN
 					);
 		}
 		else

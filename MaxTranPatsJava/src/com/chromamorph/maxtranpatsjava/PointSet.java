@@ -1779,7 +1779,7 @@ public class PointSet implements Comparable<PointSet>{
 		return groundTruthPatterns;
 	}
 	
-	private static ArrayList<ArrayList<PointSet>> readGroundTruthPatternsFromFileMTP(String groundTruthFilePath) {
+	private static ArrayList<ArrayList<PointSet>> readGroundTruthPatternsFromFileMTP(String groundTruthFilePath) throws NumberFormatException {
 		StringBuilder sb = readGroundTruthFileIntoStringBuilder(groundTruthFilePath);
 		ArrayList<ArrayList<PointSet>> groundTruthPatterns = new ArrayList<ArrayList<PointSet>>();
 		int i = 0;
@@ -1842,7 +1842,7 @@ public class PointSet implements Comparable<PointSet>{
 		int endIndex = 0;
 	}
 
-	private static OccurrenceSetEndIndexPairMTP readOccurrenceSetMTP(StringBuilder sb, int startIndex) {
+	private static OccurrenceSetEndIndexPairMTP readOccurrenceSetMTP(StringBuilder sb, int startIndex) throws NumberFormatException {
 		OccurrenceSetEndIndexPairMTP osei = new OccurrenceSetEndIndexPairMTP();
 		//Find start of first pattern within this occurrence set
 		int i = startIndex + 1;
@@ -1952,7 +1952,7 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 
-private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int startIndex) {
+private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int startIndex) throws NumberFormatException {
 		OccurrenceEndIndexPairMTP occEi = new OccurrenceEndIndexPairMTP();
 		int i = startIndex + 1;
 		int[] colArray = null;
@@ -2115,7 +2115,7 @@ private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int
 		return pEi;
 	}
 	
-	private static PointEndIndexPairMTP readPointMTP(StringBuilder sb, int startIndex) {
+	private static PointEndIndexPairMTP readPointMTP(StringBuilder sb, int startIndex) throws NumberFormatException {
 		int i = startIndex;
 		Float strokeWidth = null;
 		Float pointWidth = null;
@@ -2868,10 +2868,19 @@ private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int
 			int xScaleFactor,
 			int numThreads,
 			boolean multiThreaded,
-			boolean forkJoin,
-			boolean opndFormat) {
+			boolean forkJoin) {
 		IS_OSTG = true;
 		ArrayList<PointSet> patternList = new ArrayList<PointSet>();
+		
+		boolean opndFormat = false;
+		ArrayList<ArrayList<PointSet>> occSetList = null;
+		try {
+			occSetList = readGroundTruthPatternsFromFileMTP(groundTruthFilePath);
+
+		} catch (NumberFormatException e) {
+			opndFormat = true;
+		}
+		
 		if (opndFormat) {
 			ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, xScaleFactor, morph, chroma);
 			//		Flatten groundTruthPatterns into an array of MaxTranPats PointSets
@@ -2886,7 +2895,6 @@ private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int
 				}
 			}
 		} else { //Points have format (x1 x2 ... xn) where xi is a floating point number
-			ArrayList<ArrayList<PointSet>> occSetList = readGroundTruthPatternsFromFileMTP(groundTruthFilePath);
 			for(ArrayList<PointSet> occSet : occSetList) {
 				for(PointSet ps : occSet) {
 					patternList.add(ps);
