@@ -182,4 +182,16 @@ public class F_2STR_FIXED extends TransformationClass {
 		System.out.println(5.3%0.5);
 	}
 
+	public String getOSTGString(Transformation tran) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("$");
+		if (tran.getSigma().get(0) != 1.0)
+			sb.append("S_{"+Utility.getIntString(tran.getSigma().get(0))+"}");
+		sb.append("T_{\\langle"+Utility.getIntString(tran.getSigma().get(1))+","+Utility.getIntString(tran.getSigma().get(2))+"\\rangle}");
+		if (tran.getSigma().get(3) == -1)
+			sb.append("R_x");
+		sb.append("$");
+		return sb.toString();
+	}
+
 }

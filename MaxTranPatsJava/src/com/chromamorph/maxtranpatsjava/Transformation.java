@@ -15,6 +15,10 @@ public class Transformation implements Comparable<Transformation>{
 //	public Transformation getInverse() {
 //		return new Transformation(transformationClass, transformationClass.getInverseSigma(sigma));
 //	}
+
+	public String getOSTGString() {
+		return getTransformationClass().getOSTGString(this);
+	}
 	
 	public static ArrayList<Transformation> getTransformations(TransformationClass transformationClass, PointSequence objectBasis, PointSequence imageBasis) {
 		ArrayList<ArrayList<Double>> sigmas = transformationClass.getSigmas(objectBasis,imageBasis);
@@ -140,5 +144,9 @@ public class Transformation implements Comparable<Transformation>{
 		for(double s : getSigma()) h *= Math.abs(s==0.0?0.000001:s) * A;
 		h %= 1.0;
 		return (int)Math.floor(h*m);
+	}
+	
+	public ArrayList<Double> getIdentitySigma() {
+		return getTransformationClass().getIdentitySigma();
 	}
 }

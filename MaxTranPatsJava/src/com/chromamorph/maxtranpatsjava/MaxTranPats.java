@@ -28,6 +28,7 @@ public class MaxTranPats {
 	public static int NUM_THREADS							= 0;
 	public static boolean MULTITHREADED						= false;
 	public static boolean FORKJOIN							= false;
+	public static boolean SPERM_WHALES						= false;
 	
 	public static String INPUT_FILE_PATH_SWITCH 			= "i";
 	public static String QUERY_FILE_PATH_SWITCH 			= "q";
@@ -52,7 +53,9 @@ public class MaxTranPats {
 	public static String NUM_THREADS_SWITCH					= "numthreads";
 	public static String MULTITHREADED_SWITCH				= "multithreaded";
 	public static String FORKJOIN_SWITCH					= "forkjoin";
-		
+	public static String SPERM_WHALES_SWITCH				= "sw";
+	
+	
 	public static String[] ALL_TRANS_CLASS_STRINGS = new String[] {
 			"F_2STR_FIXED",
 			"F_2STR_Rational",
@@ -63,7 +66,9 @@ public class MaxTranPats {
 			"F_2STR_Mod12",
 			"F_2STR_Book",
 			"F_2STR_Mod7_Book",
-			"F_2STR_Mod12_Book"};
+			"F_2STR_Mod12_Book",
+			"F_2ST"};
+	
 	public static TransformationClass[] ALL_TRANS_CLASSES = new TransformationClass[] {
 			new F_2STR_FIXED(),
 			new F_2STR_Rational(),
@@ -74,10 +79,13 @@ public class MaxTranPats {
 			new F_2STR_Mod(12),
 			new F_2STR_Book(),
 			new F_2STR_Mod_Book(7),
-			new F_2STR_Mod_Book(12)
+			new F_2STR_Mod_Book(12),
+			new F_2ST()
 	};
 	
 	public static String getTransformationClasses() {
+		if (TRANSFORMATION_CLASSES == null)
+			return null;
 		StringBuilder sb = new StringBuilder("{");
 		sb.append(TRANSFORMATION_CLASSES[0]);
 		for(int i = 1; i < TRANSFORMATION_CLASSES.length; i++) {
@@ -112,7 +120,7 @@ public class MaxTranPats {
 		sb.append(String.format("%s (-%s): %s\n", "Multi-threaded computation and supply number of threads", NUM_THREADS_SWITCH, NUM_THREADS));
 		sb.append(String.format("%s (-%s): %s\n", "Multi-threaded computation with number of threads determined by number of processors", MULTITHREADED_SWITCH, MULTITHREADED));
 		sb.append(String.format("%s (-%s): %s\n", "Use Fork/Join framework", FORKJOIN_SWITCH, FORKJOIN));
-
+		sb.append(String.format("%s (-%s): %s\n", "Generate point sets from sperm whale data", SPERM_WHALES_SWITCH, SPERM_WHALES));
 		return sb.toString();
 	}
 
@@ -206,7 +214,9 @@ public class MaxTranPats {
 				"-"+IPTG_SWITCH+"\tIf present, then generate inter-pattern transformation graph for patterns in ground-truth file.",
 				"-"+NUM_THREADS_SWITCH+"\tSpecify multi-threaded computation and supply number of threads.",
 				"-"+MULTITHREADED_SWITCH+"\tSpecify multi-threaded computation with number of threads determined by number of processors.",
-				"-"+FORKJOIN_SWITCH+"\tUse Fork/Join framework parallel algorithm"
+				"-"+FORKJOIN_SWITCH+"\tUse Fork/Join framework parallel algorithm",
+				"-"+SPERM_WHALES_SWITCH+"\tGenerate pts files from Sperm Whale Coda data files."
+
 		);
 	}
 	
@@ -215,19 +225,6 @@ public class MaxTranPats {
 		for(String arg: args)
 			argArray.add(arg);
 
-		TRANSFORMATION_CLASSES = getTransformationClasses(argArray);
-		if (TRANSFORMATION_CLASSES == null) {
-			System.out.println("ERROR! Need to provide at least one transformation class - see help below!");
-			showHelp();
-			return;			
-		}
-		INPUT_FILE_PATH = getStringValue(argArray, INPUT_FILE_PATH_SWITCH);
-		GROUND_TRUTH_FILE_PATH = getStringValue(argArray, GROUND_TRUTH_FILE_PATH_SWITCH);
-		if ((INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH == null) || HELP) {
-			System.out.println("ERROR! Need to provide an input file and/or a ground-truth file - see help below!");
-			showHelp();
-			return;
-		} 
 		OUTPUT_DIR_PATH = getStringValue(argArray, OUTPUT_DIR_PATH_SWITCH);
 		MIN_PATTERN_SIZE = getIntValue(argArray, MIN_PATTERN_SIZE_SWITCH,0);
 		MIN_COMPACTNESS = getDoubleValue(argArray, MIN_COMPACTNESS_SWITCH, 0.0);
@@ -248,6 +245,15 @@ public class MaxTranPats {
 		NUM_THREADS = getIntValue(argArray,NUM_THREADS_SWITCH,0);
 		MULTITHREADED = getBooleanValue(argArray, MULTITHREADED_SWITCH);
 		FORKJOIN = getBooleanValue(argArray, FORKJOIN_SWITCH);
+		SPERM_WHALES = getBooleanValue(argArray, SPERM_WHALES_SWITCH);
+
+		INPUT_FILE_PATH = getStringValue(argArray, INPUT_FILE_PATH_SWITCH);
+		GROUND_TRUTH_FILE_PATH = getStringValue(argArray, GROUND_TRUTH_FILE_PATH_SWITCH);
+		if ((INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH == null) || HELP) {
+			System.out.println("ERROR! Need to provide an input file and/or a ground-truth file - see help below!");
+			showHelp();
+			return;
+		} 
 
 		if (OUTPUT_DIR_PATH == null && INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH != null) {
 			int end = GROUND_TRUTH_FILE_PATH.lastIndexOf("/");
@@ -262,6 +268,22 @@ public class MaxTranPats {
 		if (DIMENSION_MASK == null)
 			DIMENSION_MASK = "1100";
 		
+		if (SPERM_WHALES) {
+			System.out.println(getParameterSettings());
+			PointSet.generateSpermWhalePointSets(
+					INPUT_FILE_PATH,
+					OUTPUT_DIR_PATH
+					);
+			return;
+		}
+		
+		TRANSFORMATION_CLASSES = getTransformationClasses(argArray);
+		if (TRANSFORMATION_CLASSES == null) {
+			System.out.println("ERROR! Need to provide at least one transformation class - see help below!");
+			showHelp();
+			return;			
+		}
+
 		if (IPTG) {
 			System.out.println(getParameterSettings());
 			PointSet.computeOccurrenceSetTransformationGraph(

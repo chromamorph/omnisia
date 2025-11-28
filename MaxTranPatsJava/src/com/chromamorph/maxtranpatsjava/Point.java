@@ -1,5 +1,7 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import com.chromamorph.pitch.Pitch;
@@ -57,7 +59,7 @@ public class Point implements Comparable<Point>{
 	}
 	
 	private void constructPointFromPTSFileEntry(String str) {
-		String[] a = str.split(" ");
+		String[] a = str.split("\\h");
 		for(String cs : a)
 			coords.add(Double.parseDouble(cs));
 	}
@@ -84,6 +86,14 @@ public class Point implements Comparable<Point>{
 	
 	public void set(int i, double x) {
 		coords.set(i, x);
+	}
+	
+	public void add(double x) {
+		coords.add(x);
+	}
+	
+	public ArrayList<Double> getCoords() {
+		return coords;
 	}
 	
 	@Override

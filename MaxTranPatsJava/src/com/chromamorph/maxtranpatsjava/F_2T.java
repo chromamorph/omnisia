@@ -35,6 +35,15 @@ public class F_2T extends TransformationClass {
 		return sigmas;
 	}
 
+	public String getOSTGString(Transformation tran) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("$");
+		sb.append("T_{\\langle"+Utility.getIntString(tran.getSigma().get(1))+","+Utility.getIntString(tran.getSigma().get(2))+"\\rangle}");
+		sb.append("$");
+		return sb.toString();
+	}
+
+	
 //	@Override
 //	ArrayList<Double> getInverseSigma(ArrayList<Double> sigma) {
 //		ArrayList<Double> inverseSigma = new ArrayList<Double>();

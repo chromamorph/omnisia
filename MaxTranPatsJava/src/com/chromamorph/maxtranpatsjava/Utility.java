@@ -583,6 +583,13 @@ public class Utility {
 		return N;
 	}
 	
+	public static String getIntString(double x) {
+		if (Math.floor(x) == x)
+			return String.format("%.0f",x);
+		else
+			return String.format("%f", x);
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(lcm(5,24,16));
 //		ArrayList<Double> a = new ArrayList<Double>();

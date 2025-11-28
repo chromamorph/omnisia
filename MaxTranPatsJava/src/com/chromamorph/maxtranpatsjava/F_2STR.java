@@ -193,32 +193,15 @@ public class F_2STR extends TransformationClass {
 		System.out.println(5.3%0.5);
 	}
 	
-	public static String getIntString(double x) {
-		if (Math.floor(x) == x)
-			return String.format("%.0f",x);
-		else
-			return String.format("%f", x);
-	}
-	
-	public static String getOSTGString(TreeSet<Transformation> transformations) {
-		if (transformations == null || transformations.size() == 0) return "";
-		StringBuffer sb = new StringBuffer();
-		boolean first = true;
-		for(Transformation tran : transformations) {
-			if (Utility.equalsArrayListOfDoubles(tran.getSigma(), new F_2STR().identitySigma)) {
-				sb.append("$I$");
-				return sb.toString();
-			}
-			if (!first) sb.append("\\newline");
-			if (first) first = false;
-			sb.append("$");
-			if (tran.getSigma().get(0) != 1.0)
-				sb.append("S_{"+getIntString(tran.getSigma().get(0))+"}");
-			sb.append("T_{\\langle"+getIntString(tran.getSigma().get(1))+","+getIntString(tran.getSigma().get(2))+"\\rangle}");
-			if (tran.getSigma().get(3) == -1)
-				sb.append("R_x");
-			sb.append("$");
-		}
+	public String getOSTGString(Transformation tran) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("$");
+		if (tran.getSigma().get(0) != 1.0)
+			sb.append("S_{"+Utility.getIntString(tran.getSigma().get(0))+"}");
+		sb.append("T_{\\langle"+Utility.getIntString(tran.getSigma().get(1))+","+Utility.getIntString(tran.getSigma().get(2))+"\\rangle}");
+		if (tran.getSigma().get(3) == -1)
+			sb.append("R_x");
+		sb.append("$");
 		return sb.toString();
 	}
 

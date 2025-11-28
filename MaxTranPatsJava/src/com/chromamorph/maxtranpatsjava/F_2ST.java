@@ -6,46 +6,39 @@ import java.util.TreeSet;
 /**
  * 
  * This transformation class is the class of 2-dimensional transformations
- * that consist of a scaling parallel to the x-axis, followed by a translation,
- * optionally followed by a reflection in the x-axis.
- * 
- * The transformation class assumes that the x-value of each point gives the
- * mid-point of each note or sequence of tied notes.
- * 
- * Each transformation parameter, alpha, is a triple, <s, v, b>, where 
+ * that consist of a scaling parallel to the x-axis, followed by a translation.
+  * 
+ * Each transformation parameter, alpha, is a pair, <s, v>, where 
  * - s is a scale factor for a stretch parallel to the x-axis
  * - v is a translation vector
- * - b is either 1 or -1, with -1 indicating a reflection in the x-axis and
- *   1 indicating that no reflection takes place.
  *   
- * If alpha = <s, v, b>, then sigma = <s, v[0], v[1], b>.
+ * If alpha = <s, v>, then sigma = <s, v[0], v[1]>.
  * 
- * The identity sigma is therefore <1,0,0,1>.
+ * The identity sigma is therefore <1,0,0>.
  * The modified transformation class function is
- * phi'(sig, p) = <p0sig0+sig1,sig3(p1+sig2)>
+ * phi'(sig, p) = <p0sig0+sig1,p1+sig2)>
  * 
  * 
  * @author David Meredith
+ * @date 17 November 2025
  *
  */
-public class F_2STR_Book extends TransformationClass {
+public class F_2ST extends TransformationClass {
 
-	public F_2STR_Book() {
+	public F_2ST() {
 		super();
-		setName("F_2STR_Book");
-		setSigmaLength(4);
+		setName("F_2ST");
+		setSigmaLength(3);
 		setBasisSize(2);
 		setPerms();
-		identitySigma = Utility.makeSigma(1.0, 0.0, 0.0, 1.0);
+		identitySigma = Utility.makeSigma(1.0, 0.0, 0.0);
 	}
 	
 	@Override
 	Point phi(ArrayList<Double> sigma, Point p) {
-		if (sigma.get(3) != -1 && sigma.get(3) != 1)
-			return null;
 		if (sigma.get(0) == -0.0)
 			sigma.set(0, 0.0);
-		Point q = new Point(p.get(0)*sigma.get(0)+sigma.get(1),sigma.get(3)*(p.get(1)+sigma.get(2)));
+		Point q = new Point(p.get(0)*sigma.get(0)+sigma.get(1),p.get(1)+sigma.get(2));
 		for(int i = 0; i < p.size(); i++)
 			if (Utility.equalWithTolerance(Math.round(q.get(i)), q.get(i))) q.set(i, Math.round(q.get(i)));
 		return q;
@@ -63,7 +56,7 @@ public class F_2STR_Book extends TransformationClass {
 		double 	p10 = p1.get(0), p11 = p1.get(1), p20 = p2.get(0), p21 = p2.get(1),
 				q10 = q1.get(0), q11 = q1.get(1), q20 = q2.get(0), q21 = q2.get(1);
 
-		double sigma0, sigma1, sigma2, sigma3;
+		double sigma0, sigma1, sigma2;
 		
 		if (!Utility.equalWithTolerance(q20,q10) && Utility.equalWithTolerance(p20, p10))
 			return sigmas;
@@ -75,43 +68,28 @@ public class F_2STR_Book extends TransformationClass {
 		sigma1 = q20 - p20 * sigma0;
 		
 		if (Utility.equalWithTolerance(q11-p11, q21-p21)) {
-			sigma3 = 1;
 			sigma2 = q11-p11;
-			sigmas.add(Utility.roundSigmaValuesToNearestHalf(Utility.makeSigma(sigma0, sigma1, sigma2, sigma3)));
+			sigmas.add(Utility.roundSigmaValuesToNearestHalf(Utility.makeSigma(sigma0, sigma1, sigma2)));
 		}
-		
-		if (Utility.equalWithTolerance(p11+q11, p21+q21)) {
-			sigma3 = -1;
-			sigma2 = -p11-q11;
-			sigmas.add(Utility.roundSigmaValuesToNearestHalf(Utility.makeSigma(sigma0, sigma1, sigma2, sigma3)));
-		}
-		
+				
 		return sigmas;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(-3.00000001 % 0.5);
-		System.out.println(-4.50000001 %0.5);
-		System.out.println(5.3%0.5);
-	}
-	
-	public static String getIntString(double x) {
-		if (Math.floor(x) == x)
-			return String.format("%.0f",x);
-		else
-			return String.format("%f", x);
-	}
-	
 	public String getOSTGString(Transformation tran) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("$");
 		if (tran.getSigma().get(0) != 1.0)
 			sb.append("S_{"+Utility.getIntString(tran.getSigma().get(0))+"}");
 		sb.append("T_{\\langle"+Utility.getIntString(tran.getSigma().get(1))+","+Utility.getIntString(tran.getSigma().get(2))+"\\rangle}");
-		if (tran.getSigma().get(3) == -1)
-			sb.append("R_x");
 		sb.append("$");
 		return sb.toString();
 	}
-
+	
+	
+	public static void main(String[] args) {
+		System.out.println(-3.00000001 % 0.5);
+		System.out.println(-4.50000001 %0.5);
+		System.out.println(5.3%0.5);
+	}
+	
 }
