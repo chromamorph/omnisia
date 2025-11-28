@@ -1567,6 +1567,17 @@ public class PointSet implements Comparable<PointSet>{
 	}
 
 
+	public String mtpOccurrenceSetsToString() {
+		StringBuilder sb = new StringBuilder();
+		if (getMTPOccurrenceSets() != null)
+			for(ArrayList<OccurrenceSet> osArray : getMTPOccurrenceSets())
+				if (osArray != null)
+					for(OccurrenceSet os : osArray)
+						sb.append(os.toString()+"\n");
+			sb.append("\n");
+		return sb.toString();
+	}
+	
 	public static PointSet encodePointSet (
 			PointSet ps, 
 			String outputFilePath, 
@@ -1613,6 +1624,8 @@ public class PointSet implements Comparable<PointSet>{
 			ps.computeMaximalTransformedMatchesForkJoin(ps2,minSize);
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", !IS_OSTG));
 
+//		System.out.println(ps.getMTPs());
+		
 		//		int numMTPsBeforeRemoval = ps.getMTPs().size();
 		//		System.out.println("Number of MTPs before removal: "+numMTPsBeforeRemoval);
 
@@ -1623,44 +1636,82 @@ public class PointSet implements Comparable<PointSet>{
 		ps.computeSizeMTPSetArray(minSize,sizeMTPSetArraySize);
 		log.add(new LogInfo("computeSizeMTPSetArray ends", !IS_OSTG));
 
+//		System.out.println(ps.getMTPs());
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 		ps.mergeMTPs(sizeMTPSetArraySize);
 		log.add(new LogInfo("mergeMTPs ends", !IS_OSTG));
+
+//		System.out.println(ps.mtpOccurrenceSetsToString());
 
 		//		ps.computeSuperMTPs();
 		ps.computeSuperMTPsForkJoin();
 		log.add(new LogInfo("computeSuperMTPs ends", !IS_OSTG));
 
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
+		
 		TIME_AT_START_OF_COMPUTING_HETERO_OS = Calendar.getInstance().getTimeInMillis();
 		COMPUTE_HETERO_OS_COMPLETED = false;
 		ps.computeHeterogeneousOccurrenceSets();
 		log.add(new LogInfo("computeHeterogeneousOccurrenceSets ends", !IS_OSTG));
 
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 		ps.removeDuplicateOccurrenceSets();
+
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 		log.add(new LogInfo("removeDuplicateOccurrenceSets ends", !IS_OSTG));
 		if (!ps.isMTM())
 			ps.removeRedundantTransformations();
 		log.add(new LogInfo("removeRedundantTransformations ends", !IS_OSTG));
 
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 		if (minCompactness > 0)
 			ps.removeNonCompactOccurrenceSets(minCompactness);
+		log.add(new LogInfo("removeNonCompactOccurrenceSets ends", !IS_OSTG));
+
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 		if (minOccurrenceCompactness > 0)
 			ps.removeNonCompactOccurrences(minOccurrenceCompactness);
+		log.add(new LogInfo("removeNonCompactOccurrences ends", !IS_OSTG));
+
+//		System.out.println(ps.mtpOccurrenceSetsToString());
 
 		ps.removeOccurrenceSetsWithNoTransformations();
 		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", !IS_OSTG));
 
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 		if (ps.isMTM()) {
 			ps.removeContainedOccurrences();			
 		}
+		log.add(new LogInfo("removeContainedOccurrences ends", !IS_OSTG));
 
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
+		ps.removeOccurrenceSetsWithNoTransformations();
+		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", !IS_OSTG));
+
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+		
 		//		ps.removeOccurrenceSetsWithNoTransformations();
 		//		log.add(new LogInfo("removeOccurrenceSetsWithEmptyTransformationSets ends", true));
 		//
 		ps.computeSortedOccurrenceSets(ps.isMTM()?OccurrenceSet.DECREASING_PATTERN_SIZE:OccurrenceSet.DECREASING_CF_THEN_COVERAGE_COMPARATOR);
+
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 		log.add(new LogInfo("computeSortedOccurrenceSets ends", !IS_OSTG));
 
 		ps.computeEncoding();
 		log.add(new LogInfo("computeEncoding ends", !IS_OSTG));
+
+//		System.out.println(ps.mtpOccurrenceSetsToString());
+
 
 		//			ps.computeSortedOccurrenceSets(OccurrenceSet.DECREASING_CF_TIMES_COVERAGE_COMPARATOR);			
 		//			Utility.println(output, "\nOccurrence sets sorted decreasing by cf x coverage:");

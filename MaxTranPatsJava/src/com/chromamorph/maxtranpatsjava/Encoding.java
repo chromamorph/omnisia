@@ -261,48 +261,92 @@ public class Encoding {
 			long onset = (withMidTimePoints || p.getOnset() == null)?(long)Math.floor(p.get(0)):p.getOnset();
 			ps.add(new com.chromamorph.points022.Point(onset,(int)(Math.floor(p.get(1)))));
 		}
-		
-		final Runnable drawOccurrenceSetsRunnable = new Runnable() {
-			public void run() {
-				JFrame frame = new JFrame();
-				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
-				frame.setResizable(false);
-				PApplet embed = new DrawPoints(
-						ps,
-						getOccurrenceSetsAsArrayListsOfPointSets(includePattern),
-						true,//drawAllOccurrenceSetsAtOnce
-						diatonicPitch,
-						dataset.getTatumsPerBar(),
-						dataset.getBarOneStartsAt(),
-						dataset.getTitle(),
-						outputFilePath,
-						false, //segmentation
-						true, //writeToImageFile
-						drawBoundingBoxes,
-						useChroma,
-						useMorph
-						);
-				frame.add(embed);
-				embed.init();
-				frame.pack();
-				frame.setVisible(true);
-			}
-		};
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					javax.swing.SwingUtilities.invokeAndWait(drawOccurrenceSetsRunnable);
-				} catch (InvocationTargetException | InterruptedException e) {
-					e.printStackTrace();
-				}				
-			}
-		};
-		thread.start();
 		try {
-			thread.join();
+			final Runnable drawOccurrenceSetsRunnable = new Runnable() {
+				public void run() {
+					JFrame frame = new JFrame();
+					frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
+					frame.setResizable(false);
+					PApplet embed = new DrawPoints(
+							ps,
+							getOccurrenceSetsAsArrayListsOfPointSets(includePattern),
+							true,//drawAllOccurrenceSetsAtOnce
+							diatonicPitch,
+							dataset.getTatumsPerBar(),
+							dataset.getBarOneStartsAt(),
+							dataset.getTitle(),
+							outputFilePath,
+							false, //segmentation
+							true, //writeToImageFile
+							drawBoundingBoxes,
+							useChroma,
+							useMorph
+							);
+					frame.add(embed);
+					embed.init();
+					frame.pack();
+					do {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					} while (!DrawPoints.FINISHED);
+					embed.exit();
+					return;
+				}
+			};
+			javax.swing.SwingUtilities.invokeAndWait(drawOccurrenceSetsRunnable);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Finished on " + Thread.currentThread());
+
+		
+//		OLD VERSION
+//		final Runnable drawOccurrenceSetsRunnable = new Runnable() {
+//			public void run() {
+//				JFrame frame = new JFrame();
+//				frame.setMinimumSize(new Dimension(DrawPoints.drawWindowWidth,DrawPoints.drawWindowHeight+23));
+//				frame.setResizable(false);
+//				PApplet embed = new DrawPoints(
+//						ps,
+//						getOccurrenceSetsAsArrayListsOfPointSets(includePattern),
+//						true,//drawAllOccurrenceSetsAtOnce
+//						diatonicPitch,
+//						dataset.getTatumsPerBar(),
+//						dataset.getBarOneStartsAt(),
+//						dataset.getTitle(),
+//						outputFilePath,
+//						false, //segmentation
+//						true, //writeToImageFile
+//						drawBoundingBoxes,
+//						useChroma,
+//						useMorph
+//						);
+//				frame.add(embed);
+//				embed.init();
+//				frame.pack();
+//				frame.setVisible(true);
+//			}
+//		};
+//		Thread thread = new Thread() {
+//			public void run() {
+//				try {
+//					javax.swing.SwingUtilities.invokeAndWait(drawOccurrenceSetsRunnable);
+//				} catch (InvocationTargetException | InterruptedException e) {
+//					e.printStackTrace();
+//				}				
+//			}
+//		};
+//		thread.start();
+//		try {
+//			thread.join();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	

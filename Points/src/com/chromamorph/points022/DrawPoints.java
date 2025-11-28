@@ -469,6 +469,7 @@ public class DrawPoints extends PApplet {
 			//this.noLoop();
 		}
 		else if (drawAllOccurrenceSetsAtOnce) {
+			System.out.println("About to run drawAllOccurrenceSetsAtOnce() with occurrence sets = "+occurrenceSets);
 			if (occurrenceSets != null && !occurrenceSets.isEmpty()) {
 				drawAllOccurrenceSetsAtOnce();
 			}
@@ -643,6 +644,7 @@ public class DrawPoints extends PApplet {
 			if (i==numberOfTecs-1 && occurrenceSets.get(i).size()==1)
 				continue;
 			ArrayList<PointSet> occurrenceSet = occurrenceSets.get(i);
+			System.out.println(occurrenceSet);
 
 			int[] colArray = colours[i];
 			if (occurrenceSet.get(0).getColArray() != null)
