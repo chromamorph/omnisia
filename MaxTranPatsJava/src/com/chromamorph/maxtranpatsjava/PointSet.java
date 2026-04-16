@@ -608,6 +608,55 @@ public class PointSet implements Comparable<PointSet>{
 		return basis;
 	}
 
+	/**
+	 * Implementation of AllMaximalPatterns1 algorithm in GAMA book.
+	 */
+	public void allMaximalPatterns01(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
+		if (transformationClasses == null)
+			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+		TreeSet<TransformationPointSequencePair> V = new TreeSet<TransformationPointSequencePair>();
+		for (TransformationClass F : transformationClasses) {
+			int NObj = Utility.computeNumCombinations(pattern.size(), F.getBasisSize());
+			int NImg = Utility.computeNumCombinations(size(), F.getBasisSize());
+			int[][] R = F.getPerms();
+			for(int i = 0; i < NObj; i++) {
+				PointSequence bObj = pattern.computeBasis(F.getBasisSize(), i);
+				for(int j = 0; j < NImg; j++) {
+					PointSequence bImg = this.computeBasis(F.getBasisSize(), j);
+					for(int k = 0; k < R.length; k++) {
+						int[] r = R[k];
+						PointSequence bImgDash = new PointSequence();
+						for(int l = 0; l < F.getBasisSize(); l++)
+							bImgDash.add(bImg.get(r[l]));
+						ArrayList<Transformation> transformations = Transformation.getTransformations(F, bObj, bImgDash);
+						for(Transformation f : transformations) {
+							V.add(new TransformationPointSequencePair(f,bObj));
+						}
+					}
+				}
+			}
+		}
+		mtps = new TreeSet<TransformationPointSetPair>();
+		if (!V.isEmpty()) {
+			Transformation f = V.first().getTransformation();
+			PointSet S = new PointSet();
+			S.addAll(V.first().getPointSequence());
+			for(TransformationPointSequencePair v : V) {
+				if (v.getTransformation().equals(f))
+					S.addAll(v.getPointSequence());
+				else {
+					if (S.size() >= minSize)
+						mtps.add(new TransformationPointSetPair(f,S));
+					f = v.getTransformation();
+					S = new PointSet();
+					S.addAll(v.getPointSequence());
+				}
+			}
+			if (S.size() >= minSize)
+				mtps.add(new TransformationPointSetPair(f,S));		
+		}
+	}
+	
 	public void computeMaximalTransformedMatchesForkJoin(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
@@ -1620,8 +1669,13 @@ public class PointSet implements Comparable<PointSet>{
 				ps.computeMaximalTransformablePatternsForkJoin(minSize);
 			else
 				ps.computeMaximalTransformablePatterns(minSize);
-		} else //ps2 is non-null
+		} else if (forkJoin) {//ps2 is non-null
+			log.add(new LogInfo("Using computeMaximalTransformedMatchesForkJoin", !IS_OSTG));
 			ps.computeMaximalTransformedMatchesForkJoin(ps2,minSize);
+		} else {
+			log.add(new LogInfo("Using allMaximalPatterns01", !IS_OSTG));
+			ps.allMaximalPatterns01(ps2, minSize);
+		}
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", !IS_OSTG));
 
 //		System.out.println(ps.getMTPs());
