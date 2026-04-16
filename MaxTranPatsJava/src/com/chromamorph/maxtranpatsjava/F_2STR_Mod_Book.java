@@ -107,5 +107,12 @@ public class F_2STR_Mod_Book extends TransformationClass {
 		sb.append("$");
 		return sb.toString();
 	}
+	
+	public static void main(String[] args) {
+		F_2STR_Mod_Book tc = new F_2STR_Mod_Book(7);
+		PointSequence b1 = new PointSequence(new Point(1.0,6.0), new Point(1.0,1.0));
+		PointSequence b2 = new PointSequence(new Point(5.0,1.0), new Point(5.0,3.0));		
+		System.out.println(tc.getSigmas(b1, b2));
+	}
 
 }

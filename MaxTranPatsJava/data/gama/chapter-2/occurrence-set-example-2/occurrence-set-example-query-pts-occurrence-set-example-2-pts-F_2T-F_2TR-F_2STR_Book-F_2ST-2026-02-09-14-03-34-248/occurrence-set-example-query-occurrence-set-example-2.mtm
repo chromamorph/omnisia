@@ -1,0 +1,67 @@
+OS(P(p(1,1),p(1,2),p(2,3),p(4,1),p(4,2)),[T(F_2T,[0.0, 0.0]), T(F_2T,[0.0, 7.0]), T(F_2T,[4.0, 8.0]), T(F_2ST,[-2.0, 13.0, 0.0]), T(F_2STR_Book,[-1.0, 5.0, -7.0, -1.0]), T(F_2STR_Book,[2.0, 3.0, -8.0, -1.0])],null)
+
+
+Coverage: 30
+Dataset size: 30
+Uncompressed length: 60
+Encoding length: 33
+Compression factor: 1.8181818181818181
+Running time in milliseconds: 461
+Encoding length without residual point set: 33
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.8181818181818181
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            430 ms            430 ms  computeMaximalTransformablePatterns ends
+            430 ms              0 ms  computeSizeMTPSetArray ends
+            434 ms              4 ms  mergeMTPs ends
+            434 ms              0 ms  computeSuperMTPs ends
+            435 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+            458 ms             23 ms  keepOnlySimplestTransformations ends
+            459 ms              1 ms  keepOnlySimplestTransformations ends
+            459 ms              0 ms  removeNonCompactOccurrenceSets ends
+            460 ms              1 ms  removeNonCompactOccurrences ends
+            460 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            460 ms              0 ms  removeContainedOccurrences ends
+            460 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            460 ms              0 ms  computeSortedOccurrenceSets ends
+            461 ms              1 ms  computeEncoding ends
+            461 ms              0 ms  Program ends
+
+
+Number of points: 30
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): chapter-2/occurrence-set-example-2/occurrence-set-example-2.pts
+Query file path (-q): chapter-2/occurrence-set-example-2/occurrence-set-example-query.pts
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): chapter-2/occurrence-set-example-2
+Minimum pattern size (-min): 0
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {F_2T,F_2TR,F_2STR_Book,F_2ST}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Show help (-h): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+Use chroma (-c): false
+Use morph (-m): false
+x-axis scale factor (-xsf): 1
+Generate inter-pattern transformation graph (-iptg): false
+Multi-threaded computation and supply number of threads (-numthreads): 0
+Multi-threaded computation with number of threads determined by number of processors (-multithreaded): false
+Use Fork/Join framework (-forkjoin): false
+Generate point sets from sperm whale data (-sw): false
+

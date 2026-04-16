@@ -1,0 +1,10 @@
+MEL27;
+add(translate(note(0,0),
+              product(vector(1,0),
+                      sequence(vectorSumSet(vector(0,1)),vectorSumSet(vector(0,3))),
+                      vector(2,0),
+                      vector(0,2))));
+                      
+print();
+draw();
+encode();

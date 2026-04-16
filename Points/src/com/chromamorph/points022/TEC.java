@@ -267,6 +267,7 @@ public class TEC implements Comparable<TEC>{
 		compactness = 0.0;
 		for(Vector v : getTranslators().getVectors()) {
 			double c = getPattern().translate(v).getCompactness(getDataset(), compactnessType);
+			if (c > 1) System.out.println("TEC.getCompactness() is finding a compactness greater than 1! ("+c+")");
 			if (c > compactness) compactness = c;
 		}
 		return compactness;

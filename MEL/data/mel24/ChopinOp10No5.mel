@@ -1,0 +1,77 @@
+MEL24;
+include("nps");
+include("masks");
+include("scales");
+S1 = space(unitMaskSequence,gFlatMajorDominantFifthMaskSequence);
+S2 = space(unitMaskSequence,gFlatMajorSupertonic64FifthMaskSequence);
+
+//Right hand, bars 1-6 and 9-14 
+n1 = note(0,90);
+n2 = note(4,87); 
+n3 = note(6,85);
+n4 = note(24,61);
+n5 = note(36,75);
+v1 = vector(np,evenNumberMaskSequence,gFlatMajorTonicTriadMaskSequence);
+v2 = vector(nn,unitMaskSequence,gFlatMajorTonicTriadMaskSequence);
+v3 = vector(nn,unitMaskSequence,gFlatMajorSubdominantTriadMaskSequence);
+v4 = vector(12,-12);
+v5 = vector(48,0);
+v6 = vector(96,0);
+v7 = vector(1,2,S1);
+v8 = vector(np,S1);
+v9 = vectorSum(vector(6,7));
+v10 = vector(1,2,S2);
+v11 = vector(np,S2);
+v12 = vector(6,5);
+Q1 = vectorSequence(ss,v7,v8);
+Q2 = vectorSequence(ss,v10,v11);
+V1 = vectorAdd(vector(5,19),reflectPitch(reflectTime(Q1)));
+V2 = union(Q1,V1);
+V3 = vectorAdd(vector(5,17),reflectPitch(reflectTime(Q2)));
+V4 = union(Q2,V3);
+N1 = translate(n1,product(v1,v2));
+N2 = translate(n2,vectorSet(ss,v3));
+N3 = translate(n3,product(repeat(2,v1),v2));
+N4 = translate(union(N1,N2,N3),product(v6,v5,v4));
+N5 = translate(n4,product(V2,v9,v6));
+N6 = translate(n5,product(V4,v12,v6));
+
+//Right hand, bar 7
+N7 = translate(n5,vectorAdd(vector(36,-12),V4));
+n6 = translate(n5,vector(42,0));
+N8 = translate(n6,V3);
+N9 = translate(n6,vectorSequence(ss,vector(nn,S2),v11));
+
+//Right hand, bar 8
+n7 = note(84,82);
+Q3 = repeat(5,vector(ns,evenNumberMaskSequence,eFlatMinorDominantOctaveMaskSequence));
+v13 = vector(nn,unitMaskSequence,eFlatMinorDominantOctaveMaskSequence);
+N10 = translate(n7,product(Q3,v13));
+
+//Right hand, bar 15 - same as bar 7 except for last note
+N11 = union(setDifference(translate(union(N7,N8,N9),vector(96,0)),note(179,92)),noteSet(note(179,87)));
+
+//Right hand, bar 16
+N12 = translate(n4,product(V2,vector(160,12)));
+N13 = union(translate(n5,vectorAdd(Q2,vector(144,0))),noteSet(note(183,87)));
+N14 = translate(note(190,85),product(vector(nn,unitMaskSequence,gFlatMajorDominantOctaveMaskSequence)));
+
+//Left hand, bars 1-2, 5-6, 9-10, 13-14
+gFlatMajorTriadFourNotes = union(vectorSet(ss),repeat(3,vector(sn,threesMaskSequence,gFlatMajorTonicTriadMaskSequence)));
+cFlatMajorTriadFourNotes = union(vectorSet(ss),repeat(3,vector(sn,threesMaskSequence,gFlatMajorSubdominantTriadMaskSequence)));
+gFlatMajorTriadThreeNotes = union(vectorSet(ss),repeat(2,vector(sn,threesMaskSequence,gFlatMajorTonicTriadMaskSequence)));
+cFlatMajorTriadThreeNotes = union(vectorSet(ss),repeat(2,vector(sn,threesMaskSequence,gFlatMajorSubdominantTriadMaskSequence)));
+gFlatOctave = vectorSet(ss,vector(sp,threesMaskSequence,gFlatMajorTonicOctaveMaskSequence));
+V5 = union(gFlatMajorTriadFourNotes,
+           vectorAdd(vector(3,0),cFlatMajorTriadFourNotes),
+           vectorAdd(vector(6,0),gFlatMajorTriadFourNotes),
+           vectorAdd(vector(12,0),gFlatOctave),
+           vectorAdd(vector(15,5),cFlatMajorTriadThreeNotes),
+           vectorAdd(vector(18,4),gFlatMajorTriadThreeNotes));
+V6 = product(repeat(3,v5),V5);
+N15 = translate(note(0,54),V6);
+
+
+add(N4,N5,N6,N7,N8,N9,N10,N11,N12,N13,N14,N15);
+play(100);
+draw();

@@ -1,0 +1,29 @@
+MEL25;
+
+//STRUCTURES
+majorScaleStructure = maskStructure(2,2,1,2,2,2,1);
+minorHarmonicScaleStructure = maskStructure(2,1,2,2,1,3,1);
+triadStructure = maskStructure(2,2,3);
+
+//MASKS
+octaveMask =mask(0,2);
+fifthMask = mask(0,2,1);
+fourthMask = mask(2,1,2);
+tonicTriadMask = mask(0,triadStructure);
+supertonicTriadMask = mask(1,triadStructure);
+subdominantTriadMask = mask(3,triadStructure);
+dominantTriadMask = mask(4,triadStructure);
+gFlatMajorScaleMask = mask(6,majorScaleStructure);
+
+eFlatMinorHarmonicScaleMask = mask(3,minorHarmonicScaleStructure);
+
+//MASK SEQUENCES
+
+eFlatMinorDominantOctaveMaskSequence = maskSequence(eFlatMinorHarmonicScaleMask,dominantTriadMask,fifthMask,octaveMask);
+
+gFlatMajorTonicTriadMaskSequence = maskSequence(gFlatMajorScaleMask,tonicTriadMask); 
+gFlatMajorTonicOctaveMaskSequence = maskSequence(gFlatMajorScaleMask,tonicTriadMask,fifthMask,octaveMask); 
+gFlatMajorSubdominantTriadMaskSequence = maskSequence(gFlatMajorScaleMask,subdominantTriadMask);
+gFlatMajorDominantFifthMaskSequence = maskSequence(gFlatMajorScaleMask,dominantTriadMask,fifthMask);
+gFlatMajorDominantOctaveMaskSequence = maskSequence(gFlatMajorScaleMask,dominantTriadMask,fifthMask,octaveMask);
+gFlatMajorSupertonic64FifthMaskSequence = maskSequence(gFlatMajorScaleMask,supertonicTriadMask,fourthMask);

@@ -1,0 +1,67 @@
+OS(P(p(1,1),p(1,2),p(2,3),p(4,1),p(4,2)),[T(F_2STR,[-2.0, 13.0, 0.0, 1.0]), T(F_2STR,[-1.0, 5.0, -7.0, -1.0]), T(F_2STR,[1.0, 0.0, 0.0, 1.0]), T(F_2STR,[2.0, 3.0, -8.0, -1.0])],null)
+
+
+Coverage: 20
+Dataset size: 20
+Uncompressed length: 40
+Encoding length: 26
+Compression factor: 1.5384615384615385
+Running time in milliseconds: 417
+Encoding length without residual point set: 26
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 1.5384615384615385
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            389 ms            389 ms  computeMaximalTransformablePatterns ends
+            389 ms              0 ms  computeSizeMTPSetArray ends
+            393 ms              4 ms  mergeMTPs ends
+            393 ms              0 ms  computeSuperMTPs ends
+            393 ms              0 ms  computeHeterogeneousOccurrenceSets ends
+            414 ms             21 ms  removeDuplicateOccurrenceSets ends
+            414 ms              0 ms  removeRedundantTransformations ends
+            414 ms              0 ms  removeNonCompactOccurrenceSets ends
+            415 ms              1 ms  removeNonCompactOccurrences ends
+            416 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            416 ms              0 ms  removeContainedOccurrences ends
+            416 ms              0 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            417 ms              1 ms  computeSortedOccurrenceSets ends
+            417 ms              0 ms  computeEncoding ends
+            417 ms              0 ms  Program ends
+
+
+Number of points: 20
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/HCII2023/example2-for-book.pts
+Query file path (-q): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/HCII2023/example2-query.pts
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/HCII2023
+Minimum pattern size (-min): 5
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Show help (-h): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+Use chroma (-c): false
+Use morph (-m): false
+x-axis scale factor (-xsf): 1
+Generate inter-pattern transformation graph (-iptg): false
+Multi-threaded computation and supply number of threads (-numthreads): 0
+Multi-threaded computation with number of threads determined by number of processors (-multithreaded): false
+Use Fork/Join framework (-forkjoin): false
+Generate point sets from sperm whale data (-sw): false
+

@@ -757,7 +757,7 @@ private static void showHelp() {
 			"\tsize of the patterns trawled by the compactness trawler.",
 			"",
 			"-"+R_SUPERDIAGONALS_SWITCH+"\tIf present, limits SIA to r superdiagonals, as used in Collins'",
-			"\tSIAR algorithm. Number of superdiagonals determined by the -"+R_SWITCH+"switch.",
+			"\tSIAR algorithm. Number of superdiagonals determined by the -"+R_SWITCH+" switch.",
 			"",
 			"-"+R_SWITCH+"\tNumber of superdiagonals to analyse if limited with -"+R_SUPERDIAGONALS_SWITCH+" switch.",
 			"\tDefault value is 1.",
@@ -906,7 +906,7 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 		case SIATEC: encoding = runSIATEC(); break;
 		case Forth: encoding = runForth(); break;
 		case RecurSIA: encoding = runRecurSIA(); break;
-		case TTWM: encoding = runTTWM(); break;
+//		case TTWM: encoding = runTTWM(); break;
 		case MTECS: encoding = runMTECS(); break;
 		case ComputeTranslators: encoding = runComputeTranslators(); break;
 		case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
@@ -1336,7 +1336,6 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 		closeLogFile();
 		return;
 	}
-	printParsedParameterValues();
 	try {
 		if (INPUT_DIR != null && INPUT_FILE_LIST != null) {
 			int i = 0;
@@ -1350,6 +1349,7 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 				getBasicAlgorithm(args);
 				getDiatonicPitch(args);
 				getDraw(args);
+				printParsedParameterValues();
 				analyse(args);
 				closeLogFile();
 			}
@@ -1363,6 +1363,7 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 			getBasicAlgorithm(args);
 			getDiatonicPitch(args);
 			getDraw(args);
+			printParsedParameterValues();
 			analyse(args);		
 			closeLogFile();
 		}

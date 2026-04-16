@@ -1,6 +1,9 @@
 package com.chromamorph.maxtranpatsjava;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class MaxTranPats {
@@ -249,6 +252,34 @@ public class MaxTranPats {
 
 		INPUT_FILE_PATH = getStringValue(argArray, INPUT_FILE_PATH_SWITCH);
 		GROUND_TRUTH_FILE_PATH = getStringValue(argArray, GROUND_TRUTH_FILE_PATH_SWITCH);
+		
+		///// CHECK FILES EXIST
+		File f;
+		if (QUERY_FILE_PATH != null) {
+			f = new File(QUERY_FILE_PATH);
+			if (!f.exists()) {
+				System.out.println("ERROR: QUERY FILE PATH DOES NOT EXIST!");
+				return;
+			}
+		}
+		if (INPUT_FILE_PATH != null) {
+			f = new File(INPUT_FILE_PATH);
+			if (!f.exists()) {
+				System.out.println("ERROR: INPUT FILE PATH DOES NOT EXIST!");
+				return;
+			}
+		}
+		if (GROUND_TRUTH_FILE_PATH != null) {
+			f = new File(GROUND_TRUTH_FILE_PATH);
+			if (!f.exists()) {
+				System.out.println("ERROR: GROUND-TRUTH FILE PATH DOES NOT EXIST!");
+				return;
+			}
+		}
+		///////////////////////
+		
+		
+		
 		if ((INPUT_FILE_PATH == null && GROUND_TRUTH_FILE_PATH == null) || HELP) {
 			System.out.println("ERROR! Need to provide an input file and/or a ground-truth file - see help below!");
 			showHelp();

@@ -56,11 +56,11 @@ public class Point implements Comparable<Point>{
 		setDuration(duration);
 	}
 	
-	private void setDuration(Long duration) {
+	public void setDuration(Long duration) {
 		this.duration = duration;
 	}
 	
-	private void setVoice(Integer voice) {
+	public void setVoice(Integer voice) {
 		this.voice = voice;
 	}
 	

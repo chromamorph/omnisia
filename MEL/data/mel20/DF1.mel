@@ -1,0 +1,11 @@
+MEL20;
+M1 = maskSequence(mask(1,2),mask(0,3));
+M2 = maskSequence(mask(0,2,2,1,2,2,2,1),mask(0,2,2,3));
+n1 = note(1,60);
+v1 = vector(1,1,M1,M2);
+v2 = vector(-1,-1);
+S = translate(n1,product(repeat(3,v1),vectorSequence(v2)));
+add(S);
+play(100);
+print();
+draw();

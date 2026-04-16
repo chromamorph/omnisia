@@ -1,0 +1,8 @@
+MEL20;
+s1 = maskStructure(2,2,3);
+m1 = mask(6,2,2,1,2,2,2,1);
+include("masks");
+S1 = space(M3,M5);
+S2 = space(M3,M6);
+n = coords(1,1);
+p = coords(1,-1);

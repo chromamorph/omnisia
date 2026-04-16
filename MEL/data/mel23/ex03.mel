@@ -1,0 +1,19 @@
+MEL23;
+include("nps");
+s1 = maskStructure(2,2,3);
+m1 = mask(6,2,2,1,2,2,2,1);
+M1 = maskSequence(mask(0,2));
+M2 = maskSequence(m1,mask(0,s1));
+M3 = maskSequence(mask(0,1));
+M4 = maskSequence(m1,mask(3,s1));
+n1 = note(0,90);
+n2 = note(4,87);
+n3 = note(6,85);
+v1 = vector(np,M1,M2);
+v2 = vector(nn,M3,M2);
+v3 = vector(nn,M3,M4);
+add(translate(n1,product(v1,v2)),
+    translate(n2,product(v3)),
+    translate(n3,product(repeat(2,v1),v2)));
+play(100);
+draw();

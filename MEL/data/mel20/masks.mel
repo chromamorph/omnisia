@@ -1,0 +1,7 @@
+MEL20;
+M1 = maskSequence(mask(0,2)); 
+M2 = maskSequence(m1,mask(0,s1)); 
+M3 = maskSequence(mask(0,1));
+M4 = maskSequence(m1,mask(3,s1));
+M5 = maskSequence(m1,mask(4,s1),mask(0,2,1));
+M6 = maskSequence(m1,mask(1,s1),mask(2,1,2));

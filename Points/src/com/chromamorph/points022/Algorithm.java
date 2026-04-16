@@ -9,4 +9,5 @@ public enum Algorithm {
 	SIACT,
 	SIARCT,
 	RecurSIA,
+	ComputeTranslators
 }

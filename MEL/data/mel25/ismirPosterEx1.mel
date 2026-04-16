@@ -1,0 +1,33 @@
+MEL25;
+n1 = note(0,90);                     //First note 
+p = coords(1,-1);                    //Corresponds to p ("previous") operator in Deutsch and Feroe
+n = coords(1,1);                     //Corresponds to n ("next") operator in Deutsch and Feroe
+ms1 = maskStructure(2,2,3);          //Triad mask structure
+s1 = mask(6,2,2,3,2,3);              //Background scale: Gb pentatonic
+s2 = mask(6,2,2,1,2,2,2,1);          //Gb major scale
+T1 = maskSequence(mask(0,4,2,6));    //Background rhythm
+T2 = maskSequence(mask(0,1));        //Tatum time mask sequence
+T3 = maskSequence(mask(0,2));        //Time mask sequence for alternate semiquavers
+P1 = maskSequence(s2,mask(3,ms1));   //Subdominant triad in Gb major
+P2 = maskSequence(s1);               //Pitch mask sequence for background (Gb pentatonic)
+P3 = maskSequence(s2,mask(0,ms1));   //Tonic triad in Gb major
+S1 = space(T1,P2);                   //Background space
+S2 = space(T2,P3);                   //Space for first four semiquavers
+S3 = space(T2,P1);                   //Space for vector v4
+S4 = space(T3,P3);                   //Space for vector v2
+v1 = vector(p,S1);                   // \
+v2 = vector(p,S4);                   //  | Vectors - see figure ->
+v3 = vector(n,S2);                   //  |
+v4 = vector(n,S3);                   // /
+Q1 = repeat(2,v1);                   //Sequence of 2 v1 vectors in background space
+Q2 = repeat(2,v2);                   //Sequence of 2 v2 vectors in middleground space
+R1 = product(v2,v3);                 //Cartesian product of v2 and v3
+R2 = product(Q2,v3);                 //Cartesian product of Q2 = <v2,v2> and v3
+add(translate(n1,
+              product(Q1,                         //<v1,v1>
+                      sequence(R1,                //v2 x v3
+                               vectorSumSet(v4),  //v4
+                               R2))));            //<v2,v2> x v3
+print();                             //Prints to the console
+draw();                              //Draws a graph in a window
+play(100);                           //Plays resulting note set, with tatum = 100ms

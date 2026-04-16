@@ -1060,7 +1060,7 @@ public class PointSet implements Comparable<PointSet>{
 			mtpOccurrenceSets[size] = new ArrayList<OccurrenceSet>();
 			ArrayList<TransformationPointSetPair> mtpsForThisSize = sizeMTPSetArray[size];
 			PointSet currentPattern = mtpsForThisSize.get(0).getPointSet();
-			OccurrenceSet currentMergedMTP = new OccurrenceSet(currentPattern,this);
+			OccurrenceSet currentMergedMTP = new OccurrenceSet(currentPattern,this,transformationClasses.size()>1);
 			currentMergedMTP.addTransformation(mtpsForThisSize.get(0).getTransformation());
 			for(int i = 1; i < mtpsForThisSize.size(); i++) {
 				TransformationPointSetPair thisMTP = mtpsForThisSize.get(i);
@@ -1069,7 +1069,7 @@ public class PointSet implements Comparable<PointSet>{
 				else {
 					mtpOccurrenceSets[size].add(currentMergedMTP);
 					currentPattern = thisMTP.getPointSet();
-					currentMergedMTP = new OccurrenceSet(currentPattern,this);
+					currentMergedMTP = new OccurrenceSet(currentPattern,this,transformationClasses.size()>1);
 					currentMergedMTP.addTransformation(thisMTP.getTransformation());
 				}
 			}
@@ -1083,7 +1083,7 @@ public class PointSet implements Comparable<PointSet>{
 			System.out.println();
 
 			System.out.println("\nNum occurrence sets of each size");
-			for(int size = 0; size < mtpOccurrenceSets.length; size++) {
+			for(int size : mtpSizes) {
 				if (mtpOccurrenceSets[size] != null) {
 					System.out.println(size + " : " + mtpOccurrenceSets[size].size());
 				}
@@ -1214,12 +1214,12 @@ public class PointSet implements Comparable<PointSet>{
 		//			}
 	}
 
-	public void removeRedundantTransformations() {
+	public void keepOnlySimplestTransformations() {
 		//		For each MTP, remove more complex transformations that map the pattern
 		//		onto the same image pattern as less complex transformations
 		for(int size : mtpSizes) {
 			for (OccurrenceSet mtp : mtpOccurrenceSets[size]) {
-				mtp.removeRedundantTransformations(isMTM());
+				mtp.keepSimplestTransformationForEachImagePattern();
 			}
 		}
 	}
@@ -1453,7 +1453,7 @@ public class PointSet implements Comparable<PointSet>{
 		if (!isMTM()) {
 			PointSet residualSet = this.setMinus(coveredSet);
 			if (!residualSet.isEmpty()) {
-				OccurrenceSet residualOccurrenceSet = new OccurrenceSet(residualSet, this);
+				OccurrenceSet residualOccurrenceSet = new OccurrenceSet(residualSet, this,transformationClasses.size()>1);
 				encoding.add(residualOccurrenceSet);
 			}
 		}
@@ -1662,10 +1662,9 @@ public class PointSet implements Comparable<PointSet>{
 
 //		System.out.println(ps.mtpOccurrenceSetsToString());
 
-		log.add(new LogInfo("removeDuplicateOccurrenceSets ends", !IS_OSTG));
-		if (!ps.isMTM())
-			ps.removeRedundantTransformations();
-		log.add(new LogInfo("removeRedundantTransformations ends", !IS_OSTG));
+		log.add(new LogInfo("keepOnlySimplestTransformations ends", !IS_OSTG));
+		ps.keepOnlySimplestTransformations();
+		log.add(new LogInfo("keepOnlySimplestTransformations ends", !IS_OSTG));
 
 //		System.out.println(ps.mtpOccurrenceSetsToString());
 
@@ -2459,9 +2458,9 @@ private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int
 					useChroma,
 					useMorph);
 			System.out.println("Dataset:\n"+dataset+"\n");
-			if (minSize < 0)
+			if (minSize <= 0)
 				minSize = pattern.size()+minSize;
-			if (minSize < 0) System.out.println(">>>ERROR! minSize is still less than zero: "+minSize+"<<<");
+			if (minSize <= 0) System.out.println(">>>ERROR! minSize is still less than zero: "+minSize+"<<<");
 			int beginIndex = patternFileName.lastIndexOf("/")+1;
 			String patternFileNameOnly = patternFileName.substring(beginIndex);
 			beginIndex = datasetFileName.lastIndexOf("/")+1;

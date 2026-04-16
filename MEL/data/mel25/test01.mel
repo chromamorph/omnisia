@@ -1,0 +1,15 @@
+MEL25;
+include("nps");
+m1 = mask(0,2);
+M1 = maskSequence(m1,m1,m1,m1);
+m2 = mask(0,2,2,1,2,2,2,1);
+m3 = mask(0,2,2,3);
+m4 = mask(0,2,1);
+M2 = maskSequence(m2,m3,m4,m1);
+S1 = space(M1,M2);
+n1 = note(0,60);
+N1 = translate(n1,product(vector(nn,S1),vector(np,pop(M1),pop(M2)),vector(nn,pop(pop(M1)),pop(pop(M2))),vector(np,pop(pop(pop(M1))),pop(pop(pop(M2))))));
+add(noteSet(n1),N1);
+print();
+draw();
+play(300);

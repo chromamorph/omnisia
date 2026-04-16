@@ -1,0 +1,67 @@
+OS(P(p(1,1),p(1,2),p(2,3),p(4,1),p(4,2)),[T(F_2STR,[-3.0, 13.0, -9.0, -1.0]), T(F_2STR,[-3.0, 13.0, -8.0, -1.0]), T(F_2STR,[-3.0, 13.0, 5.0, 1.0]), T(F_2STR,[-2.0, 13.0, 0.0, 1.0]), T(F_2STR,[-1.0, 11.0, -9.0, -1.0]), T(F_2STR,[-1.0, 12.0, 3.0, 1.0]), T(F_2STR,[1.0, 0.0, -9.0, -1.0]), T(F_2STR,[1.0, 0.0, 0.0, 1.0]), T(F_2STR,[1.0, 6.0, -8.0, -1.0]), T(F_2STR,[1.0, 7.0, -6.0, -1.0]), T(F_2STR,[1.0, 7.0, 3.0, 1.0]), T(F_2STR,[2.0, -1.0, -7.0, -1.0]), T(F_2STR,[3.0, -2.0, 5.0, 1.0])],null)
+
+
+Coverage: 30
+Dataset size: 30
+Uncompressed length: 60
+Encoding length: 62
+Compression factor: 0.967741935483871
+Running time in milliseconds: 432
+Encoding length without residual point set: 62
+Number of residual points: 0
+Percentage of residual points: 0.00%
+Compression factor without residual point set: 0.967741935483871
+Number of occurrence sets: 1
+
+
+
+Log:
+              0 ms              0 ms  computeMaximalTransformablePatterns starts
+            400 ms            400 ms  computeMaximalTransformablePatterns ends
+            401 ms              1 ms  computeSizeMTPSetArray ends
+            405 ms              4 ms  mergeMTPs ends
+            405 ms              0 ms  computeSuperMTPs ends
+            406 ms              1 ms  computeHeterogeneousOccurrenceSets ends
+            428 ms             22 ms  removeDuplicateOccurrenceSets ends
+            428 ms              0 ms  removeRedundantTransformations ends
+            428 ms              0 ms  removeNonCompactOccurrenceSets ends
+            428 ms              0 ms  removeNonCompactOccurrences ends
+            430 ms              2 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            430 ms              0 ms  removeContainedOccurrences ends
+            431 ms              1 ms  removeOccurrenceSetsWithEmptyTransformationSets ends
+            431 ms              0 ms  computeSortedOccurrenceSets ends
+            432 ms              1 ms  computeEncoding ends
+            432 ms              0 ms  Program ends
+
+
+Number of points: 30
+Number of OSs after removal: 1
+
+
+Parameter settings:
+===================
+Input file path (-i): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/HCII2023/example2-for-book.pts
+Query file path (-q): /Users/susanne/Repos/omnisia/MaxTranPatsJava/data/HCII2023/example2-query.pts
+Ground-truth file path (-gt): null
+Mid-time point (-mt): false
+Output directory (-o): /Users/susanne/Repos/omnisia/MaxTranPatsJava/output/HCII2023
+Minimum pattern size (-min): 5
+Minimum occurrence set compactness (-minc): 0.0
+Minimum occurrence compactness (-minoc): 0.0
+Morphetic pitch (-d): false
+Transformation classes (-tc): {TC(3,F_2STR)}
+Dimension mask (-dm): 1100
+Use ScaleXIA (-scal): false
+Draw patterns (-draw): true
+Show help (-h): false
+Draw ground truth (-drawgt): false
+Draw bounding boxes around patterns (-drawbb): false
+Use chroma (-c): false
+Use morph (-m): false
+x-axis scale factor (-xsf): 1
+Generate inter-pattern transformation graph (-iptg): false
+Multi-threaded computation and supply number of threads (-numthreads): 0
+Multi-threaded computation with number of threads determined by number of processors (-multithreaded): false
+Use Fork/Join framework (-forkjoin): false
+Generate point sets from sperm whale data (-sw): false
+

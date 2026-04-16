@@ -164,21 +164,31 @@ public class ForthEncoding extends Encoding {
 					if (wCrArray[i] < minCr) minCr = wCrArray[i];
 					if (wCompVArray[i] > maxCompV) maxCompV = wCompVArray[i];
 					if (wCompVArray[i] < minCompV) minCompV = wCompVArray[i];
+					if (wCompVArray[i] > 1) System.out.println("wCompVArray[i] == "+wCompVArray[i]+" for i = "+i+" and tec == "+tecs.get(i));
 				}
 
+				System.out.println("minCr = "+minCr+", maxCr = "+maxCr+"; minCompV = "+minCompV+"; maxCompV = "+maxCompV);
+				
 				//Now we compute a weight for each TEC
 				double[] weights = new double[tecs.size()];
 				for(int i = 0; i < tecs.size(); i++) {
 					weights[i] = wDashCr(i) * wDashCompV(i);
 				}
 
+				System.out.println("Completed computing weights for all TECs");
+				
 				//Make list of TECWeightPairs
 				tecWeights = new ArrayList<TECWeightPair>();
 				for(int i = 0; i < tecs.size(); i++) {
 					tecWeights.add(new TECWeightPair(tecs.get(i),weights[i]));
 				}
 
+				System.out.println("Completed making list of TECWeightPairs");
+				
 				Collections.sort(tecWeights);
+				
+				System.out.println("Completed sorting tecWeights");
+				
 				
 				for(int i = 0; i < 20; i++) {
 					if (tecWeights.get(i).getWeight() != 0)
@@ -341,8 +351,12 @@ public class ForthEncoding extends Encoding {
 		TreeSet<Vector> vectors = tec.getTranslators().getVectors();
 		PointSet pattern = tec.getPattern();
 		for(Vector v : vectors) {
-			PointSet thisPattern = pattern.translate(v);
-			double thisWCompV = (thisPattern.size() * 1.0)/segV(thisPattern).size();
+			PointSet thisPattern = pattern.translate(v,dataset);			
+			int segVSize = segV(thisPattern).size();
+			if (segVSize == 0)
+				System.out.println("Size of segV is zero: thisPattern = " + thisPattern+"; segV(thisPattern) = "+segV(thisPattern)+"thisPattern in dataset? "+dataset.contains(thisPattern));
+			if (pattern.size()==1) segVSize = 1;
+			double thisWCompV = (thisPattern.size() * 1.0)/segVSize;
 			if (maxWCompV == null || thisWCompV > maxWCompV)
 				maxWCompV = thisWCompV;
 		}
@@ -368,6 +382,7 @@ public class ForthEncoding extends Encoding {
 			if (p.getVoice() != null)
 				voices.add(p.getVoice());
 		PointSet segment = dataset.getSegment(startTime, endTime, true); 
+		if (segment.isEmpty()) System.out.println("segment is empty for "+pattern);
 		if (voices.isEmpty()) { 
 			//Return contents of bounding segment
 			return segment;

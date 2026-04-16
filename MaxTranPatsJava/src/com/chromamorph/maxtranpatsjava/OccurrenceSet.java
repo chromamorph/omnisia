@@ -16,7 +16,14 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 	private PointSet coveredSet = null; //Do not access this directly - use getCoveredSet()
 	private int encodingLength = -1; //Do not access this directly - use getEncodingLength()
 	private PointSet dataset;
+	private boolean isHeterogeneous = false;
 
+	public void setIsHeterogeneous(boolean isHeterogeneous) {
+		this.isHeterogeneous = isHeterogeneous;
+	}
+	
+	public boolean isHeterogeneous() {return isHeterogeneous;}
+	
 	public PointSet getDataset() {return dataset;}
 
 	private void resetProperties() {
@@ -40,13 +47,15 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		resetProperties();
 	}
 
-	public OccurrenceSet(PointSet pattern, PointSet dataset) {
+	public OccurrenceSet(PointSet pattern, PointSet dataset, boolean isHeterogeneous) {
 		setPattern(pattern);
 		this.dataset = dataset;
+		setIsHeterogeneous(isHeterogeneous);
 		resetProperties();
 	}
 
-	public OccurrenceSet(String l, PointSet dataset) throws InvalidArgumentException {
+	public OccurrenceSet(String l, PointSet dataset, boolean isHeterogeneous) throws InvalidArgumentException {
+		setIsHeterogeneous(isHeterogeneous);
 		int patternStart, patternEnd, transStart, transEnd;
 		if (l.trim().startsWith("OS(P(")) {
 			patternStart = 3;
@@ -187,7 +196,7 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 			throw new SuperMTPsNotNullException("superMTPs needs to be null in order to compute encoding length. Run PointSet.computeHeterogeneousOccurrenceSets() first on the owning PointSet.");
 		int el = 0;
 		for(Transformation f : getTransformations())
-			el += f.getTransformationClass().getSigmaLength();
+			el += f.getTransformationClass().getSigmaLength()+(isHeterogeneous()?1:0);
 		return el;
 	}
 
@@ -245,6 +254,22 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 		resetProperties();
 	}
 
+	public void keepSimplestTransformationForEachImagePattern() {
+		TreeSet<PointSet> imagePatterns = new TreeSet<PointSet>();
+		int numImagePatterns = 0;
+		TreeSet<Transformation> newTrans = new TreeSet<Transformation>();
+		for(Transformation tran : getTransformations()) {
+			PointSet ps = tran.phi(getPattern());
+			imagePatterns.add(ps);
+			if (imagePatterns.size()>numImagePatterns) {
+				newTrans.add(tran);
+				numImagePatterns++;
+			}
+		}
+		setTransformations(newTrans);
+		resetProperties();
+	}
+	
 	public void removeRedundantTransformations(boolean isMTM) {
 		//		Remove more complex transformations that map the pattern
 		//		onto the same image pattern as less complex transformations
@@ -283,10 +308,11 @@ public class OccurrenceSet implements Comparable<OccurrenceSet>{
 			if (!tranPatPair.getPointSet().equals(currentPattern)) {
 				currentPattern = tranPatPair.getPointSet();
 				//				Do not add transformation if it results in the object pattern for this occurrence set.
-				if ( isMTM ||!tranPatPair.getPointSet().equals(getPattern())) {
+				//if ( //isMTM ||
+				//		!tranPatPair.getPointSet().equals(getPattern())) {
 					newTrans.add(tranPatPair.getTransformation());
 					//					System.out.println(tranPatPair);
-				}
+				//}
 			}
 		}
 		Collections.sort(newTrans);

@@ -1,0 +1,13 @@
+MEL23;
+include("nps");
+n1 = note(0,65);
+n2 = note(0,58);
+M1 = maskSequence(mask(0,3));
+M2 = maskSequence(mask(3,2,2,1,2,2,2,1),mask(6,2,2,3));
+v1 = vector(sp,M1,M2);
+v2 = vector(np,M1,M2);
+A = translate(n1,product(repeat(2,v1),repeat(5,v2)));
+B = translate(n2,product(repeat(17,vector(ns))));
+add(A,B);
+play(100);
+draw();

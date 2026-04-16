@@ -837,6 +837,31 @@ public class PointSet implements Comparable<PointSet>{
 		return newPoints;
 	}
 
+	public Point findPoint(Point queryPoint) {
+		Point ceil = points.ceiling(queryPoint);
+		Point flr = points.floor(queryPoint);
+		if (ceil.equals(flr))
+			return  ceil;
+		return null;
+	}
+	
+	public PointSet translate(Vector vector, PointSet dataset) {
+		PointSet newPoints = translate(vector);
+		if (dataset.contains(newPoints)) {
+			for(Point point : newPoints.getPoints()) {
+				Point targetPoint = dataset.findPoint(point);
+				if (targetPoint != null) {
+					point.setVoice(targetPoint.getVoice());
+					point.setDuration(targetPoint.getDuration());
+				} else {
+					point.setVoice(null);
+					point.setDuration(null);
+				}
+			}
+		}
+		return newPoints;
+	}
+	
 	public PointSet getInversion() {
 		PointSet inversion = new PointSet();
 		for(Point point : points)

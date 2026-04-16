@@ -122,7 +122,7 @@ public abstract class TransformationClass implements Comparable<TransformationCl
 	
 	@Override
 	public String toString() {
-		return "TC("+getId()+","+getName()+")";
+		return getName();
 	}
 	
 	public static String getTransformationClassesString(TransformationClass[] transformationClasses) {

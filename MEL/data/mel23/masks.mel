@@ -1,0 +1,11 @@
+MEL23;
+
+//MASKS
+unitMask = mask(0,1);
+evenNumberMask = mask(0,2);
+threesMask = mask(0,3);
+
+//MASK SEQUENCES
+unitMaskSequence = maskSequence(unitMask);
+evenNumberMaskSequence = maskSequence(evenNumberMask); 
+threesMaskSequence = maskSequence(threesMask);

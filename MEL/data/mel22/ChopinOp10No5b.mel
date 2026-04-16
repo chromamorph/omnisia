@@ -1,0 +1,33 @@
+MEL22;
+
+p = coords(1,-1);
+n = coords(1,1);
+triad = maskStructure(2,2,3);
+majorScale = maskStructure(2,2,1,2,2,2,1);
+pentatonicScale = maskStructure(2,2,3,2,3);
+unitMask = mask(0,1);
+unitMaskSeq = maskSequence(unitMask);
+evenMask = mask(0,2);
+evenMaskSeq = maskSequence(evenMask);
+rhythm1 = maskSequence(evenMask,
+                       mask(0,2,1,3));
+GfPent = maskSequence(mask(6,pentatonicScale));
+GfMaTriad = maskSequence(mask(6,majorScale), mask(0,triad));
+CfMaTriad = maskSequence(mask(6,majorScale), mask(3,triad));
+bar = maskSequence(mask(0,12));
+GfOct = maskSequence(mask(6,12));
+space1 = space(evenMaskSeq,GfMaTriad);
+space2 = space(unitMaskSeq,GfMaTriad);
+
+n1 = note(0,90);
+V1 = product(vector(p,bar,GfOct),
+			 repeat(2,vector(p,rhythm1,GfPent)),
+             sequence(product(vector(p,space1),
+                              vector(n,space2)),
+                      vector(n,unitMask,CfMaTriad),
+                      product(repeat(2,vector(p,space1)),
+                              vector(n,space2))));
+N1 = translate(n1,V1);
+add(N1);
+print();
+draw();
