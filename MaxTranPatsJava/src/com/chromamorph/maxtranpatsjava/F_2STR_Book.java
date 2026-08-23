@@ -89,12 +89,6 @@ public class F_2STR_Book extends TransformationClass {
 		return sigmas;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(-3.00000001 % 0.5);
-		System.out.println(-4.50000001 %0.5);
-		System.out.println(5.3%0.5);
-	}
-	
 	public static String getIntString(double x) {
 		if (Math.floor(x) == x)
 			return String.format("%.0f",x);
@@ -114,4 +108,14 @@ public class F_2STR_Book extends TransformationClass {
 		return sb.toString();
 	}
 
+	public static void main(String[] args) {
+		F_2STR_Book tc = new F_2STR_Book();
+		PointSequence objectBasis = new PointSequence(new Point(1.0,2.0),new Point(3.0,2.0));
+		PointSequence imageBasis = new PointSequence(new Point(3.0,3.0), new Point(7.0,3.0));
+
+		System.out.println(tc.getSigmas(objectBasis,imageBasis));
+	}
+	
+
+	
 }

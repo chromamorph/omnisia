@@ -1670,10 +1670,10 @@ public class PointSet implements Comparable<PointSet>{
 			else
 				ps.computeMaximalTransformablePatterns(minSize);
 		} else if (forkJoin) {//ps2 is non-null
-			log.add(new LogInfo("Using computeMaximalTransformedMatchesForkJoin", !IS_OSTG));
+			log.add(new LogInfo("Using computeMaximalTransformedMatchesForkJoin", true));
 			ps.computeMaximalTransformedMatchesForkJoin(ps2,minSize);
 		} else {
-			log.add(new LogInfo("Using allMaximalPatterns01", !IS_OSTG));
+			log.add(new LogInfo("Using allMaximalPatterns01", true));
 			ps.allMaximalPatterns01(ps2, minSize);
 		}
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", !IS_OSTG));

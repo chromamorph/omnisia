@@ -591,7 +591,21 @@ public class Utility {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(lcm(5,24,16));
+		try {
+			System.out.println(computeCombinationIndexSequence(27,4,7));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+//		int k = 3;
+//		int[][] A = computePermutationIndexSequences(k);
+//		for(int r = 0; r < A.length; r++) {
+//			for(int i = 0; i < k; i++) {
+//				System.out.print(A[r][i]+" ");
+//			}
+//			System.out.println();
+//		}
+		
 //		ArrayList<Double> a = new ArrayList<Double>();
 //		a.add(1.0);
 //		a.add(0.0);
