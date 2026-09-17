@@ -52,7 +52,7 @@ public class ComputeMaximalTransformedMatches extends RecursiveAction {
 		int N = numObjectBases, p = tc.getPerms().length;
 		long imgIndex = C/(N*p);
 		long objIndex = (C % (N * p)) / p;
-		if (!dataset.isMTM() && imgIndex < objIndex)
+		if (!dataset.isWithQuery() && imgIndex < objIndex)
 			return;
 		int[] perm = tc.getPerm(C % p);
 		PointSequence objectBasis = null, imageBasis = null;

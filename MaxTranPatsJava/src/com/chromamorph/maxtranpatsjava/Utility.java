@@ -556,9 +556,11 @@ public class Utility {
 		 * The remaining i+1 values in C are equal to the values
 		 * 0,1,...,i
 		 */
-		if (i >= 0)
+		if (i >= 0) {
+			System.out.println("i="+i+" after termination of while loop with N="+N+", k="+k+" and size = "+size);
 			for(int j = 0; j <= i; j++)
 				C[j] = j;
+		}
 		ArrayList<Integer> outputList = new ArrayList<Integer>();
 		for(int m : C) outputList.add(m);
 		return outputList;
@@ -592,7 +594,10 @@ public class Utility {
 	
 	public static void main(String[] args) {
 		try {
-			System.out.println(computeCombinationIndexSequence(27,4,7));
+			int k = 4, size = 10;
+			int numCombinations = computeNumCombinations(size,k);
+			for (int N = 0; N < numCombinations; N++)
+				System.out.println(computeCombinationIndexSequence(N, k, size));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
