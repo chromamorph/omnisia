@@ -10,5 +10,6 @@ public enum BasicAlgorithm {
 //	TTWM, //Implements Laaksonen and Lemstr�m's (2019m DLfM) algorithm and a new version
 	NONE,
 	MTECS,
-	ComputeTranslators
+	ComputeTranslators,
+	SIATEC_C
 }

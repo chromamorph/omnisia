@@ -109,6 +109,7 @@ public class OMNISIA {
 	public static CompactnessType COMPACTNESS_TYPE	= CompactnessType.BOUNDING_BOX;
 	private static File OCCURRENCE_SETS_FILE		= null;
 	private static File QUERY_FILE					= null;
+	private static int DELTA						= 0;
 
 	////////////////////
 	//	Switches
@@ -157,11 +158,26 @@ public class OMNISIA {
 	private static String COMPACTNESS_TYPE_SWITCH	= "comptype";
 	private static String OCCURRENCE_SETS_FILE_SWITCH = "occsets";
 	private static String QUERY_FILE_SWITCH			= "q";
+	private static String DELTA_SWITCH				= "delta";
 
 
 	////////////////////
 	//	Static methods for parsing program arguments and setting parameter values
 
+	private static void getDELTA(String[] args) throws DavesIntFormatException {
+		String deltaStr = getValue(DELTA_SWITCH,args);
+		if (deltaStr != null) {
+			try {
+				int delta = Integer.parseInt(deltaStr);
+				if (delta < 0)
+					throw new NumberFormatException("Value of -"+DELTA_SWITCH+" must be non-negative. Default value of "+DELTA+" will be used.");
+				DELTA = delta;
+			} catch (NumberFormatException e) {
+				throw new DavesIntFormatException(DELTA_SWITCH, DELTA, e);
+			}
+		}
+	}
+	
 	private static void getBasicAlgorithm(String[] args) {
 		if (inputFileIsEncodingFile())
 			BASIC_ALGORITHM = BasicAlgorithm.NONE;
@@ -694,6 +710,7 @@ public static String getParameterValuesString() {
 			"Input file directory (-"+INPUT_DIR_SWITCH+"): " + INPUT_DIR,
 			"Occurrence set file (-"+OCCURRENCE_SETS_FILE_SWITCH+"): " + ((OCCURRENCE_SETS_FILE==null)?null:OCCURRENCE_SETS_FILE.getAbsolutePath()),
 			"Query file (-"+QUERY_FILE_SWITCH+"): " + ((QUERY_FILE==null)?null:QUERY_FILE.getAbsolutePath()),
+			"SIATEC-C delta value (-"+DELTA_SWITCH+"): " + DELTA,
 			""
 	};
 	StringBuilder sb = new StringBuilder();
@@ -856,6 +873,8 @@ private static void showHelp() {
 			"\tfile, the user must supply an input dataset file using the -"+INPUT_FILE_SWITCH+" switch.",
 			"",
 			"-"+QUERY_FILE_SWITCH+"\t Path to a file to use as a query file if doing pattern matching.",
+			"",
+			"-"+DELTA_SWITCH+"\t Value of delta to use in SIATEC-C algorithm.",
 			""
 			);
 }
@@ -909,6 +928,7 @@ private static void analyse(String[] args) throws MissingTieStartNoteException, 
 //		case TTWM: encoding = runTTWM(); break;
 		case MTECS: encoding = runMTECS(); break;
 		case ComputeTranslators: encoding = runComputeTranslators(); break;
+		case SIATEC_C: encoding = runSIATEC_C(); break;
 		case NONE: encoding = new COSIATECEncoding(INPUT_FILE.getAbsolutePath());
 		}
 		encoding.setTitle(COMMAND_LINE);
@@ -1030,6 +1050,39 @@ private static COSIATECEncoding runCOSIATEC() throws MissingTieStartNoteExceptio
 					TEC_PRIORITY_STRING,
 					DUAL_TEC_PRIORITY_STRING,
 					COMPACTNESS_TYPE
+			);
+}
+
+private static SIATEC_CEncoding runSIATEC_C() throws MissingTieStartNoteException, FileNotFoundException {
+	return new SIATEC_CEncoding(
+			null, 
+			OUTPUT_DIR==null?null:OUTPUT_DIR.getAbsolutePath(), 
+					DIATONIC_PITCH, 
+					INPUT_FILE.getAbsolutePath(), 
+					MIREX,
+					COMPACTNESS_TRAWLER,
+					CTA,
+					CTB,
+					R_SUPERDIAGONALS,
+					R,
+					RRT,
+					MIN_TEC_COMPACTNESS,
+					MIN_PATTERN_SIZE,
+					MAX_PATTERN_SIZE,
+					MERGE_TECS,
+					MIN_MATCH_SIZE,
+					NUM_ITERATIONS,
+					false, //Do not draw
+					SEGMENT_MODE,
+					BB_MODE,
+					(OUTPUT_FILE!=null?OUTPUT_FILE.getAbsolutePath():null),
+					TOP_N_PATTERNS,
+					WITHOUT_CHANNEL_10,
+					SORT_BY_PATTERN_SIZE,
+					TEC_PRIORITY_STRING,
+					DUAL_TEC_PRIORITY_STRING,
+					COMPACTNESS_TYPE,
+					DELTA
 			);
 }
 
@@ -1311,6 +1364,7 @@ public static void main(String[] args) throws MissingTieStartNoteException {
 		getNumIterations(args);
 		getCMin(args);
 		getTopNPatterns(args);
+		getDELTA(args);
 	} catch (DavesIntFormatException e) {
 		println(e.getMessage());
 		printParsedParameterValues();
