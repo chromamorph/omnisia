@@ -39,7 +39,7 @@ public class F_2STR_Mod_Book extends TransformationClass {
 	public F_2STR_Mod_Book(int modulus) {
 		super();
 		this.modulus = modulus;
-		setName("F_2STR_Mod_Book"+modulus);
+		setName("F_2STR_Mod"+modulus+"_Book");
 		setSigmaLength(4);
 		setBasisSize(2);
 		setPerms();

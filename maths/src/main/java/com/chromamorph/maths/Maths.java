@@ -121,6 +121,15 @@ public class Maths {
 		return a - (b * floor(a,b));
 	}
 
+	public static Double mod(Double a, Double b)
+	throws IllegalArgumentException {
+		if (b == 0.0)
+			throw new IllegalArgumentException(
+					"Second argument to mod must not be zero.");
+		return a - (b * Math.floor(a/b));
+	}
+
+	
 	public static Integer mod(Integer a, Integer b)
 	throws IllegalArgumentException {
 		if (b.equals(0))

@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,6 +63,20 @@ public class PointSet implements Comparable<PointSet>{
 	public static boolean IS_OSTG = false;
 	protected String label = null;
 
+	public TreeSet<Double> getChromaSet() {
+		TreeSet<Double> chromas = new TreeSet<Double>();
+		for(Point p: points)
+			chromas.add(Maths.mod(p.get(1), 12.0));
+		return chromas;
+	}
+	
+	public TreeSet<Double> getMorphSet() {
+		TreeSet<Double> morphs = new TreeSet<Double>();
+		for(Point p: points)
+			morphs.add(Maths.mod(p.get(1), 7.0));
+		return morphs;
+	}
+	
 	public void setLabel(String label) {
 		this.label = label;
 	}
@@ -611,56 +627,57 @@ public class PointSet implements Comparable<PointSet>{
 	/**
 	 * Implementation of AllMaximalPatterns1 algorithm in GAMA book.
 	 */
-	public void allMaximalPatterns01(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
-		if (transformationClasses == null)
-			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
-		TreeSet<TransformationPointSequencePair> V = new TreeSet<TransformationPointSequencePair>();
-		for (TransformationClass F : transformationClasses) {
-			int NObj = Utility.computeNumCombinations(pattern.size(), F.getBasisSize());
-			int NImg = Utility.computeNumCombinations(size(), F.getBasisSize());
-			int[][] R = F.getPerms();
-			for(int i = 0; i < NObj; i++) {
-				PointSequence bObj = pattern.computeBasis(F.getBasisSize(), i);
-				for(int j = 0; j < NImg; j++) {
-					PointSequence bImg = this.computeBasis(F.getBasisSize(), j);
-					for(int k = 0; k < R.length; k++) {
-						int[] r = R[k];
-						PointSequence bImgDash = new PointSequence();
-						for(int l = 0; l < F.getBasisSize(); l++)
-							bImgDash.add(bImg.get(r[l]));
-						ArrayList<Transformation> transformations = Transformation.getTransformations(F, bObj, bImgDash);
-						for(Transformation f : transformations) {
-							V.add(new TransformationPointSequencePair(f,bObj));
-						}
-					}
-				}
-			}
-		}
-		mtps = new TreeSet<TransformationPointSetPair>();
-		if (!V.isEmpty()) {
-			Transformation f = V.first().getTransformation();
-			PointSet S = new PointSet();
-			S.addAll(V.first().getPointSequence());
-			for(TransformationPointSequencePair v : V) {
-				if (v.getTransformation().equals(f))
-					S.addAll(v.getPointSequence());
-				else {
-					if (S.size() >= minSize)
-						mtps.add(new TransformationPointSetPair(f,S));
-					f = v.getTransformation();
-					S = new PointSet();
-					S.addAll(v.getPointSequence());
-				}
-			}
-			if (S.size() >= minSize)
-				mtps.add(new TransformationPointSetPair(f,S));		
-		}
-	}
+//	public void allMaximalPatterns01(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
+//		if (transformationClasses == null)
+//			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
+//		TreeSet<TransformationPointSequencePair> V = new TreeSet<TransformationPointSequencePair>();
+//		for (TransformationClass F : transformationClasses) {
+//			int NObj = Utility.computeNumCombinations(pattern.size(), F.getBasisSize());
+//			int NImg = Utility.computeNumCombinations(size(), F.getBasisSize());
+//			int[][] R = F.getPerms();
+//			for(int i = 0; i < NObj; i++) {
+//				PointSequence bObj = pattern.computeBasis(F.getBasisSize(), i);
+//				for(int j = 0; j < NImg; j++) {
+//					PointSequence bImg = this.computeBasis(F.getBasisSize(), j);
+//					for(int k = 0; k < R.length; k++) {
+//						int[] r = R[k];
+//						PointSequence bImgDash = new PointSequence();
+//						for(int l = 0; l < F.getBasisSize(); l++)
+//							bImgDash.add(bImg.get(r[l]));
+//						ArrayList<Transformation> transformations = Transformation.getTransformations(F, bObj, bImgDash);
+//						for(Transformation f : transformations) {
+//							V.add(new TransformationPointSequencePair(f,bObj));
+//						}
+//					}
+//				}
+//			}
+//		}
+//		mtps = new TreeSet<TransformationPointSetPair>();
+//		if (!V.isEmpty()) {
+//			Transformation f = V.first().getTransformation();
+//			PointSet S = new PointSet();
+//			S.addAll(V.first().getPointSequence());
+//			for(TransformationPointSequencePair v : V) {
+//				if (v.getTransformation().equals(f))
+//					S.addAll(v.getPointSequence());
+//				else {
+//					if (S.size() >= minSize)
+//						mtps.add(new TransformationPointSetPair(f,S));
+//					f = v.getTransformation();
+//					S = new PointSet();
+//					S.addAll(v.getPointSequence());
+//				}
+//			}
+//			if (S.size() >= minSize)
+//				mtps.add(new TransformationPointSetPair(f,S));		
+//		}
+//	}
 	
 	public void computeMaximalTransformedMatchesForkJoin(PointSet pattern, int minSize) throws NoTransformationClassesDefinedException {
 		if (transformationClasses == null)
 			throw new NoTransformationClassesDefinedException("No transformation classes defined! Add some transformation classes using addTransformationClasses() method.");
 		ListOfTransformationPointSetPairs[] mtmArray = new ListOfTransformationPointSetPairs[HASH_TABLE_SIZE];
+				
 		for (int i = 0; i < mtmArray.length; i++)
 			mtmArray[i] = new ListOfTransformationPointSetPairs();
 		for (TransformationClass tc : transformationClasses) {
@@ -1669,13 +1686,14 @@ public class PointSet implements Comparable<PointSet>{
 				ps.computeMaximalTransformablePatternsForkJoin(minSize);
 			else
 				ps.computeMaximalTransformablePatterns(minSize);
-		} else if (forkJoin) {//ps2 is non-null
+		} else {//ps2 is non-null
 			log.add(new LogInfo("Using computeMaximalTransformedMatchesForkJoin", true));
 			ps.computeMaximalTransformedMatchesForkJoin(ps2,minSize);
-		} else {
-			log.add(new LogInfo("Using allMaximalPatterns01", true));
-			ps.allMaximalPatterns01(ps2, minSize);
-		}
+		} 
+//		else {
+//			log.add(new LogInfo("Using allMaximalPatterns01", true));
+//			ps.allMaximalPatterns01(ps2, minSize);
+//		}
 		log.add(new LogInfo("computeMaximalTransformablePatterns ends", !IS_OSTG));
 
 //		System.out.println(ps.getMTPs());
@@ -3045,7 +3063,9 @@ private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int
 					PointSet objectPattern = new PointSet(patternList.get(i).toString());
 					PointSet imagePattern = new PointSet(patternList.get(j).toString());
 					TreeSet<Transformation> transformations = null;
-					if (imagePattern.size() == objectPattern.size()) {
+					if ((!chroma && !morph && imagePattern.size() == objectPattern.size()) ||
+							(chroma && imagePattern.getChromaSet().size() == objectPattern.getChromaSet().size()) ||
+							(morph && imagePattern.getMorphSet().size() == objectPattern.getMorphSet().size())) {
 
 						//				Now we need to do MTM of objectPattern in imagePattern
 						//				and select only complete matches, 
@@ -3096,13 +3116,24 @@ private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int
 			String timeType = (midTimePoint?"M":"O");
 			String repType = "-"+pitchType+timeType;
 			String transformationClassesString = TransformationClass.getTransformationClassesString(transformationClasses);
-			String graphFilePath = groundTruthFilePath.substring(0,startOfSuffix)+repType+"-"+transformationClassesString+"-IPTG.tex";
+			
+			if (outputDirPath == null || outputDirPath.equals("")) {
+				outputDirPath = new File(groundTruthFilePath).getParent();
+			}
+			try {
+				Files.createDirectories(Path.of(outputDirPath));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			String graphFileName = new File(groundTruthFilePath).getName();
+			graphFileName = graphFileName.substring(0,graphFileName.lastIndexOf('.'))+repType+"-"+transformationClassesString+"-IPTG.tex";
+			String graphFilePath = outputDirPath+(outputDirPath.endsWith("/")?"":"/")+graphFileName;
+			
 			PrintWriter graphFile = new PrintWriter(graphFilePath);
 			graphFile.println("\\begin{sidewaystable}");
 			graphFile.println("\\caption{"+graphFilePath+"}");
-			int startOfName = graphFilePath.lastIndexOf('/')+1;
-			String graphFileName = graphFilePath.substring(startOfName,startOfSuffix);
-			graphFile.println("\\label{"+graphFileName+repType+"-"+transformationClassesString+"-IPTG}");
+			graphFile.println("\\label{"+graphFileName.substring(0,graphFileName.lastIndexOf("."))+"}");
 			graphFile.println("\\resizebox{\\linewidth}{!}{");
 			graphFile.print("\\begin{tabularx}{2\\linewidth}{ll|");
 			for(int i = 0; i < patternList.size();i++) {
