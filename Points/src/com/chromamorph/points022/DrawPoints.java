@@ -333,7 +333,6 @@ public class DrawPoints extends PApplet {
 		this.useMorph = useMorph;
 		//System.out.println(occurrenceSets.get(occurrenceSetIndex));
 	}
-
 	
 	public DrawPoints(PointSet dataset, 
 			ArrayList<TEC> tecs, 

@@ -2937,14 +2937,25 @@ private static OccurrenceEndIndexPairMTP readOccurrenceMTP(StringBuilder sb, int
 			String dimensionMask,
 			boolean drawBoundingBoxes,
 			boolean useChroma,
-			boolean useMorph) throws IOException, DimensionalityException {
+			boolean useMorph,
+			String outputDirPath) throws IOException, DimensionalityException {
 		final PointSet dataset = new PointSet(new File(datasetFilePath),diatonicPitch,midTimePoint,dimensionMask,useChroma,useMorph);
 		ArrayList<ArrayList<com.chromamorph.points022.PointSet>> groundTruthPatterns = readGroundTruthPatternsFromFile(groundTruthFilePath, diatonicPitch, midTimePoint, 1, useMorph, useChroma);
 		final TreeSet<com.chromamorph.maxtranpatsjava.Point> points = dataset.getPoints();
 		final int endIndex = groundTruthFilePath.lastIndexOf(".");
 		String pitchType = useChroma?"C":(useMorph?"M":(diatonicPitch?"MP":"CP"));
 		String timeType = midTimePoint?"M":"O";
-		final String outputFilePath = groundTruthFilePath.substring(0, endIndex)+"-"+pitchType+timeType+".png";
+		final String outputFilePath;
+		if (outputDirPath == null)
+			outputFilePath = groundTruthFilePath.substring(0, endIndex)+"-"+pitchType+timeType+".png";
+		else {
+			if (!outputDirPath.endsWith("/"))
+				outputDirPath = outputDirPath + "/";
+			String groundTruthFileNameWithoutSuffix = Path.of(groundTruthFilePath).getFileName().toString();
+			int suffixIndex = groundTruthFileNameWithoutSuffix.lastIndexOf('.');
+			groundTruthFileNameWithoutSuffix = groundTruthFileNameWithoutSuffix.substring(0, suffixIndex);
+			outputFilePath = outputDirPath + groundTruthFileNameWithoutSuffix+"-"+pitchType+timeType+".png";
+		}
 		com.chromamorph.points022.PointSet ps = new com.chromamorph.points022.PointSet(); 
 		for(com.chromamorph.maxtranpatsjava.Point p : points) {
 			long onset = midTimePoint?(long)Math.floor(p.get(0)):p.getOnset();

@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class MaxTranPats {
-
+	
 	public static String INPUT_FILE_PATH 					= null;
 	public static String QUERY_FILE_PATH 					= null;
 	public static String GROUND_TRUTH_FILE_PATH 			= null;
@@ -309,7 +309,7 @@ public class MaxTranPats {
 		}
 		
 		TRANSFORMATION_CLASSES = getTransformationClasses(argArray);
-		if (TRANSFORMATION_CLASSES == null) {
+		if (TRANSFORMATION_CLASSES == null && !DRAW_GROUND_TRUTH) {
 			System.out.println("ERROR! Need to provide at least one transformation class - see help below!");
 			showHelp();
 			return;			
@@ -343,7 +343,8 @@ public class MaxTranPats {
 						DIMENSION_MASK,
 						DRAW_BOUNDING_BOXES,
 						CHROMA,
-						MORPH);
+						MORPH,
+						OUTPUT_DIR_PATH);
 			} catch (IOException | DimensionalityException e) {
 				e.printStackTrace();
 			}
