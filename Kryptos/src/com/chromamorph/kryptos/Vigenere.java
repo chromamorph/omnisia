@@ -1,14 +1,17 @@
 package com.chromamorph.kryptos;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * This class provides methods for encoding and decoding by any Vigenère cipher (https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher)
+ * This class provides methods for encoding, decoding and cracking any Vigenère cipher (https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher)
  */
 public class Vigenere {
+	public static String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
 	private static String decrypt(String cipherAsInput, String prefix, String key) {
-		String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		StringBuilder cipherSB = new StringBuilder();
 		for(int i = 0; i < cipherAsInput.length(); i++)
 			if (alpha.contains(((Character)(cipherAsInput.charAt(i))).toString()))
@@ -75,14 +78,147 @@ public class Vigenere {
 		return cipher.toString();
 	}
 		
+	public static ArrayList<Integer> textToIntArray(String text) {
+		String upcaseText = text.toUpperCase();
+		ArrayList<Integer> intArray = new ArrayList<Integer>();
+		for(int i = 0; i < text.length(); i++) {
+			char c = upcaseText.charAt(i);
+			if (c >= 'A' && c <= 'Z')
+				intArray.add((int)c-(int)('A'));
+		}
+		return intArray;
+	}
+	
+	public static String crackVigenere(String cipherText) {
+		int N = cipherText.length();
+				
+		String plainText = null;
+		System.out.println("Cipher text: "+cipherText);
+		
+		for(int i = 0; i < N; i++)
+			System.out.print(String.format("%4d", i));
+		System.out.println();
+		for(int i = 0; i < N; i++)
+			System.out.print(String.format("%4s", cipherText.charAt(i)));
+		System.out.println();
+		
+		ArrayList<Integer> cipherIntArray = textToIntArray(cipherText);
+		for(int i = 0; i < N; i++)
+			System.out.print(String.format("%4d", cipherIntArray.get(i)));
+		System.out.println();
+		System.out.println("Cipher text length: "+cipherText.length());
+		
+		// Find best cycleLength
+		////////////////////////
+		
+		for(int cycleLength = 1; cycleLength <= cipherText.length(); cycleLength++) {
+			
+			int[][] histograms = new int[cycleLength][26];
+			// row with index i is a frequency histogram of the letters
+			// at positions {j | j = i + k*cycleLength && 0 <= j < N}
+			// where k is a non-negative integer and N is the length of the 
+			// cipherText
+			
+			// Initialize histograms
+			for(int i = 0; i < cycleLength; i++)
+				for(int c = 0; c < 26; c++)
+					histograms[i][c] = 0;
+			
+			// Compute histograms
+			for(int i = 0; i < cycleLength; i++) {
+				for(int k = 0; i+k*cycleLength < N; k++)
+					histograms[i][cipherIntArray.get(i+k*cycleLength)]++;
+			}
+			
+			// Print out histograms
+			System.out.println("\n\nCycle length = "+cycleLength);
+			for(int c = 0; c < 26; c++)
+				System.out.print(String.format("%4s", alpha.charAt(c)));
+			for(int i = 0; i < cycleLength; i++) {
+				System.out.println();
+				for(int c = 0; c < 26; c++)
+					System.out.print(String.format("%4d", histograms[i][c]));
+				// compute similarity of sorted histogram to english frequency vector
+			}
+			
+			
+			// Compute  cycleLength x cycleLength x 2 array that gives the best rotation and minimum distance
+			// between each pair of histograms
+		}
+		
+		return plainText;
+	}
+
+	public static void printHelp() {
+		System.out.println(
+				"Syntax: java -jar vigenere.jar <d|e|c> <text-file-path> [alphabet-prefix cycling-key]"
+				);
+	}
+	
+	public static boolean getIsDecrypt(String[] args) {
+		return args[0].toUpperCase().equals("D");
+	}
+	
+	public static boolean getIsEncrypt(String[] args) {
+		return args[0].toUpperCase().equals("E");
+	}
+	
+	public static boolean getIsCrack(String[] args) {
+		return args[0].toUpperCase().equals("C");
+	}
+	
+	public static String getText(String[] args) throws IOException {
+		String filePath = args[1];
+		StringBuilder text = new StringBuilder();
+		BufferedReader br = new BufferedReader(new FileReader(filePath));
+		String l;
+		while ((l = br.readLine()) != null)
+			text.append(l);
+		br.close();
+		return text.toString().toUpperCase();
+	}
+	
+	public static String getAlphabetPrefix(String[] args) {
+		if (args.length >= 3)
+			return args[2].toUpperCase();
+		return null;
+	}
+	
+	public static String getCyclingKey(String[] args) {
+		if (args.length >= 4)
+			return args[3].toUpperCase();
+		return null;
+	}
+	
 	public static void main(String[] args) {
-		if (args.length != 4) {
-			System.out.println("Usage: java -jar vigenere.jar <d|e> <cipher|plain> <alphabet_prefix> <cycling_key>");
+		try {
+		if (args.length < 2) {
+			printHelp();
 			return;
 		}
-		if (args[0].toUpperCase().equals("D"))
-			System.out.println("\nPlain text is "+ decrypt(args[1].toUpperCase(), args[2].toUpperCase(), args[3].toUpperCase()));
-		else
-			System.out.println(encrypt(args[1].toUpperCase(), args[2].toUpperCase(), args[3].toUpperCase()));
+		boolean isDecrypt = getIsDecrypt(args);
+		boolean isEncrypt = getIsEncrypt(args);
+		boolean isCrack = getIsCrack(args);
+		String text = getText(args);
+		String alphabetPrefix = getAlphabetPrefix(args);
+		String cyclingKey = getCyclingKey(args);
+		if ((isDecrypt || isEncrypt) && (text == null || alphabetPrefix == null || cyclingKey == null)) {
+			printHelp();
+			return;
+		}
+		if (isCrack && text == null) {
+			printHelp();
+			return;
+		}
+		if (isDecrypt)
+			System.out.println("\nPlain text is "+ decrypt(text, alphabetPrefix, cyclingKey));
+		else if (isEncrypt)
+			System.out.println(encrypt(text, alphabetPrefix, cyclingKey));
+		else if (isCrack)
+			System.out.println(crackVigenere(text));
+		} catch(Exception e) {
+			e.printStackTrace();
+			printHelp();
+		}
 	}
 }
